@@ -189,7 +189,11 @@ stateDiagram-v2
     verifying --> reasoning
     reasoning --> completed: LLM ok + schema valid
     reasoning --> completed_without_ai: LLM down / invalid output
-    failed_recognition --> awaiting_confirmation: user types correction
+    failed_recognition --> verifying: POST /confirm with typed text
+    verifying --> failed: unexpected crash
+    reasoning --> failed: unexpected crash
+    completed --> verifying: POST /review (re-review)
+    failed --> verifying: POST /review (retry)
     completed --> [*]
     completed_without_ai --> [*]
 ```

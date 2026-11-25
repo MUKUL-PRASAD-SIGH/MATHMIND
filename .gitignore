@@ -1,0 +1,40 @@
+# Node
+node_modules/
+dist/
+.vite/
+coverage/
+test-results/
+playwright-report/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Data / runtime
+*.db
+*.sqlite3
+backend/data/
+*.ckpt
+*.pth
+*.safetensors
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+
+# Large media (link instead)
+*.mp4
+*.mov

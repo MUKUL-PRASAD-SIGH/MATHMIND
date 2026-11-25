@@ -7,7 +7,7 @@
 
 | ID | Name / handle | Role |
 |---|---|---|
-| M1 | _fill in_ | Tech Lead · Backend · Integration |
+| M1 | _fill in_ (**team lead**) | Tech Lead · Backend · Integration |
 | M2 | _fill in_ | Frontend · Notebook |
 | M3 | _fill in_ | Math & AI |
 | M4 | _fill in_ | Junior · QA, Content & Docs |
@@ -27,7 +27,7 @@
 
 | Task | Title | Prereqs | Status | Branch / PR |
 |---|---|---|---|---|
-| T0.1 | Monorepo scaffold | — | todo | |
+| T0.1 | Monorepo scaffold | — | review (branch protection + labels pending, needs repo admin) | `feat/M1-foundation` |
 | T0.3 | Backend scaffold | T0.1 | todo | |
 | T0.4 | API contract v0 + mocks | T0.3 | todo | |
 | T0.7 | CI pipeline | T0.2, T0.3 | todo | |
