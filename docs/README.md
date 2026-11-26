@@ -17,6 +17,7 @@ Everything needed to plan, build, test and present MathMind lives here.
 | 9 | [08-risks-and-limitations.md](08-risks-and-limitations.md) | M1, M3 | Risk register |
 | 10 | [09-ai-disclosure-log.md](09-ai-disclosure-log.md) | everyone | Log of AI-assisted work (hackathon A4) |
 | 11 | [10-evaluation-plan.md](10-evaluation-plan.md) | M3, M4 | Dataset, metrics, R2/R3 evidence |
+| 12 | [11-demo-script.md](11-demo-script.md) | M1, all | Demo run sheet, pre-flight, fallbacks (draft) |
 | — | [task-board.md](task-board.md) | everyone + AI agents | Live status tracker |
 
 ## Personal guides (paste into your AI agent)

@@ -72,7 +72,7 @@
 | 2:45–3:00 | Local AI, SymPy as authority, limitations, zero paid APIs | voice | M1 |
 
 **Steps**
-1. Prepare a seeded demo notebook (a script resets the DB to a known state).
+1. Prepare a seeded demo notebook (a script resets the DB to a known state). *(Built: `scripts/seed_demo.py --reset`. Draft run sheet: [11-demo-script.md](../11-demo-script.md).)*
 2. Dry run #1 on Day 6 PM: time it and list the problems.
 3. Fix the problems, then dry run #2 on Day 7 AM.
 4. Record (OBS; tablet via screen mirroring or a camera), make 2 takes, pick the best one, add captions.
