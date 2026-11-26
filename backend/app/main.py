@@ -14,6 +14,7 @@ from app.core.db import init_db, make_engine
 from app.core.errors import install_error_handlers
 from app.core.logging import configure_logging
 from app.repositories.learning import get_or_create_default_user
+from app.schemas.common import ErrorResponse
 from app.seed import seed
 from app.services.jobs.runner import JobRunner
 
@@ -53,6 +54,8 @@ def create_app(settings: Settings | None = None, *, synchronous_jobs: bool = Fal
         description="Intelligent mathematics notebook — local-first API. Contract: shared/contracts/.",
         lifespan=lifespan,
         separate_input_output_schemas=False,
+        # Any endpoint can get a body it cannot parse at all (e.g. not UTF-8): documented once here.
+        responses={400: {"model": ErrorResponse, "description": "Malformed request"}},
     )
     app.state.settings = settings
     app.add_middleware(

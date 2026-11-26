@@ -18,6 +18,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Health'
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/notebooks:
     get:
       tags:
@@ -34,6 +40,12 @@ paths:
                   $ref: '#/components/schemas/Notebook'
                 type: array
                 title: Response List Notebooks Api V1 Notebooks Get
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     post:
       tags:
       - notebooks
@@ -52,6 +64,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Notebook'
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Not Found
           content:
@@ -96,6 +114,12 @@ paths:
                 items:
                   $ref: '#/components/schemas/Page'
                 title: Response List Pages Api V1 Notebooks  Notebook Id  Pages Get
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           content:
             application/json:
@@ -156,6 +180,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Page'
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           content:
             application/json:
@@ -193,6 +223,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubmissionAccepted'
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Not Found
           content:
@@ -242,6 +278,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubmissionAccepted'
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Not Found
           content:
@@ -295,6 +337,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubmissionStatusResponse'
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           content:
             application/json:
@@ -355,6 +403,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubmissionAccepted'
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           content:
             application/json:
@@ -409,6 +463,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubmissionAccepted'
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           content:
             application/json:
@@ -461,6 +521,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReviewResponse'
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           content:
             application/json:
@@ -507,6 +573,12 @@ paths:
                   $ref: '#/components/schemas/Concept'
                 type: array
                 title: Response List Concepts Api V1 Concepts Get
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/problems:
     get:
       tags:
@@ -533,6 +605,12 @@ paths:
                 items:
                   $ref: '#/components/schemas/Problem'
                 title: Response List Problems Api V1 Problems Get
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '422':
           description: Validation Error
           content:
@@ -552,6 +630,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Mastery'
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/learners/me/revision:
     get:
       tags:
@@ -565,6 +649,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Revision'
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/learners/me/next:
     get:
       tags:
@@ -578,6 +668,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NextAction'
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Not Found
           content:
@@ -598,6 +694,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LearnerExport'
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/learners/me/data:
     delete:
       tags:
