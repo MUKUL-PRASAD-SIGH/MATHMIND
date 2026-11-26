@@ -66,6 +66,7 @@ def test_example_matches_schema_and_model(path: Path) -> None:
     import app.schemas.common as common
     import app.schemas.learning as learning
     import app.schemas.notebooks as notebooks
+    import app.schemas.privacy as privacy
     import app.schemas.review as review
     import app.schemas.submissions as submissions
     import app.schemas.verification as verification
@@ -73,9 +74,10 @@ def test_example_matches_schema_and_model(path: Path) -> None:
     name = path.name.split(".")[0]
     data = json.loads(path.read_text(encoding="utf-8"))
     assert_valid(name, data)
-    model = next(
-        getattr(m, name) for m in (common, learning, notebooks, review, submissions, verification) if hasattr(m, name)
-    )
+    modules = (common, learning, notebooks, privacy, review, submissions, verification)
+    found = [getattr(m, name) for m in modules if hasattr(m, name)]
+    assert found, f"example {path.name}: no model named {name} in app.schemas (add its module here)"
+    model = found[0]
     model.model_validate(data)
 
 

@@ -1,0 +1,175 @@
+{
+  "format_version": 1,
+  "app_version": "0.1.0",
+  "exported_at": "2026-01-01T10:00:00Z",
+  "notebooks": [
+    {
+      "id": "nb_algebra",
+      "title": "Algebra practice",
+      "domain": "algebra",
+      "created_at": "2026-01-01T10:00:00Z",
+      "updated_at": "2026-01-01T10:00:00Z",
+      "pages": [
+        {
+          "id": "pg_1",
+          "notebook_id": "nb_algebra",
+          "chapter": "Linear equations",
+          "order": 0,
+          "title": "Day 1",
+          "background": "ruled",
+          "bookmarked": false,
+          "version": 3,
+          "stroke_count": 1,
+          "strokes": [
+            {
+              "id": "st_1",
+              "page_id": "pg_1",
+              "points": [
+                [
+                  0.1,
+                  0.2
+                ],
+                [
+                  0.11,
+                  0.21
+                ],
+                [
+                  0.13,
+                  0.21
+                ]
+              ],
+              "pressure": [
+                0.4,
+                0.55,
+                0.6
+              ],
+              "timestamps": [
+                0.0,
+                8.0,
+                16.0
+              ],
+              "tool": "pen",
+              "color": "#1f2937",
+              "width": 2.0,
+              "bbox": {
+                "x": 0.1,
+                "y": 0.2,
+                "w": 0.03,
+                "h": 0.01
+              },
+              "deleted": false
+            }
+          ],
+          "objects": []
+        }
+      ]
+    }
+  ],
+  "submissions": [
+    {
+      "id": "sub_r2b_typed",
+      "page_id": "pg_1",
+      "problem_id": null,
+      "input_mode": "typed",
+      "status": "completed",
+      "created_at": "2026-01-01T10:00:00Z",
+      "has_source_image": false,
+      "steps": [
+        "2(x-3)=10",
+        "2x-3=10",
+        "2x=13",
+        "x=6.5"
+      ],
+      "regions": [],
+      "verification": {
+        "steps": [
+          {
+            "index": 1,
+            "latex": "2(x-3)=10",
+            "verdict": "supported",
+            "reason": "Problem statement",
+            "domain_warning": null,
+            "after_error": false
+          },
+          {
+            "index": 2,
+            "latex": "2x-3=10",
+            "verdict": "incorrect",
+            "reason": "Solution set changed from {8} to {13/2}",
+            "domain_warning": null,
+            "after_error": false
+          },
+          {
+            "index": 3,
+            "latex": "2x=13",
+            "verdict": "supported",
+            "reason": "Equivalent to previous step",
+            "domain_warning": null,
+            "after_error": true
+          },
+          {
+            "index": 4,
+            "latex": "x=6.5",
+            "verdict": "supported",
+            "reason": "Equivalent to previous step",
+            "domain_warning": null,
+            "after_error": true
+          }
+        ],
+        "first_error_step": 2,
+        "overall": "incorrect",
+        "verifier_version": "sympy-1.14"
+      },
+      "review": {
+        "status": "incorrect",
+        "first_error_step": 2,
+        "concept": "linear_equations",
+        "error_type": "algebraic_transformation",
+        "explanation": "When expanding 2(x-3), the 2 multiplies both x and -3, giving 2x-6.",
+        "hint": "Multiply every term inside the bracket by 2.",
+        "confidence": 0.72,
+        "recommended_action": "targeted_practice",
+        "overridden": false
+      },
+      "ai_status": "ok"
+    }
+  ],
+  "mastery": [
+    {
+      "concept_id": "integer_arithmetic",
+      "concept_name": "Integer arithmetic",
+      "mastery": 0.82,
+      "attempts": 9,
+      "confidence_level": "high",
+      "last_practised_at": "2026-01-01T10:00:00Z"
+    },
+    {
+      "concept_id": "linear_equations",
+      "concept_name": "Linear equations",
+      "mastery": 0.46,
+      "attempts": 4,
+      "confidence_level": "medium",
+      "last_practised_at": "2026-01-01T10:00:00Z"
+    },
+    {
+      "concept_id": "quadratic_equations",
+      "concept_name": "Quadratic equations",
+      "mastery": 0.3,
+      "attempts": 1,
+      "confidence_level": "low",
+      "last_practised_at": "2026-01-01T10:00:00Z"
+    }
+  ],
+  "learning_events": [
+    {
+      "id": "ev_1",
+      "kind": "attempt",
+      "concept_id": "linear_equations",
+      "submission_id": "sub_r2b_typed",
+      "score": 0.4,
+      "hints_used": 1,
+      "error_type": "algebraic_transformation",
+      "at": "2026-01-01T10:00:00Z"
+    }
+  ]
+}

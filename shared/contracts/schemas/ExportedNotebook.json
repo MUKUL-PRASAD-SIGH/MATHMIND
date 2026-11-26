@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/ExportedNotebook.json",
+  "properties": {
+    "id": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "title": "Id"
+    },
+    "title": {
+      "type": "string",
+      "title": "Title"
+    },
+    "domain": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Domain"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Created At"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Updated At"
+    },
+    "pages": {
+      "items": {
+        "$ref": "ExportedPage.json"
+      },
+      "type": "array",
+      "title": "Pages"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "domain",
+    "created_at",
+    "updated_at",
+    "pages"
+  ],
+  "title": "ExportedNotebook"
+}

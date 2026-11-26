@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session
 
-from app.api.v1 import health, learners, notebooks, submissions
+from app.api.v1 import health, learners, notebooks, privacy, submissions
 from app.core.config import Settings, get_settings
 from app.core.db import init_db, make_engine
 from app.core.errors import install_error_handlers
@@ -62,7 +62,7 @@ def create_app(settings: Settings | None = None, *, synchronous_jobs: bool = Fal
         allow_headers=["*"],
     )
     install_error_handlers(app)
-    for module in (health, notebooks, submissions, learners):
+    for module in (health, notebooks, submissions, learners, privacy):
         app.include_router(module.router, prefix=API_PREFIX)
     return app
 

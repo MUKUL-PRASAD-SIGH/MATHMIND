@@ -584,6 +584,67 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/learners/me/export:
+    get:
+      tags:
+      - privacy
+      summary: Export My Data
+      description: Everything the server stores about the current learner, as one JSON document.
+      operationId: export_my_data_api_v1_learners_me_export_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LearnerExport'
+  /api/v1/learners/me/data:
+    delete:
+      tags:
+      - privacy
+      summary: Delete My Data
+      description: 'Permanently delete the learner''s notebooks, submissions, uploads and progress.
+
+
+        Concepts and problems are shared content and stay. Refused while a submission is still processing,
+
+        so a background job never writes into rows that were just deleted.'
+      operationId: delete_my_data_api_v1_learners_me_data_delete
+      parameters:
+      - name: confirm
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Must be true. Guards against an accidental call.
+          default: false
+          title: Confirm
+        description: Must be true. Guards against an accidental call.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletionSummary'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Conflict
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
     AiStatus:
@@ -719,6 +780,19 @@ components:
       required:
       - regions
       title: ConfirmRequest
+    DeletionSummary:
+      properties:
+        deleted:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Deleted
+          description: Rows removed per table, plus `upload_files`
+      additionalProperties: false
+      type: object
+      required:
+      - deleted
+      title: DeletionSummary
     ErrorDetail:
       properties:
         code:
@@ -758,6 +832,249 @@ components:
       - incomplete
       - other
       title: ErrorType
+    ExportedLearningEvent:
+      properties:
+        id:
+          type: string
+          maxLength: 64
+          minLength: 1
+          pattern: ^[A-Za-z0-9_-]+$
+          title: Id
+        kind:
+          type: string
+          title: Kind
+        concept_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Concept Id
+        submission_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Submission Id
+        score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Score
+        hints_used:
+          type: integer
+          title: Hints Used
+        error_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error Type
+        at:
+          type: string
+          format: date-time
+          title: At
+      additionalProperties: false
+      type: object
+      required:
+      - id
+      - kind
+      - concept_id
+      - submission_id
+      - score
+      - hints_used
+      - error_type
+      - at
+      title: ExportedLearningEvent
+    ExportedNotebook:
+      properties:
+        id:
+          type: string
+          maxLength: 64
+          minLength: 1
+          pattern: ^[A-Za-z0-9_-]+$
+          title: Id
+        title:
+          type: string
+          title: Title
+        domain:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Domain
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+        pages:
+          items:
+            $ref: '#/components/schemas/ExportedPage'
+          type: array
+          title: Pages
+      additionalProperties: false
+      type: object
+      required:
+      - id
+      - title
+      - domain
+      - created_at
+      - updated_at
+      - pages
+      title: ExportedNotebook
+    ExportedObject:
+      properties:
+        id:
+          type: string
+          maxLength: 64
+          minLength: 1
+          pattern: ^[A-Za-z0-9_-]+$
+          title: Id
+        kind:
+          type: string
+          title: Kind
+        bbox:
+          $ref: '#/components/schemas/BBox'
+        payload:
+          additionalProperties: true
+          type: object
+          title: Payload
+      additionalProperties: false
+      type: object
+      required:
+      - id
+      - kind
+      - bbox
+      - payload
+      title: ExportedObject
+    ExportedPage:
+      properties:
+        id:
+          type: string
+          maxLength: 64
+          minLength: 1
+          pattern: ^[A-Za-z0-9_-]+$
+          title: Id
+        notebook_id:
+          type: string
+          maxLength: 64
+          minLength: 1
+          pattern: ^[A-Za-z0-9_-]+$
+          title: Notebook Id
+        chapter:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Chapter
+        order:
+          type: integer
+          title: Order
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        background:
+          $ref: '#/components/schemas/Background'
+        bookmarked:
+          type: boolean
+          title: Bookmarked
+        version:
+          type: integer
+          title: Version
+        stroke_count:
+          type: integer
+          title: Stroke Count
+        strokes:
+          items:
+            $ref: '#/components/schemas/Stroke'
+          type: array
+          title: Strokes
+          description: Includes soft-deleted strokes (deleted=true)
+        objects:
+          items:
+            $ref: '#/components/schemas/ExportedObject'
+          type: array
+          title: Objects
+      additionalProperties: false
+      type: object
+      required:
+      - id
+      - notebook_id
+      - chapter
+      - order
+      - title
+      - background
+      - bookmarked
+      - version
+      - stroke_count
+      - strokes
+      - objects
+      title: ExportedPage
+    ExportedSubmission:
+      properties:
+        id:
+          type: string
+          maxLength: 64
+          minLength: 1
+          pattern: ^[A-Za-z0-9_-]+$
+          title: Id
+        page_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Page Id
+        problem_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Problem Id
+        input_mode:
+          $ref: '#/components/schemas/InputMode'
+        status:
+          $ref: '#/components/schemas/SubmissionStatus'
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        has_source_image:
+          type: boolean
+          title: Has Source Image
+        steps:
+          items:
+            type: string
+          type: array
+          title: Steps
+        regions:
+          items:
+            $ref: '#/components/schemas/RecognizedRegion'
+          type: array
+          title: Regions
+        verification:
+          anyOf:
+          - $ref: '#/components/schemas/VerificationResult'
+          - type: 'null'
+        review:
+          anyOf:
+          - $ref: '#/components/schemas/ReviewResult'
+          - type: 'null'
+        ai_status:
+          $ref: '#/components/schemas/AiStatus'
+      additionalProperties: false
+      type: object
+      required:
+      - id
+      - page_id
+      - problem_id
+      - input_mode
+      - status
+      - created_at
+      - has_source_image
+      - steps
+      - regions
+      - verification
+      - review
+      - ai_status
+      title: ExportedSubmission
     HTTPValidationError:
       properties:
         detail:
@@ -798,6 +1115,50 @@ components:
       - image
       - ink
       title: InputMode
+    LearnerExport:
+      properties:
+        format_version:
+          type: integer
+          const: 1
+          title: Format Version
+          default: 1
+        app_version:
+          type: string
+          title: App Version
+        exported_at:
+          type: string
+          format: date-time
+          title: Exported At
+        notebooks:
+          items:
+            $ref: '#/components/schemas/ExportedNotebook'
+          type: array
+          title: Notebooks
+        submissions:
+          items:
+            $ref: '#/components/schemas/ExportedSubmission'
+          type: array
+          title: Submissions
+        mastery:
+          items:
+            $ref: '#/components/schemas/MasteryEntry'
+          type: array
+          title: Mastery
+        learning_events:
+          items:
+            $ref: '#/components/schemas/ExportedLearningEvent'
+          type: array
+          title: Learning Events
+      additionalProperties: false
+      type: object
+      required:
+      - app_version
+      - exported_at
+      - notebooks
+      - submissions
+      - mastery
+      - learning_events
+      title: LearnerExport
     Mastery:
       properties:
         items:
