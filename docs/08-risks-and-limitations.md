@@ -15,6 +15,8 @@
 | R9 | Camera needs HTTPS on phones | Medium | Medium | `vite --https` (basic-ssl), or file import fallback | M2 | — |
 | R10 | SymPy/antlr version mismatch breaks `parse_latex` | Medium | High | Pin `antlr4-python3-runtime==4.11.*`; T0.5 smoke test | M3 | — |
 | R11 | Windows path / line-ending issues | Medium | Low | `.gitattributes`, `pathlib`, CI on ubuntu + one Windows dev | M1 | — |
+| R12 | Unpinned backend deps change under us (seen: FastAPI 0.165 wraps included routers in a private class; Starlette deprecates `httpx` in `TestClient`) | Medium | Medium | Code uses public APIs only (the 405 `Allow` fix reads the OpenAPI doc, not router internals); CI catches breaks on every PR | M1 | CI goes red with no code change → pin the last good versions in a lock file and install the demo laptop from it |
+| R13 | No authentication: single local learner. Anyone who can reach the API on the network can read or delete the data (incl. `DELETE /learners/me/data`) | Medium | High | Run on a private hotspot for the demo; API on `127.0.0.1` unless the tablet needs it; delete needs `?confirm=true`; stated as a limitation | M1 | Venue Wi-Fi is shared → use a phone hotspot |
 
 ## 2. Delivery / team risks
 
@@ -26,9 +28,11 @@
 | D4 | Large model downloads fail at the venue | Download on Day 0; copy to USB | M3 |
 | D5 | Demo machine failure | Backup recording of each segment; second laptop prepared | M1 |
 | D6 | Over-claiming in the submission | Only claim measured metrics and tested devices (T8.2 check) | M4 + M1 |
+| D7 | Review bottleneck: `main` needs 1 approval and M1's PRs are stacked (`feat/M1-foundation` ← `feat/T7.7-security` ← `feat/T8.4-demo-seed`) | Review PRs the same day; merge in order (squash); rebase the next branch onto `main` after each merge | M1 |
 
 ## 3. Known limitations (to state publicly)
 
+- **Single-user and local:** there are no accounts or passwords. Run it on your own machine or a private network.
 - Handwriting recognition works on **selected, clearly written expression regions**, not arbitrary full pages.
 - Verification covers **the scope listed in `backend/app/services/verification/SUPPORTED_SCOPE.md`**. Everything else is `inconclusive`.
 - AI explanations come from a small local model. They may be imperfect and are constrained by symbolic checks.
