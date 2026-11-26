@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/NotebookCreate.json",
+  "properties": {
+    "title": {
+      "type": "string",
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Title"
+    },
+    "domain": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 64
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Domain"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "title"
+  ],
+  "title": "NotebookCreate"
+}

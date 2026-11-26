@@ -16,7 +16,7 @@
 
 | Milestone | Target | Status |
 |---|---|---|
-| Contract freeze v0 | Day 1 noon | todo |
+| Contract freeze v0 | Day 1 noon | ready for review (`shared/contracts/`) |
 | Milestone A — typed review E2E | Day 3 EOD | todo |
 | Milestone B — full review + mastery | Day 5 EOD | todo |
 | Feature freeze + dry run #1 | Day 6 PM | todo |
@@ -28,15 +28,15 @@
 | Task | Title | Prereqs | Status | Branch / PR |
 |---|---|---|---|---|
 | T0.1 | Monorepo scaffold | — | review (branch protection + labels pending, needs repo admin) | `feat/M1-foundation` |
-| T0.3 | Backend scaffold | T0.1 | todo | |
-| T0.4 | API contract v0 + mocks | T0.3 | todo | |
-| T0.7 | CI pipeline | T0.2, T0.3 | todo | |
-| T2.1 | DB models + repos | T0.3, T0.4 | todo | |
-| T2.2 | Notebook/page API | T2.1 | todo | |
-| T2.3 | Submission API + upload validation | T2.1 | todo | |
-| T2.4 | Job runner + state machine | T2.3 | todo | |
-| T2.5 | FE API client + sync (with M2) | T2.2, T1.5 | todo | |
-| T4.2 | Recognition stage + /confirm | T2.4, T4.1 | todo | |
+| T0.3 | Backend scaffold | T0.1 | review | `feat/M1-foundation` |
+| T0.4 | API contract v0 + mocks | T0.3 | review (MSW handlers wait for T0.2) | `feat/M1-foundation` |
+| T0.7 | CI pipeline | T0.2, T0.3 | review (backend job live; frontend job auto-enables at T0.2) | `feat/M1-foundation` |
+| T2.1 | DB models + repos | T0.3, T0.4 | review | `feat/M1-foundation` |
+| T2.2 | Notebook/page API | T2.1 | review | `feat/M1-foundation` |
+| T2.3 | Submission API + upload validation | T2.1 | review | `feat/M1-foundation` |
+| T2.4 | Job runner + state machine | T2.3 | review | `feat/M1-foundation` |
+| T2.5 | FE API client + sync (with M2) | T2.2, T1.5 | blocked: needs T1.5 (M2) | |
+| T4.2 | Recognition stage + /confirm | T2.4, T4.1 | in-progress (stage + /confirm built on stubs; swap in T4.1) | `feat/M1-foundation` |
 | T5.3 | Review orchestrator + fallback | T3.4, T4.2, T5.2 | todo | |
 | T6.5 | Learner endpoints | T6.3, T6.4 | todo | |
 | T7.3 | E2E Playwright (with M2) | T5.4 | todo | |

@@ -35,8 +35,12 @@ Read this file before every session. It applies to Claude Code, Cursor, Copilot,
 
 ## 3. Contract-first
 
-- `shared/contracts/openapi.yaml` and `shared/contracts/schemas/*.json` are the source of truth for API shapes.
-- Never change a request/response shape without updating the contract, regenerating types (`npm run gen:types`), and noting it in the PR.
+- API shapes are defined **once**, as Pydantic models in `backend/app/schemas/`. They are exported to
+  `shared/contracts/openapi.yaml` + `shared/contracts/schemas/*.json` by `python scripts/export_contracts.py`
+  (run from `backend/`). Mock payloads live in `shared/contracts/examples/` (`python scripts/make_examples.py`).
+- CI fails if the exported files are stale (`export_contracts.py --check` + `tests/test_contracts.py`), so the contract diff
+  is always visible in the PR. Contract changes need M1 + one consumer approval.
+- Frontend: regenerate types with `npm run gen:types` after any contract change.
 
 ## 4. Non-negotiable product rules (from the spec)
 

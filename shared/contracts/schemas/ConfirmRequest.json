@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/ConfirmRequest.json",
+  "properties": {
+    "regions": {
+      "items": {
+        "$ref": "RegionConfirmation.json"
+      },
+      "type": "array",
+      "maxItems": 50,
+      "minItems": 1,
+      "title": "Regions"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "regions"
+  ],
+  "title": "ConfirmRequest"
+}

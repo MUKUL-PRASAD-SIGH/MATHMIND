@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/OcrState.json",
+  "type": "string",
+  "enum": [
+    "loaded",
+    "not_loaded",
+    "not_installed"
+  ],
+  "title": "OcrState"
+}

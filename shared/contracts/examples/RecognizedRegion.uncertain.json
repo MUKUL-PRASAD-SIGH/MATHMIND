@@ -1,0 +1,16 @@
+{
+  "id": "rg_2",
+  "submission_id": "sub_r2b_image",
+  "line_index": 1,
+  "bbox": {
+    "x": 0.1,
+    "y": 0.29,
+    "w": 0.6,
+    "h": 0.08
+  },
+  "latex": "2x-3=1O",
+  "confidence": 0.41,
+  "confirmed": false,
+  "corrected_latex": null,
+  "recognizer_version": "pix2tex-0.1.2"
+}

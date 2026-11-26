@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/BBox.json",
+  "properties": {
+    "x": {
+      "type": "number",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "X"
+    },
+    "y": {
+      "type": "number",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Y"
+    },
+    "w": {
+      "type": "number",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "W"
+    },
+    "h": {
+      "type": "number",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "H"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "x",
+    "y",
+    "w",
+    "h"
+  ],
+  "title": "BBox"
+}

@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/Stroke.json",
+  "properties": {
+    "id": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "title": "Id"
+    },
+    "page_id": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "title": "Page Id"
+    },
+    "points": {
+      "items": {
+        "items": {
+          "type": "number"
+        },
+        "type": "array",
+        "maxItems": 2,
+        "minItems": 2
+      },
+      "type": "array",
+      "maxItems": 20000,
+      "minItems": 1,
+      "title": "Points",
+      "description": "[x, y] page-normalized 0..1"
+    },
+    "pressure": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Pressure"
+    },
+    "timestamps": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Timestamps"
+    },
+    "tool": {
+      "$ref": "Tool.json"
+    },
+    "color": {
+      "type": "string",
+      "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+      "title": "Color"
+    },
+    "width": {
+      "type": "number",
+      "maximum": 100.0,
+      "exclusiveMinimum": 0.0,
+      "title": "Width"
+    },
+    "bbox": {
+      "$ref": "BBox.json"
+    },
+    "deleted": {
+      "type": "boolean",
+      "title": "Deleted",
+      "default": false
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "id",
+    "page_id",
+    "points",
+    "tool",
+    "color",
+    "width",
+    "bbox"
+  ],
+  "title": "Stroke"
+}

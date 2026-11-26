@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/SubmissionStatus.json",
+  "type": "string",
+  "enum": [
+    "received",
+    "recognizing",
+    "awaiting_confirmation",
+    "verifying",
+    "reasoning",
+    "completed",
+    "completed_without_ai",
+    "failed_recognition",
+    "failed"
+  ],
+  "title": "SubmissionStatus"
+}

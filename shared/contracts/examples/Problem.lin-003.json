@@ -1,0 +1,7 @@
+{
+  "id": "lin-003",
+  "concept_id": "linear_equations",
+  "prompt_latex": "2(x-3)=10",
+  "expected_answer_latex": "x=8",
+  "difficulty": 3
+}

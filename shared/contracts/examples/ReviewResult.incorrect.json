@@ -1,0 +1,11 @@
+{
+  "status": "incorrect",
+  "first_error_step": 2,
+  "concept": "linear_equations",
+  "error_type": "algebraic_transformation",
+  "explanation": "When expanding 2(x-3), the 2 multiplies both x and -3, giving 2x-6.",
+  "hint": "Multiply every term inside the bracket by 2.",
+  "confidence": 0.72,
+  "recommended_action": "targeted_practice",
+  "overridden": false
+}

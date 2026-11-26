@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/MasteryEntry.json",
+  "properties": {
+    "concept_id": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "title": "Concept Id"
+    },
+    "concept_name": {
+      "type": "string",
+      "title": "Concept Name"
+    },
+    "mastery": {
+      "type": "number",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Mastery",
+      "description": "Estimate, not a guaranteed measure"
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 0.0,
+      "title": "Attempts"
+    },
+    "confidence_level": {
+      "$ref": "ConfidenceLevel.json"
+    },
+    "last_practised_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Last Practised At"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "concept_id",
+    "concept_name",
+    "mastery",
+    "attempts",
+    "confidence_level"
+  ],
+  "title": "MasteryEntry"
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/Revision.json",
+  "properties": {
+    "items": {
+      "items": {
+        "$ref": "RevisionItem.json"
+      },
+      "type": "array",
+      "title": "Items"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "items"
+  ],
+  "title": "Revision"
+}

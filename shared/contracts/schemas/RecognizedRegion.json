@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/RecognizedRegion.json",
+  "properties": {
+    "id": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "title": "Id"
+    },
+    "submission_id": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "title": "Submission Id"
+    },
+    "line_index": {
+      "type": "integer",
+      "minimum": 0.0,
+      "title": "Line Index"
+    },
+    "bbox": {
+      "$ref": "BBox.json"
+    },
+    "latex": {
+      "type": "string",
+      "title": "Latex"
+    },
+    "confidence": {
+      "type": "number",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Confidence"
+    },
+    "confirmed": {
+      "type": "boolean",
+      "title": "Confirmed"
+    },
+    "corrected_latex": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Corrected Latex"
+    },
+    "recognizer_version": {
+      "type": "string",
+      "title": "Recognizer Version"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "id",
+    "submission_id",
+    "line_index",
+    "bbox",
+    "latex",
+    "confidence",
+    "confirmed",
+    "recognizer_version"
+  ],
+  "title": "RecognizedRegion"
+}

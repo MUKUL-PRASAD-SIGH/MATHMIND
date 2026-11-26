@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/AiStatus.json",
+  "type": "string",
+  "enum": [
+    "ok",
+    "unavailable",
+    "invalid_output",
+    "pending"
+  ],
+  "title": "AiStatus"
+}

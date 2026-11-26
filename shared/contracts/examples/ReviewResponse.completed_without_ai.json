@@ -1,0 +1,39 @@
+{
+  "submission_id": "sub_r2a_typed",
+  "status": "completed_without_ai",
+  "verification": {
+    "steps": [
+      {
+        "index": 1,
+        "latex": "3x+5=20",
+        "verdict": "supported",
+        "reason": "Problem statement",
+        "domain_warning": null,
+        "after_error": false
+      },
+      {
+        "index": 2,
+        "latex": "3x=15",
+        "verdict": "supported",
+        "reason": "Equivalent to previous step",
+        "domain_warning": null,
+        "after_error": false
+      },
+      {
+        "index": 3,
+        "latex": "x=5",
+        "verdict": "supported",
+        "reason": "Equivalent to previous step",
+        "domain_warning": null,
+        "after_error": false
+      }
+    ],
+    "first_error_step": null,
+    "overall": "correct",
+    "verifier_version": "sympy-1.14"
+  },
+  "review": null,
+  "ai_status": "unavailable",
+  "regions": [],
+  "step_to_region": {}
+}

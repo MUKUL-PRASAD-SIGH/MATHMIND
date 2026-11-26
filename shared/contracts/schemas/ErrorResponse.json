@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/ErrorResponse.json",
+  "properties": {
+    "error": {
+      "$ref": "ErrorDetail.json"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "error"
+  ],
+  "title": "ErrorResponse"
+}

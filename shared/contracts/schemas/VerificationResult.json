@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/VerificationResult.json",
+  "properties": {
+    "steps": {
+      "items": {
+        "$ref": "StepVerdict.json"
+      },
+      "type": "array",
+      "title": "Steps"
+    },
+    "first_error_step": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1.0
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "First Error Step"
+    },
+    "overall": {
+      "$ref": "Overall.json"
+    },
+    "verifier_version": {
+      "type": "string",
+      "title": "Verifier Version",
+      "default": "stub-0"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "steps",
+    "overall"
+  ],
+  "title": "VerificationResult"
+}

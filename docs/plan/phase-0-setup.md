@@ -118,9 +118,10 @@
    5. `ReviewResult.json` (from `02-architecture.md §8`, with enums).
    6. `Mastery.json`, `NextAction.json` (`action`, `concept_id`, `problem_id?`, `reason`).
 2. Write `shared/contracts/openapi.yaml` for every endpoint in `02-architecture.md §5`, using the `$ref` schemas.
-3. Generate the types.
+3. Generate the types. *(As built: Pydantic models in `backend/app/schemas/` are the single definition;
+   `python scripts/export_contracts.py` writes `openapi.yaml` + `schemas/*.json`, and CI checks they are in sync.)*
    1. Frontend: `npm run gen:types`.
-   2. Backend: hand-write the matching Pydantic models in `app/schemas/` (they must validate the example files).
+   2. Backend: `python scripts/export_contracts.py` after changing any model.
 4. Create mock data.
    1. `shared/contracts/examples/*.json`: one example per schema, including `incorrect` and `completed_without_ai` cases.
    2. `frontend/src/mocks/handlers.ts` (MSW) serving the examples, enabled by `VITE_USE_MOCKS=true`.

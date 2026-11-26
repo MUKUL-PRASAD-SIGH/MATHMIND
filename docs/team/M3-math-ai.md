@@ -43,18 +43,34 @@ Plan details: [phase-3](../plan/phase-3-math.md), [phase-4](../plan/phase-4-reco
 
 ## Public interfaces you must provide (M1 depends on these)
 
+The pipeline seam is **already built** by M1 in `backend/app/services/jobs/stages.py`. Implement these exact
+signatures, then register them (e.g. in an `install()` function that `app/main.py` calls):
+
 ```python
-# services/verification
-def verify_steps(steps: list[str], problem: Problem | None = None,
-                 domain: Domain = "reals") -> VerificationResult: ...
+from app.services.jobs.stages import (register_stage, ProblemContext, RecognizedLine, ReviewInput,
+                                      RecognitionUnavailable, ReviewUnavailable)
 
-# services/recognition
-def recognize_region(png: bytes, stroke_hint: StrokeHint | None = None) -> list[RecognizedLine]: ...
+# services/verification  — return VerificationResult (app/schemas/verification.py)
+def verify_steps(steps: list[str], problem: ProblemContext | None) -> VerificationResult: ...
+register_stage("verify", verify_steps)
 
-# services/reasoning
-class ReviewUnavailable(Exception): ...
-def review(problem, steps, verification, concept, history) -> ReviewResult: ...   # may raise ReviewUnavailable
-def ollama_healthy() -> bool: ...
+# services/recognition — RecognizedLine.bbox is RELATIVE TO THE CROP (0..1); the runner maps it to the page.
+# Raise RecognitionUnavailable on failure; the runner gives the learner a typeable placeholder region.
+def recognize_region(png: bytes, region_bbox: BBox) -> list[RecognizedLine]: ...
+register_stage("recognize", recognize_region)
+
+# services/reasoning — return a ReviewResult (app/schemas/review.py, extra="forbid").
+# Raise ReviewUnavailable(invalid_output=True) after the retry fails; ReviewUnavailable() when Ollama is down.
+def review(data: ReviewInput) -> ReviewResult: ...
+register_stage("reason", review)
+```
+
+Already handled for you by the runner, so don't duplicate it: per-stage timeouts (`TIMEOUT_*` in `.env`), verifier
+crash → all steps `inconclusive`, LLM failure → `completed_without_ai`, and the **SymPy override** of a disagreeing
+`status`/`first_error_step` (`enforce_sympy_authority`). Test your stage with `register_stage` the way
+`backend/tests/test_submissions_typed.py` does.
+
+```python
 
 # services/adaptation
 def score_from_evidence(verification, hints_used: int, attempts: int) -> float | None: ...

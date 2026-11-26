@@ -1,0 +1,39 @@
+{
+  "steps": [
+    {
+      "index": 1,
+      "latex": "2(x-3)=10",
+      "verdict": "supported",
+      "reason": "Problem statement",
+      "domain_warning": null,
+      "after_error": false
+    },
+    {
+      "index": 2,
+      "latex": "2x-3=10",
+      "verdict": "incorrect",
+      "reason": "Solution set changed from {8} to {13/2}",
+      "domain_warning": null,
+      "after_error": false
+    },
+    {
+      "index": 3,
+      "latex": "2x=13",
+      "verdict": "supported",
+      "reason": "Equivalent to previous step",
+      "domain_warning": null,
+      "after_error": true
+    },
+    {
+      "index": 4,
+      "latex": "x=6.5",
+      "verdict": "supported",
+      "reason": "Equivalent to previous step",
+      "domain_warning": null,
+      "after_error": true
+    }
+  ],
+  "first_error_step": 2,
+  "overall": "incorrect",
+  "verifier_version": "sympy-1.14"
+}
