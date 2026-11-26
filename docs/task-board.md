@@ -27,7 +27,7 @@
 
 | Task | Title | Prereqs | Status | Branch / PR |
 |---|---|---|---|---|
-| T0.1 | Monorepo scaffold | — | review (branch protection + labels pending, needs repo admin) | `feat/M1-foundation` |
+| T0.1 | Monorepo scaffold | — | review (branch protection + labels set) | `feat/M1-foundation` |
 | T0.3 | Backend scaffold | T0.1 | review | `feat/M1-foundation` |
 | T0.4 | API contract v0 + mocks | T0.3 | review (MSW handlers wait for T0.2) | `feat/M1-foundation` |
 | T0.7 | CI pipeline | T0.2, T0.3 | review (backend job live; frontend job auto-enables at T0.2) | `feat/M1-foundation` |

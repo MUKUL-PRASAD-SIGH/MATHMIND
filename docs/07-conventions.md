@@ -38,6 +38,16 @@ T1.2 — Ink canvas (docs/plan/phase-1-notebook.md#t12)
 
 **Review SLA:** within 2 hours during the working day. M4's PRs are reviewed by their mentor first.
 
+## Tooling
+
+| What | Choice | Notes |
+|---|---|---|
+| JS package manager | **npm** | Commit `package-lock.json`; CI uses `npm ci`. Don't mix in yarn/pnpm lockfiles. |
+| Node | 20 LTS | Same version as CI. |
+| Python | 3.11 | venv at `backend/.venv` (`py -3.11 -m venv .venv` on Windows). |
+| Python deps | pip + `requirements*.txt` | `requirements.txt` (runtime), `-dev` (tests/lint), `-ml` (pix2tex, optional). |
+| Issue labels | `M1`–`M4`, `blocked`, `P0`, `P1`, `bug`, `test` | Owner label + priority on every issue. |
+
 ## Code style
 
 ### TypeScript / React
