@@ -69,3 +69,87 @@ export function smoothPath(points: readonly (readonly number[])[]): PathCommand[
 export function pressureWidth(base: number, pressure: number | null | undefined): number {
   return pressure == null ? base : base * (0.5 + pressure)
 }
+
+// --- Eraser ----------------------------------------------------------------------------
+
+/**
+ * Distance from p to segment ab. `aspect` (height / width) makes y comparable to x, so
+ * distances are measured in page-width units on a non-square page.
+ */
+export function distanceToSegment(
+  p: readonly number[],
+  a: readonly number[],
+  b: readonly number[],
+  aspect = 1,
+): number {
+  const px = p[0]
+  const py = p[1] * aspect
+  const ax = a[0]
+  const ay = a[1] * aspect
+  const bx = b[0]
+  const by = b[1] * aspect
+  const dx = bx - ax
+  const dy = by - ay
+  const len2 = dx * dx + dy * dy
+  const t = len2 === 0 ? 0 : Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / len2))
+  return Math.hypot(px - (ax + t * dx), py - (ay + t * dy))
+}
+
+export function bboxesIntersect(a: BBox, b: BBox, pad = 0): boolean {
+  return (
+    a.x - pad <= b.x + b.w && b.x - pad <= a.x + a.w && a.y - pad <= b.y + b.h && b.y - pad <= a.y + a.h
+  )
+}
+
+interface HitStroke {
+  points: readonly (readonly number[])[]
+  bbox: BBox
+}
+
+const cross = (o: readonly number[], a: readonly number[], b: readonly number[]) =>
+  (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+
+/** Distance between segments ab and cd (0 when they cross). */
+export function segmentDistance(
+  a: readonly number[],
+  b: readonly number[],
+  c: readonly number[],
+  d: readonly number[],
+  aspect = 1,
+): number {
+  const d1 = cross(c, d, a)
+  const d2 = cross(c, d, b)
+  const d3 = cross(a, b, c)
+  const d4 = cross(a, b, d)
+  if (((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) && ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0))) {
+    return 0
+  }
+  return Math.min(
+    distanceToSegment(a, c, d, aspect),
+    distanceToSegment(b, c, d, aspect),
+    distanceToSegment(c, a, b, aspect),
+    distanceToSegment(d, a, b, aspect),
+  )
+}
+
+const segments = (pts: readonly (readonly number[])[]) =>
+  pts.length === 1 ? [[pts[0], pts[0]]] : pts.slice(1).map((p, i) => [pts[i], p])
+
+/**
+ * Stroke eraser hit-test: cheap bbox rejection first, then the distance between the
+ * eraser path and the stroke's segments. `radius` is in page-width units.
+ */
+export function strokeHit(
+  stroke: HitStroke,
+  eraserPath: readonly (readonly number[])[],
+  radius: number,
+  aspect = 1,
+): boolean {
+  if (eraserPath.length === 0) return false
+  if (!bboxesIntersect(stroke.bbox, computeBBox(eraserPath), radius)) return false
+  const strokeSegs = segments(stroke.points)
+  for (const [a, b] of segments(eraserPath)) {
+    for (const [c, d] of strokeSegs) if (segmentDistance(a, b, c, d, aspect) <= radius) return true
+  }
+  return false
+}

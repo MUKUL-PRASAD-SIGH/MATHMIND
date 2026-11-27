@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { computeBBox, normalizePoint, pressureWidth, smoothPath } from './geometry'
+import {
+  computeBBox,
+  distanceToSegment,
+  normalizePoint,
+  pressureWidth,
+  smoothPath,
+  strokeHit,
+} from './geometry'
 
 describe('normalizePoint', () => {
   const rect = { left: 100, top: 50, width: 200, height: 400 }
@@ -70,6 +77,46 @@ describe('smoothPath', () => {
       { op: 'M', p: [0, 0] },
       { op: 'L', p: [1, 1] },
     ])
+  })
+})
+
+describe('eraser hit-test', () => {
+  const horizontal = {
+    points: [
+      [0.1, 0.5],
+      [0.5, 0.5],
+    ],
+    bbox: { x: 0.1, y: 0.5, w: 0.4, h: 0 },
+  }
+
+  it('measures distance to a segment, clamped to its ends', () => {
+    expect(distanceToSegment([0.3, 0.6], [0.1, 0.5], [0.5, 0.5])).toBeCloseTo(0.1)
+    expect(distanceToSegment([0.0, 0.5], [0.1, 0.5], [0.5, 0.5])).toBeCloseTo(0.1)
+    expect(distanceToSegment([0.3, 0.3], [0.3, 0.3], [0.3, 0.3])).toBe(0)
+    expect(distanceToSegment([0, 0.1], [0, 0], [1, 0], 2)).toBeCloseTo(0.2)
+  })
+
+  it('hits a stroke the eraser crosses', () => {
+    const vertical = [
+      [0.3, 0.3],
+      [0.3, 0.7],
+    ]
+    expect(strokeHit(horizontal, vertical, 0.01)).toBe(true)
+  })
+
+  it('hits when an eraser sample lands near the stroke', () => {
+    expect(strokeHit(horizontal, [[0.3, 0.505]], 0.01)).toBe(true)
+  })
+
+  it('misses strokes outside the radius or the bbox', () => {
+    expect(strokeHit(horizontal, [[0.3, 0.6]], 0.01)).toBe(false)
+    expect(strokeHit(horizontal, [[0.9, 0.9]], 0.05)).toBe(false)
+    expect(strokeHit(horizontal, [], 0.05)).toBe(false)
+  })
+
+  it('hits single-point strokes (dots)', () => {
+    const dot = { points: [[0.2, 0.2]], bbox: { x: 0.2, y: 0.2, w: 0, h: 0 } }
+    expect(strokeHit(dot, [[0.205, 0.2]], 0.01)).toBe(true)
   })
 })
 
