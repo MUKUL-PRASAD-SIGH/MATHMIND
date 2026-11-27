@@ -154,3 +154,44 @@ export function strokeHit(
   }
   return false
 }
+
+// --- Selection -------------------------------------------------------------------------
+
+/** Ray-casting point-in-polygon (the polygon is implicitly closed). */
+export function pointInPolygon(
+  p: readonly number[],
+  poly: readonly (readonly number[])[],
+): boolean {
+  let inside = false
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i]
+    const [xj, yj] = poly[j]
+    if (yi > p[1] !== yj > p[1] && p[0] < ((xj - xi) * (p[1] - yi)) / (yj - yi) + xi) {
+      inside = !inside
+    }
+  }
+  return inside
+}
+
+export const bboxCenter = (b: BBox): Point => [b.x + b.w / 2, b.y + b.h / 2]
+
+/** Selected when its bbox centre is inside the polygon, or ≥ `threshold` of its points are. */
+export function isStrokeSelected(
+  stroke: HitStroke,
+  poly: readonly (readonly number[])[],
+  threshold = 0.6,
+): boolean {
+  if (poly.length < 3) return false
+  if (pointInPolygon(bboxCenter(stroke.bbox), poly)) return true
+  const inside = stroke.points.filter((p) => pointInPolygon(p, poly)).length
+  return inside / stroke.points.length >= threshold
+}
+
+export function unionBBox(boxes: readonly BBox[]): BBox | null {
+  if (boxes.length === 0) return null
+  const x = Math.min(...boxes.map((b) => b.x))
+  const y = Math.min(...boxes.map((b) => b.y))
+  const right = Math.max(...boxes.map((b) => b.x + b.w))
+  const bottom = Math.max(...boxes.map((b) => b.y + b.h))
+  return { x, y, w: right - x, h: bottom - y }
+}

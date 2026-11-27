@@ -4,11 +4,18 @@ import { objectsRepo } from '../services/db/repos/objects'
 import { pagesRepo } from '../services/db/repos/pages'
 import { strokesRepo } from '../services/db/repos/strokes'
 import { debounce, forgetLast, rememberLast, saveQueue, type Debounced } from './autosave'
-import { strokeHit } from './canvas/geometry'
+import {
+  bboxCenter,
+  isStrokeSelected,
+  pointInPolygon,
+  strokeHit,
+  unionBBox,
+} from './canvas/geometry'
 import { uuidv7 } from './ids'
 import {
   PAGE_ASPECT,
   type Background,
+  type BBox,
   type InkTool,
   type Notebook,
   type NotebookObject,
@@ -20,6 +27,12 @@ import {
 import { History, type Command } from './tools/history'
 
 type PageMeta = 'title' | 'chapter' | 'background' | 'bookmarked' | 'order'
+
+export interface Selection {
+  pageId: string
+  strokeIds: string[]
+  objectIds: string[]
+}
 
 export interface ToolSettings {
   color: string
@@ -41,6 +54,7 @@ export interface NotebookState {
   toolSettings: Record<InkTool, ToolSettings>
   /** Bumped on every history change so undo/redo buttons re-render. */
   historyVersion: number
+  selection: Selection | null
 
   loadNotebooks(): Promise<void>
   createNotebook(title: string, domain?: string | null): Promise<Notebook>
@@ -56,6 +70,8 @@ export interface NotebookState {
   goToPage(id: string): Promise<void>
   loadPage(id: string): Promise<void>
 
+  /** Attach a working-space area below a page (same notebook, linked by parent_page_id). */
+  addWorkspace(parentPageId: string): Promise<Page>
   setTool(tool: ToolName): void
   setToolSettings(tool: InkTool, settings: Partial<ToolSettings>): void
 
@@ -67,6 +83,13 @@ export interface NotebookState {
   /** Edit an object's content (solution steps, note text). MathLive/textarea own that undo. */
   updateObjectPayload<O extends NotebookObject>(object: O, payload: O['payload']): void
   execute(cmd: Command): void
+  /** Select strokes/objects inside a lasso or rectangle polygon. */
+  selectArea(pageId: string, polygon: Point[]): Selection | null
+  clearSelection(): void
+  moveSelection(dx: number, dy: number): void
+  deleteSelection(): void
+  /** Duplicate the selection slightly offset and select the copy. */
+  copySelection(): void
   undo(pageId?: string): void
   redo(pageId?: string): void
   canUndo(pageId?: string): boolean
@@ -268,6 +291,9 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
       case 'moveObjects':
         translate(cmd.pageId, cmd.strokeIds, cmd.objectIds, cmd.dx * dir, cmd.dy * dir)
         break
+      case 'batch':
+        for (const c of dir === 1 ? cmd.commands : [...cmd.commands].reverse()) apply(c, dir)
+        break
       case 'resizeObject':
         setObjectBBox(cmd.pageId, cmd.id, dir === 1 ? cmd.to : cmd.from)
         break
@@ -288,6 +314,7 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
       activePageId: current?.id ?? null,
       strokes: {},
       objects: {},
+      selection: null,
     })
     rememberLast(id, current?.id ?? null)
     if (current) await get().loadPage(current.id)
@@ -311,6 +338,7 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
       highlighter: { color: '#facc15', width: 16 },
     },
     historyVersion: 0,
+    selection: null,
 
     async loadNotebooks() {
       set({ notebooks: await notebooksRepo.list() })
@@ -413,7 +441,7 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
     },
 
     async goToPage(id) {
-      set({ currentPageId: id, activePageId: id })
+      set({ currentPageId: id, activePageId: id, selection: null })
       const nb = get().notebook
       if (nb) rememberLast(nb.id, id)
       await get().loadPage(id)
@@ -447,7 +475,7 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
       })
     },
 
-    setTool: (tool) => set({ tool }),
+    setTool: (tool) => set({ tool, selection: null }),
     setToolSettings: (tool, settings) =>
       set((s) => ({
         toolSettings: { ...s.toolSettings, [tool]: { ...s.toolSettings[tool], ...settings } },
@@ -481,6 +509,90 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
           bump()
         }
       }
+    },
+
+    async addWorkspace(parentPageId) {
+      const { notebook, pages } = get()
+      if (!notebook) throw new Error('No notebook open')
+      const order = pages.reduce((max, p) => Math.max(max, p.order), -1) + 1
+      const parent = pages.find((p) => p.id === parentPageId)
+      const area = newPage(notebook.id, order, {
+        parent_page_id: parentPageId,
+        chapter: parent?.chapter ?? null,
+        background: parent?.background ?? 'ruled',
+      })
+      persist(area.id, () => pagesRepo.put(area))
+      set((s) => ({
+        pages: [...s.pages, area],
+        strokes: { ...s.strokes, [area.id]: [] },
+        objects: { ...s.objects, [area.id]: [] },
+        activePageId: area.id,
+      }))
+      return area
+    },
+
+    selectArea(pageId, polygon) {
+      const strokeIds = (get().strokes[pageId] ?? [])
+        .filter((s) => isStrokeSelected(s, polygon))
+        .map((s) => s.id)
+      const objectIds = (get().objects[pageId] ?? [])
+        .filter((o) => polygon.length >= 3 && pointInPolygon(bboxCenter(o.bbox), polygon))
+        .map((o) => o.id)
+      const selection =
+        strokeIds.length + objectIds.length > 0 ? { pageId, strokeIds, objectIds } : null
+      set({ selection, activePageId: pageId })
+      return selection
+    },
+
+    clearSelection: () => set({ selection: null }),
+
+    moveSelection(dx, dy) {
+      const sel = get().selection
+      if (!sel || (dx === 0 && dy === 0)) return
+      get().execute({
+        type: 'moveObjects',
+        pageId: sel.pageId,
+        strokeIds: sel.strokeIds,
+        objectIds: sel.objectIds,
+        dx,
+        dy,
+      })
+    },
+
+    deleteSelection() {
+      const sel = get().selection
+      if (!sel) return
+      const strokeIds = new Set(sel.strokeIds)
+      const objectIds = new Set(sel.objectIds)
+      const commands: Command[] = []
+      const strokes = (get().strokes[sel.pageId] ?? []).filter((s) => strokeIds.has(s.id))
+      const objects = (get().objects[sel.pageId] ?? []).filter((o) => objectIds.has(o.id))
+      if (strokes.length) commands.push({ type: 'deleteStrokes', pageId: sel.pageId, strokes })
+      if (objects.length) commands.push({ type: 'deleteObjects', pageId: sel.pageId, objects })
+      set({ selection: null })
+      if (commands.length) get().execute({ type: 'batch', pageId: sel.pageId, commands })
+    },
+
+    copySelection() {
+      const sel = get().selection
+      if (!sel) return
+      const ids = new Set(sel.strokeIds)
+      const box = selectionBBox(get(), sel)
+      if (!box) return
+      // Offset down-right, but keep the copy on the page.
+      const dx = Math.min(0.03, 1 - (box.x + box.w))
+      const dy = Math.min(0.03, 1 - (box.y + box.h))
+      const copies = (get().strokes[sel.pageId] ?? [])
+        .filter((s) => ids.has(s.id))
+        .map((s) => ({
+          ...s,
+          id: uuidv7(),
+          points: s.points.map(([x, y]) => [x + dx, y + dy]),
+          bbox: { ...s.bbox, x: s.bbox.x + dx, y: s.bbox.y + dy },
+        }))
+      if (copies.length === 0) return
+      get().execute({ type: 'addStrokes', pageId: sel.pageId, strokes: copies })
+      set({ selection: { pageId: sel.pageId, strokeIds: copies.map((s) => s.id), objectIds: [] } })
     },
 
     addObject(object, { record = true } = {}) {
@@ -532,3 +644,24 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
     canRedo: (pageId = target()) => history.canRedo(pageId),
   }
 })
+
+/** Union bbox of the selected strokes and objects. */
+export function selectionBBox(
+  state: Pick<NotebookState, 'strokes' | 'objects'>,
+  sel: Selection,
+): BBox | null {
+  const s = new Set(sel.strokeIds)
+  const o = new Set(sel.objectIds)
+  return unionBBox([
+    ...(state.strokes[sel.pageId] ?? []).filter((x) => s.has(x.id)).map((x) => x.bbox),
+    ...(state.objects[sel.pageId] ?? []).filter((x) => o.has(x.id)).map((x) => x.bbox),
+  ])
+}
+
+/** The current selection and its bbox, for the review flow (crop export, annotations). */
+export function getSelection(): (Selection & { bbox: BBox }) | null {
+  const state = useNotebookStore.getState()
+  const sel = state.selection
+  const bbox = sel && selectionBBox(state, sel)
+  return sel && bbox ? { ...sel, bbox } : null
+}

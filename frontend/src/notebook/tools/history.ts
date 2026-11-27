@@ -15,6 +15,8 @@ export type Command =
     }
   | { type: 'resizeObject'; pageId: string; id: string; from: BBox; to: BBox }
   | { type: 'deleteObjects'; pageId: string; objects: NotebookObject[] }
+  /** Several commands undone/redone as one step. */
+  | { type: 'batch'; pageId: string; commands: Command[] }
 
 export const HISTORY_CAP = 200
 

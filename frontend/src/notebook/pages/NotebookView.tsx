@@ -23,6 +23,7 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
   const goToPage = useNotebookStore((s) => s.goToPage)
   const updatePage = useNotebookStore((s) => s.updatePage)
   const addObject = useNotebookStore((s) => s.addObject)
+  const addWorkspace = useNotebookStore((s) => s.addWorkspace)
   const loaded = useNotebookStore((s) =>
     s.currentPageId ? !!s.strokes[s.currentPageId] && !!s.objects[s.currentPageId] : false,
   )
@@ -218,6 +219,13 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
                       virtualKeyboard={!keyboardFirst}
                     />
                   ))}
+                  <button
+                    type="button"
+                    onClick={() => void addWorkspace(page.id)}
+                    className="min-h-11 rounded-md border border-dashed border-slate-400 bg-white/60 text-sm text-slate-700 hover:bg-white"
+                  >
+                    + Add working space
+                  </button>
                 </div>
               )}
             </PageViewport>

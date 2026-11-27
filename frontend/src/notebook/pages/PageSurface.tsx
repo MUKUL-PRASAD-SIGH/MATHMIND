@@ -1,7 +1,9 @@
 import { useDeviceSettings } from '../../services/device/capabilities'
+import { useMemo, useState } from 'react'
 import { InkCanvas } from '../canvas/InkCanvas'
 import { PAGE_ASPECT, type Background, type InkTool, type Stroke } from '../model'
 import { useNotebookStore } from '../store'
+import { SelectionOverlay, type ReviewKind } from '../tools/SelectionOverlay'
 import { ObjectLayer } from './ObjectLayer'
 
 const EMPTY: Stroke[] = []
@@ -34,6 +36,8 @@ export interface PageSurfaceProps {
   label?: string
   /** Show MathLive's on-screen keyboard (touch devices). */
   virtualKeyboard?: boolean
+  /** Send the current selection to the review flow. */
+  onReview?(kind: ReviewKind): void
 }
 
 /** One writable page: background, ink layers and (later) overlays, bound to the store. */
@@ -43,6 +47,7 @@ export function PageSurface({
   zoom = 1,
   label,
   virtualKeyboard = false,
+  onReview,
 }: PageSurfaceProps) {
   const strokes = useNotebookStore((s) => s.strokes[pageId] ?? EMPTY)
   const tool = useNotebookStore((s) => s.tool)
@@ -50,6 +55,13 @@ export function PageSurface({
   const addStroke = useNotebookStore((s) => s.addStroke)
   const erase = useNotebookStore((s) => s.erase)
   const ignoreTouchWithPen = useDeviceSettings((s) => s.ignoreTouchWithPen)
+  const selectArea = useNotebookStore((s) => s.selectArea)
+  const selection = useNotebookStore((s) => (s.selection?.pageId === pageId ? s.selection : null))
+  const [preview, setPreview] = useState<{ dx: number; dy: number } | null>(null)
+  const moving = useMemo(
+    () => (preview && selection ? { ids: new Set(selection.strokeIds), ...preview } : null),
+    [preview, selection],
+  )
 
   return (
     <section
@@ -68,8 +80,11 @@ export function PageSurface({
         ignoreTouchWithPen={ignoreTouchWithPen}
         onStrokeComplete={addStroke}
         onErase={(segment, phase) => erase(pageId, segment, phase)}
+        onSelectArea={(polygon) => selectArea(pageId, polygon)}
+        moving={moving}
       />
       <ObjectLayer pageId={pageId} virtualKeyboard={virtualKeyboard} />
+      <SelectionOverlay pageId={pageId} onPreview={setPreview} onReview={onReview} />
     </section>
   )
 }

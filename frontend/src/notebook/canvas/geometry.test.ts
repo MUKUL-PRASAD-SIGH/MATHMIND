@@ -2,11 +2,84 @@ import { describe, expect, it } from 'vitest'
 import {
   computeBBox,
   distanceToSegment,
+  isStrokeSelected,
   normalizePoint,
+  pointInPolygon,
   pressureWidth,
   smoothPath,
   strokeHit,
+  unionBBox,
 } from './geometry'
+
+describe('pointInPolygon', () => {
+  const square = [
+    [0.2, 0.2],
+    [0.6, 0.2],
+    [0.6, 0.6],
+    [0.2, 0.6],
+  ]
+  // A "C" shape: the notch between x 0.3..0.6, y 0.3..0.5 is outside.
+  const cShape = [
+    [0.2, 0.2],
+    [0.6, 0.2],
+    [0.6, 0.3],
+    [0.3, 0.3],
+    [0.3, 0.5],
+    [0.6, 0.5],
+    [0.6, 0.6],
+    [0.2, 0.6],
+  ]
+
+  it('detects points inside and outside a convex polygon', () => {
+    expect(pointInPolygon([0.4, 0.4], square)).toBe(true)
+    expect(pointInPolygon([0.1, 0.4], square)).toBe(false)
+    expect(pointInPolygon([0.4, 0.7], square)).toBe(false)
+  })
+
+  it('handles concave polygons', () => {
+    expect(pointInPolygon([0.25, 0.4], cShape)).toBe(true)
+    expect(pointInPolygon([0.45, 0.4], cShape)).toBe(false)
+    expect(pointInPolygon([0.45, 0.25], cShape)).toBe(true)
+  })
+})
+
+describe('selection by threshold', () => {
+  const lasso = [
+    [0, 0],
+    [0.5, 0],
+    [0.5, 1],
+    [0, 1],
+  ]
+  const stroke = (xs: number[]) => {
+    const points = xs.map((x) => [x, 0.5])
+    return { points, bbox: computeBBox(points) }
+  }
+
+  it('selects when the bbox centre is inside', () => {
+    expect(isStrokeSelected(stroke([0.1, 0.2, 0.3]), lasso)).toBe(true)
+  })
+
+  it('selects when at least 60% of the points are inside', () => {
+    // centre 0.55 is outside, 3 of 5 points (60%) inside
+    expect(isStrokeSelected(stroke([0.1, 0.2, 0.3, 0.9, 1.0]), lasso)).toBe(true)
+    // centre 0.55 outside, 2 of 5 points (40%) inside
+    expect(isStrokeSelected(stroke([0.1, 0.45, 0.7, 0.8, 1.0]), lasso)).toBe(false)
+  })
+
+  it('ignores degenerate lassos', () => {
+    expect(isStrokeSelected(stroke([0.1]), lasso.slice(0, 2))).toBe(false)
+  })
+
+  it('unions bounding boxes', () => {
+    expect(
+      unionBBox([
+        { x: 0.1, y: 0.1, w: 0.1, h: 0.1 },
+        { x: 0.3, y: 0.05, w: 0.1, h: 0.1 },
+      ]),
+    ).toEqual({ x: 0.1, y: 0.05, w: expect.closeTo(0.3), h: expect.closeTo(0.15) })
+    expect(unionBBox([])).toBeNull()
+  })
+})
 
 describe('normalizePoint', () => {
   const rect = { left: 100, top: 50, width: 200, height: 400 }
