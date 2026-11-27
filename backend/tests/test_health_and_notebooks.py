@@ -106,3 +106,15 @@ def test_unparseable_body_is_a_documented_400(client: TestClient) -> None:
     r = client.post(f"{API}/notebooks", content=not_utf8, headers={"content-type": "application/json"})
     assert r.status_code == 400
     assert "400" in client.get("/openapi.json").json()["paths"]["/api/v1/notebooks"]["post"]["responses"]
+
+
+def test_health_reports_pix2tex_loaded_only_when_in_memory(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    from app.services.recognition import engine
+
+    monkeypatch.setattr(engine, "is_installed", lambda: True)
+    monkeypatch.setattr(engine, "_model", None)
+    assert client.get(f"{API}/health").json()["pix2tex"] == "not_loaded"
+    monkeypatch.setattr(engine, "_model", lambda img: "x")
+    assert client.get(f"{API}/health").json()["pix2tex"] == "loaded"
+    monkeypatch.setattr(engine, "is_installed", lambda: False)
+    assert client.get(f"{API}/health").json()["pix2tex"] == "not_installed"

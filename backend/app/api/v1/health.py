@@ -1,4 +1,3 @@
-import importlib.util
 import time
 
 import httpx
@@ -6,7 +5,7 @@ from fastapi import APIRouter
 
 from app.api.deps import SettingsDep
 from app.schemas.common import Health, OcrState, ServiceState
-from app.services.jobs import stages
+from app.services.recognition import engine
 
 router = APIRouter(tags=["health"])
 
@@ -29,10 +28,11 @@ def ollama_state(url: str, ttl: float = 10.0) -> ServiceState:
 
 @router.get("/health", response_model=Health)
 def health(settings: SettingsDep) -> Health:
-    if importlib.util.find_spec("pix2tex") is None:
+    if not engine.is_installed():
         ocr = OcrState.not_installed
     else:
-        ocr = OcrState.not_loaded if stages.is_stub("recognize") else OcrState.loaded
+        # "loaded" only once the weights are in memory (lazy load or PRELOAD_OCR=true), not merely installed.
+        ocr = OcrState.loaded if engine.is_loaded() else OcrState.not_loaded
     return Health(
         version=settings.app_version,
         ollama=ollama_state(settings.ollama_url),
