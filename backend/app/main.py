@@ -17,6 +17,7 @@ from app.repositories.learning import get_or_create_default_user
 from app.schemas.common import ErrorResponse
 from app.seed import seed
 from app.services.jobs.runner import JobRunner
+from app.services.jobs.stages import install_real_stages
 
 log = logging.getLogger(__name__)
 API_PREFIX = "/api/v1"
@@ -70,4 +71,5 @@ def create_app(settings: Settings | None = None, *, synchronous_jobs: bool = Fal
     return app
 
 
+install_real_stages()
 app = create_app()
