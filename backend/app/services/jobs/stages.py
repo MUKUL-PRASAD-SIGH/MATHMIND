@@ -119,3 +119,13 @@ def reset_stages() -> None:
 
 def is_stub(name: str) -> bool:
     return _STAGES[name] is _DEFAULTS[name]
+
+
+def install_real_stages() -> None:
+    """Register M3's real services in place of the stubs. Called once by app/main.py at import time.
+
+    Tests build apps with ``create_app`` and reset to the stubs per test, so they opt in explicitly.
+    """
+    from app.services.verification import verify_steps
+
+    register_stage("verify", verify_steps)
