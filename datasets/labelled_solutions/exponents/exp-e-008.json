@@ -1,0 +1,22 @@
+{
+  "id": "exp-e-008",
+  "concept_id": "exponents",
+  "problem_latex": "2^{-3}\\cdot 2^{5}",
+  "reference_solution": [
+    "2^{-3}\\cdot 2^{5}",
+    "2^{-3+5}",
+    "2^{2}",
+    "4"
+  ],
+  "learner_attempt": [
+    "2^{-3}\\cdot 2^{5}",
+    "2^{8}",
+    "256"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "sign_error",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "-3+5 is 2; the negative sign on the exponent was ignored."
+}

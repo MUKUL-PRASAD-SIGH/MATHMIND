@@ -1,0 +1,21 @@
+{
+  "id": "lin-e-011",
+  "concept_id": "linear_equations",
+  "problem_latex": "\\frac{x}{3}+2=5",
+  "reference_solution": [
+    "\\frac{x}{3}+2=5",
+    "\\frac{x}{3}=3",
+    "x=9"
+  ],
+  "learner_attempt": [
+    "\\frac{x}{3}+2=5",
+    "x+2=15",
+    "x=13"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "algebraic_transformation",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Multiplied only x/3 by 3, not the +2 term."
+}

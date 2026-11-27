@@ -1,0 +1,23 @@
+{
+  "id": "quad-c-002",
+  "concept_id": "quadratic_equations",
+  "problem_latex": "x^{2}=16",
+  "reference_solution": [
+    "x^{2}=16",
+    "x^{2}-16=0",
+    "(x-4)(x+4)=0",
+    "x=4 \\text{ or } x=-4"
+  ],
+  "learner_attempt": [
+    "x^{2}=16",
+    "x^{2}-16=0",
+    "(x-4)(x+4)=0",
+    "x=4 \\text{ or } x=-4"
+  ],
+  "expected_correct": true,
+  "first_error_step": null,
+  "error_type": null,
+  "expected_intervention": "continue",
+  "has_handwriting_image": false,
+  "notes": ""
+}

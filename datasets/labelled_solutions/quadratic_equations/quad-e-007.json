@@ -1,0 +1,23 @@
+{
+  "id": "quad-e-007",
+  "concept_id": "quadratic_equations",
+  "problem_latex": "x^{2}+x-12=0",
+  "reference_solution": [
+    "x^{2}+x-12=0",
+    "x=\\frac{-1\\pm\\sqrt{1+48}}{2}",
+    "x=\\frac{-1\\pm 7}{2}",
+    "x=3 \\text{ or } x=-4"
+  ],
+  "learner_attempt": [
+    "x^{2}+x-12=0",
+    "x=\\frac{1\\pm\\sqrt{1+48}}{2}",
+    "x=\\frac{1\\pm 7}{2}",
+    "x=4 \\text{ or } x=-3"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "formula_selection",
+  "expected_intervention": "worked_example",
+  "has_handwriting_image": false,
+  "notes": "Quadratic formula used +b instead of -b (b=1)."
+}

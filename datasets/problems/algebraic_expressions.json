@@ -1,0 +1,37 @@
+[
+  {
+    "id": "alg-001",
+    "concept_id": "algebraic_expressions",
+    "prompt_latex": "3x+5x",
+    "expected_answer_latex": "8x",
+    "difficulty": 1
+  },
+  {
+    "id": "alg-002",
+    "concept_id": "algebraic_expressions",
+    "prompt_latex": "4x+7-x-2",
+    "expected_answer_latex": "3x+5",
+    "difficulty": 2
+  },
+  {
+    "id": "alg-003",
+    "concept_id": "algebraic_expressions",
+    "prompt_latex": "3(x+2)-2(x-1)",
+    "expected_answer_latex": "x+8",
+    "difficulty": 3
+  },
+  {
+    "id": "alg-004",
+    "concept_id": "algebraic_expressions",
+    "prompt_latex": "(x+3)(x-2)",
+    "expected_answer_latex": "x^{2}+x-6",
+    "difficulty": 4
+  },
+  {
+    "id": "alg-005",
+    "concept_id": "algebraic_expressions",
+    "prompt_latex": "2x(x-3)-(x-4)(x+1)",
+    "expected_answer_latex": "x^{2}-3x+4",
+    "difficulty": 5
+  }
+]

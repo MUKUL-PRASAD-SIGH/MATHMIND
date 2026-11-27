@@ -1,0 +1,23 @@
+{
+  "id": "quad-e-009",
+  "concept_id": "quadratic_equations",
+  "problem_latex": "x^{2}-6x+4=0",
+  "reference_solution": [
+    "x^{2}-6x+4=0",
+    "x=\\frac{6\\pm\\sqrt{36-16}}{2}",
+    "x=\\frac{6\\pm\\sqrt{20}}{2}",
+    "x=3\\pm\\sqrt{5}"
+  ],
+  "learner_attempt": [
+    "x^{2}-6x+4=0",
+    "x=\\frac{6\\pm\\sqrt{36+16}}{2}",
+    "x=\\frac{6\\pm\\sqrt{52}}{2}",
+    "x=3\\pm\\sqrt{13}"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "formula_selection",
+  "expected_intervention": "worked_example",
+  "has_handwriting_image": false,
+  "notes": "Used b^2+4ac under the square root instead of b^2-4ac."
+}

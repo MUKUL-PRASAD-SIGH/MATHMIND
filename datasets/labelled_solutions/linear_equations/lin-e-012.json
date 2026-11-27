@@ -1,0 +1,22 @@
+{
+  "id": "lin-e-012",
+  "concept_id": "linear_equations",
+  "problem_latex": "3x-4=11",
+  "reference_solution": [
+    "3x-4=11",
+    "3x=15",
+    "x=5"
+  ],
+  "learner_attempt": [
+    "3x-4=11",
+    "3x=15",
+    "x=15-3",
+    "x=12"
+  ],
+  "expected_correct": false,
+  "first_error_step": 3,
+  "error_type": "algebraic_transformation",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Subtracted the coefficient 3 instead of dividing by it."
+}

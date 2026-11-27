@@ -1,0 +1,65 @@
+[
+  {
+    "id": "integer_arithmetic",
+    "name": "Integer arithmetic",
+    "domain": "arithmetic",
+    "description": "Adding, subtracting, multiplying and dividing positive and negative whole numbers, respecting the order of operations.",
+    "prerequisites": []
+  },
+  {
+    "id": "fractions",
+    "name": "Fractions",
+    "domain": "arithmetic",
+    "description": "Simplifying fractions and adding, subtracting, multiplying and dividing them using common denominators and reciprocals.",
+    "prerequisites": [
+      "integer_arithmetic"
+    ]
+  },
+  {
+    "id": "algebraic_expressions",
+    "name": "Algebraic expressions",
+    "domain": "algebra",
+    "description": "Collecting like terms, expanding brackets and simplifying expressions that contain a variable.",
+    "prerequisites": [
+      "integer_arithmetic"
+    ]
+  },
+  {
+    "id": "exponents",
+    "name": "Exponents",
+    "domain": "arithmetic",
+    "description": "Using the laws of indices to multiply, divide and raise powers, including zero and negative exponents.",
+    "prerequisites": [
+      "integer_arithmetic"
+    ]
+  },
+  {
+    "id": "linear_equations",
+    "name": "Linear equations",
+    "domain": "algebra",
+    "description": "Solving equations of the form ax + b = c, including ones with brackets, fractions and the variable on both sides.",
+    "prerequisites": [
+      "algebraic_expressions",
+      "fractions"
+    ]
+  },
+  {
+    "id": "factorization",
+    "name": "Factorization",
+    "domain": "algebra",
+    "description": "Writing expressions as products by taking out common factors, factorising quadratics and using the difference of two squares.",
+    "prerequisites": [
+      "algebraic_expressions"
+    ]
+  },
+  {
+    "id": "quadratic_equations",
+    "name": "Quadratic equations",
+    "domain": "algebra",
+    "description": "Solving ax^2 + bx + c = 0 by factorising, completing the square or using the quadratic formula.",
+    "prerequisites": [
+      "factorization",
+      "linear_equations"
+    ]
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "id": "quad-e-013",
+  "concept_id": "quadratic_equations",
+  "problem_latex": "(x-1)(x+2)=4(x-1)",
+  "reference_solution": [
+    "(x-1)(x+2)=4(x-1)",
+    "(x-1)(x+2)-4(x-1)=0",
+    "(x-1)(x-2)=0",
+    "x=1 \\text{ or } x=2"
+  ],
+  "learner_attempt": [
+    "(x-1)(x+2)=4(x-1)",
+    "x+2=4",
+    "x=2"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "domain_violation",
+  "expected_intervention": "worked_example",
+  "has_handwriting_image": false,
+  "notes": "Cancelled (x-1) from both sides, which may be 0; the root x=1 is lost."
+}

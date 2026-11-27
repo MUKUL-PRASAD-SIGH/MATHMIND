@@ -1,0 +1,23 @@
+{
+  "id": "lin-e-023",
+  "concept_id": "linear_equations",
+  "problem_latex": "\\frac{x}{2}+\\frac{x}{3}=10",
+  "reference_solution": [
+    "\\frac{x}{2}+\\frac{x}{3}=10",
+    "\\frac{3x}{6}+\\frac{2x}{6}=10",
+    "\\frac{5x}{6}=10",
+    "5x=60",
+    "x=12"
+  ],
+  "learner_attempt": [
+    "\\frac{x}{2}+\\frac{x}{3}=10",
+    "\\frac{3x}{6}+\\frac{2x}{6}=10",
+    "\\frac{5x}{6}=10"
+  ],
+  "expected_correct": false,
+  "first_error_step": null,
+  "error_type": "incomplete",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Combined the fractions correctly but did not solve for x (x=12)."
+}

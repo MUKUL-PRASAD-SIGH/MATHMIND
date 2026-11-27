@@ -1,0 +1,21 @@
+{
+  "id": "quad-e-005",
+  "concept_id": "quadratic_equations",
+  "problem_latex": "x^{2}+7x+12=0",
+  "reference_solution": [
+    "x^{2}+7x+12=0",
+    "(x+3)(x+4)=0",
+    "x=-3 \\text{ or } x=-4"
+  ],
+  "learner_attempt": [
+    "x^{2}+7x+12=0",
+    "(x+2)(x+6)=0",
+    "x=-2 \\text{ or } x=-6"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "algebraic_transformation",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Chose factors of 12 that multiply correctly but add to 8, not 7."
+}

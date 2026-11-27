@@ -1,0 +1,24 @@
+{
+  "id": "lin-e-004",
+  "concept_id": "linear_equations",
+  "problem_latex": "5x-7=2x+8",
+  "reference_solution": [
+    "5x-7=2x+8",
+    "3x-7=8",
+    "3x=15",
+    "x=5"
+  ],
+  "learner_attempt": [
+    "5x-7=2x+8",
+    "5x+2x-7=8",
+    "7x-7=8",
+    "7x=15",
+    "x=\\frac{15}{7}"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "sign_error",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Moved 2x to the left as +2x instead of -2x."
+}

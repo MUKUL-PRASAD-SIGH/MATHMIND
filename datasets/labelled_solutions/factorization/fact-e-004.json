@@ -1,0 +1,20 @@
+{
+  "id": "fact-e-004",
+  "concept_id": "factorization",
+  "problem_latex": "4x^{2}-25",
+  "reference_solution": [
+    "4x^{2}-25",
+    "(2x)^{2}-5^{2}",
+    "(2x-5)(2x+5)"
+  ],
+  "learner_attempt": [
+    "4x^{2}-25",
+    "(4x-5)(4x+5)"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "algebraic_transformation",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Used 4x instead of 2x as the square root of 4x^2."
+}

@@ -1,0 +1,21 @@
+{
+  "id": "exp-e-003",
+  "concept_id": "exponents",
+  "problem_latex": "(x^{2})^{3}\\cdot x",
+  "reference_solution": [
+    "(x^{2})^{3}\\cdot x",
+    "x^{6}\\cdot x",
+    "x^{7}"
+  ],
+  "learner_attempt": [
+    "(x^{2})^{3}\\cdot x",
+    "x^{5}\\cdot x",
+    "x^{6}"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "algebraic_transformation",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Added exponents for a power of a power; (x^2)^3 is x^6."
+}
