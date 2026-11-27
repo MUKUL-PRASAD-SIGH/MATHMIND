@@ -64,9 +64,19 @@ export const handlers = [
     HttpResponse.json(example('SubmissionAccepted.received'), { status: 202 }),
   ),
 
-  http.post(`${API}/submissions/image`, () =>
-    HttpResponse.json(example('SubmissionAccepted.received'), { status: 202 }),
-  ),
+  // Mirrors the backend's upload checks (type) so a broken crop fails visibly against mocks too.
+  http.post(`${API}/submissions/image`, async ({ request }) => {
+    const file = (await request.formData()).get('file')
+    if (!(file instanceof Blob) || !['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+      const error = {
+        code: 'unsupported_media_type',
+        message: 'PNG, JPEG or WebP only',
+        details: {},
+      }
+      return HttpResponse.json({ error }, { status: 415 })
+    }
+    return HttpResponse.json(example('SubmissionAccepted.received'), { status: 202 })
+  }),
 
   // First poll reports `verifying`, later polls `completed`.
   http.get(`${API}/submissions/:id/status`, ({ params }) => {

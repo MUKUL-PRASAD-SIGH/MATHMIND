@@ -1,7 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import type { ChangeEvent } from 'react'
 import { SettingsMenu } from '../../components/SettingsMenu'
+import { sendCaptureForReview, sendSelectionForReview } from '../../features/ai-review/regionReview'
+import { SubmissionStatus } from '../../features/ai-review/SubmissionStatus'
+import { describeError, useSubmission } from '../../features/ai-review/useSubmission'
 import { useDeviceMode } from '../../services/device/capabilities'
 import { readLast } from '../autosave'
+import { CaptureDialog } from '../images/CaptureDialog'
+import { ACCEPTED_TYPES, newImageObject, prepareImage, validateImageFile } from '../images/image'
 import { newSolutionBlock, newTextNote } from '../objects'
 import type { Background } from '../model'
 import { SaveStatus } from '../SaveStatus'
@@ -33,6 +39,11 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
   const phone = mode === 'phone'
   const tablet = mode === 'tablet'
   const keyboardFirst = mode === 'laptop' || mode === 'hybrid'
+  const review = useSubmission()
+  const [notice, setNotice] = useState<string | null>(null)
+  const [capture, setCapture] = useState<File | null>(null)
+  const importInput = useRef<HTMLInputElement>(null)
+  const captureInput = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (useNotebookStore.getState().notebook?.id === notebookId) return
@@ -131,10 +142,42 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
   const actionBtn = (large: boolean) =>
     `${large ? 'min-h-11' : 'min-h-9'} rounded-md px-2 text-sm font-medium hover:bg-slate-200 focus-visible:outline-2 focus-visible:outline-blue-600`
   const add = (factory: typeof newSolutionBlock | typeof newTextNote) => {
-    const pageId = useNotebookStore.getState().activePageId ?? currentPageId
+    const pageId = targetPage()
     if (!pageId) return
     addObject(factory(pageId, useNotebookStore.getState().objects[pageId] ?? []))
   }
+  const targetPage = () => useNotebookStore.getState().activePageId ?? currentPageId
+
+  const onImport = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    const pageId = targetPage()
+    if (!file || !pageId) return
+    try {
+      const img = await prepareImage(file)
+      addObject(newImageObject(pageId, useNotebookStore.getState().objects[pageId] ?? [], img))
+      setNotice(null)
+    } catch (err) {
+      setNotice(describeError(err))
+    }
+  }
+
+  const onCapture = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    const check = validateImageFile(file)
+    if (check.ok) setCapture(file)
+    else setNotice(check.reason)
+  }
+
+  const confirmCapture = (crop: Parameters<typeof sendCaptureForReview>[1]) => {
+    const file = capture
+    const pageId = currentPageId
+    setCapture(null)
+    if (file && pageId) void review.submit(() => sendCaptureForReview(file, crop, pageId))
+  }
+
   const toolbar = (orientation: 'horizontal' | 'vertical', large: boolean) => (
     <Toolbar orientation={orientation} large={large}>
       <button
@@ -147,6 +190,13 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
       </button>
       <button type="button" className={actionBtn(large)} onClick={() => add(newTextNote)}>
         ✎ Note
+      </button>
+      <button
+        type="button"
+        className={actionBtn(large)}
+        onClick={() => importInput.current?.click()}
+      >
+        🖼 Image
       </button>
     </Toolbar>
   )
@@ -170,8 +220,64 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
             Pages
           </button>
         )}
+        {phone && (
+          <button
+            type="button"
+            onClick={() => captureInput.current?.click()}
+            className="min-h-11 rounded bg-blue-600 px-3 text-sm font-semibold text-white"
+          >
+            📷 Capture
+          </button>
+        )}
         <SettingsMenu mode={mode} />
       </header>
+      <input
+        ref={importInput}
+        type="file"
+        accept={ACCEPTED_TYPES.join(',')}
+        aria-label="Import image"
+        className="sr-only"
+        tabIndex={-1}
+        onChange={(e) => void onImport(e)}
+      />
+      <input
+        ref={captureInput}
+        type="file"
+        accept={ACCEPTED_TYPES.join(',')}
+        capture="environment"
+        aria-label="Take a photo"
+        className="sr-only"
+        tabIndex={-1}
+        onChange={onCapture}
+      />
+      {capture && (
+        <CaptureDialog file={capture} onCancel={() => setCapture(null)} onUse={confirmCapture} />
+      )}
+      {(review.state.kind !== 'idle' || notice) && (
+        <div
+          aria-live="polite"
+          className="fixed bottom-16 left-1/2 z-40 flex max-w-[90vw] -translate-x-1/2 items-center gap-3 rounded-lg bg-white px-4 py-2 shadow-lg ring-1 ring-slate-200"
+        >
+          {notice ? (
+            <span role="alert" className="text-sm text-red-700">
+              {notice}
+            </span>
+          ) : (
+            <SubmissionStatus state={review.state} />
+          )}
+          <button
+            type="button"
+            aria-label="Dismiss"
+            className="min-h-8 min-w-8 rounded hover:bg-slate-100"
+            onClick={() => {
+              setNotice(null)
+              review.reset()
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
       {phone && (
         <p className="bg-amber-50 px-3 py-1 text-xs text-amber-900">
           Phone mode is for short practice and photos of your work. Use a tablet or laptop for long
@@ -208,6 +314,7 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
                     zoom={zoom}
                     label={pageTitle}
                     virtualKeyboard={!keyboardFirst}
+                    onReview={() => void review.submit(sendSelectionForReview)}
                   />
                   {areas.map((a, i) => (
                     <PageSurface
@@ -217,6 +324,7 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
                       zoom={zoom}
                       label={`${pageTitle} — working space ${i + 1}`}
                       virtualKeyboard={!keyboardFirst}
+                      onReview={() => void review.submit(sendSelectionForReview)}
                     />
                   ))}
                   <button

@@ -1,5 +1,6 @@
+import { useEffect, useState } from 'react'
 import { SolutionBlock } from '../equations/SolutionBlock'
-import type { NotebookObject, TextObject } from '../model'
+import type { ImageObject, NotebookObject, TextObject } from '../model'
 import { useNotebookStore } from '../store'
 import { ObjectFrame } from './ObjectFrame'
 
@@ -21,6 +22,28 @@ function TextNote({ object }: { object: TextObject }) {
   )
 }
 
+/** The working copy is displayed; the original file stays untouched in IndexedDB. */
+function ImageView({ object }: { object: ImageObject }) {
+  const [url, setUrl] = useState<string | null>(null)
+  useEffect(() => {
+    const u = URL.createObjectURL(object.payload.image)
+    setUrl(u)
+    return () => URL.revokeObjectURL(u)
+  }, [object.payload.image])
+  return (
+    <ObjectFrame object={object} title="Image" fixedHeight resizable>
+      {url && (
+        <img
+          src={url}
+          alt="Imported work"
+          draggable={false}
+          className="pointer-events-none h-full w-full object-contain select-none"
+        />
+      )}
+    </ObjectFrame>
+  )
+}
+
 /** DOM objects placed on a page (solution blocks, notes), above the ink. */
 export function ObjectLayer({
   pageId,
@@ -37,7 +60,7 @@ export function ObjectLayer({
           return <SolutionBlock key={o.id} object={o} virtualKeyboard={virtualKeyboard} />
         }
         if (o.kind === 'text') return <TextNote key={o.id} object={o} />
-        return null
+        return <ImageView key={o.id} object={o} />
       })}
     </div>
   )

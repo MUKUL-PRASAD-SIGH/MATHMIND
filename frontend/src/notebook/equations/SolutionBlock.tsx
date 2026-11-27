@@ -1,6 +1,8 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 import type { MathfieldElement } from 'mathlive'
-import { api, ApiError } from '../../services/api/client'
+import { SubmissionStatus } from '../../features/ai-review/SubmissionStatus'
+import { useSubmission } from '../../features/ai-review/useSubmission'
+import { api } from '../../services/api/client'
 import { uuidv7 } from '../ids'
 import type { EquationObject, SolutionStep } from '../model'
 import { ObjectFrame } from '../pages/ObjectFrame'
@@ -88,12 +90,6 @@ function MathStep(props: StepProps) {
   )
 }
 
-type CheckState =
-  | { kind: 'idle' }
-  | { kind: 'sending' }
-  | { kind: 'sent'; submissionId: string; status: string }
-  | { kind: 'error'; message: string }
-
 /**
  * Keyboard-first solution: one MathLive field per step. Enter adds a step below, Backspace on
  * an empty step removes it, ↑/↓ move between steps. "Check these steps" submits them.
@@ -109,7 +105,7 @@ export function SolutionBlock({
   const fields = useRef(new Map<string, MathfieldElement>())
   const lastFocused = useRef<string | null>(null)
   const pendingFocus = useRef<string | null>(null)
-  const [check, setCheck] = useState<CheckState>({ kind: 'idle' })
+  const check = useSubmission()
   const steps = object.payload.steps
 
   /** Latest copy from the store, so rapid key presses never work on a stale payload. */
@@ -179,29 +175,16 @@ export function SolutionBlock({
     onChange(id!, mf.value)
   }
 
-  const submit = async () => {
+  const submit = () => {
     const filled = latest().payload.steps.filter((s) => s.latex.trim() !== '')
-    if (filled.length === 0) {
-      setCheck({ kind: 'error', message: 'Write at least one step first.' })
-      return
-    }
-    setCheck({ kind: 'sending' })
-    try {
-      const res = await api.submitTyped({
+    if (filled.length === 0) return check.fail('Write at least one step first.')
+    void check.submit(() =>
+      api.submitTyped({
         page_id: object.page_id,
         problem_id: object.payload.problemId ?? null,
         steps: filled.map((s) => ({ latex: s.latex, region_id: null })),
-      })
-      setCheck({ kind: 'sent', submissionId: res.submission_id, status: res.status })
-    } catch (err) {
-      const message =
-        err instanceof ApiError && err.isNetwork
-          ? 'The checker is offline. Your steps are saved in this notebook — try again later.'
-          : err instanceof Error
-            ? err.message
-            : 'Could not send the steps.'
-      setCheck({ kind: 'error', message })
-    }
+      }),
+    )
   }
 
   const btn =
@@ -241,17 +224,13 @@ export function SolutionBlock({
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            onClick={() => void submit()}
-            disabled={check.kind === 'sending'}
+            onClick={submit}
+            disabled={check.state.kind === 'sending'}
             className="min-h-9 rounded bg-blue-600 px-3 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
           >
             Check these steps
           </button>
-          <span role="status" className="text-sm text-slate-600">
-            {check.kind === 'sending' && 'Sending…'}
-            {check.kind === 'sent' && `Sent for checking (${check.status.replace(/_/g, ' ')}).`}
-            {check.kind === 'error' && <span className="text-red-700">{check.message}</span>}
-          </span>
+          <SubmissionStatus state={check.state} />
         </div>
       </div>
     </ObjectFrame>
