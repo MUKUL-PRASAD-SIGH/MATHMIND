@@ -1,0 +1,22 @@
+{
+  "id": "exp-e-002",
+  "concept_id": "exponents",
+  "problem_latex": "2^{3}\\cdot 2^{4}",
+  "reference_solution": [
+    "2^{3}\\cdot 2^{4}",
+    "2^{3+4}",
+    "2^{7}",
+    "128"
+  ],
+  "learner_attempt": [
+    "2^{3}\\cdot 2^{4}",
+    "4^{7}",
+    "16384"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "algebraic_transformation",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Multiplied the bases; the base stays 2 and the exponents add."
+}

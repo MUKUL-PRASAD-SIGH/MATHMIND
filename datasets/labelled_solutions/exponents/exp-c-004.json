@@ -1,0 +1,21 @@
+{
+  "id": "exp-c-004",
+  "concept_id": "exponents",
+  "problem_latex": "\\frac{(2x^{3})^{2}}{4x^{2}}",
+  "reference_solution": [
+    "\\frac{(2x^{3})^{2}}{4x^{2}}",
+    "\\frac{4x^{6}}{4x^{2}}",
+    "x^{4}"
+  ],
+  "learner_attempt": [
+    "\\frac{(2x^{3})^{2}}{4x^{2}}",
+    "\\frac{4x^{6}}{4x^{2}}",
+    "x^{4}"
+  ],
+  "expected_correct": true,
+  "first_error_step": null,
+  "error_type": null,
+  "expected_intervention": "continue",
+  "has_handwriting_image": false,
+  "notes": ""
+}

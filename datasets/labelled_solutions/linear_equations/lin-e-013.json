@@ -1,0 +1,25 @@
+{
+  "id": "lin-e-013",
+  "concept_id": "linear_equations",
+  "problem_latex": "2(3x-1)=4(x+2)",
+  "reference_solution": [
+    "2(3x-1)=4(x+2)",
+    "6x-2=4x+8",
+    "2x-2=8",
+    "2x=10",
+    "x=5"
+  ],
+  "learner_attempt": [
+    "2(3x-1)=4(x+2)",
+    "6x-2=4x+2",
+    "2x-2=2",
+    "2x=4",
+    "x=2"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "algebraic_transformation",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Expanded 4(x+2) as 4x+2, multiplying only the first term."
+}

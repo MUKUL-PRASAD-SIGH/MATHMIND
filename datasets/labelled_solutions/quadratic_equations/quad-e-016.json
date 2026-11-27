@@ -1,0 +1,22 @@
+{
+  "id": "quad-e-016",
+  "concept_id": "quadratic_equations",
+  "problem_latex": "x^{2}+6x+9=0",
+  "reference_solution": [
+    "x^{2}+6x+9=0",
+    "(x+3)^{2}=0",
+    "x+3=0",
+    "x=-3"
+  ],
+  "learner_attempt": [
+    "x^{2}+6x+9=0",
+    "(x-3)^{2}=0",
+    "x=3"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "sign_error",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Perfect square has the wrong sign: x^2+6x+9 is (x+3)^2."
+}

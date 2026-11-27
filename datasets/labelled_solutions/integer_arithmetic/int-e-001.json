@@ -1,0 +1,23 @@
+{
+  "id": "int-e-001",
+  "concept_id": "integer_arithmetic",
+  "problem_latex": "-8+3-(-6)",
+  "reference_solution": [
+    "-8+3-(-6)",
+    "-5-(-6)",
+    "-5+6",
+    "1"
+  ],
+  "learner_attempt": [
+    "-8+3-(-6)",
+    "-5-(-6)",
+    "-5-6",
+    "-11"
+  ],
+  "expected_correct": false,
+  "first_error_step": 3,
+  "error_type": "sign_error",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Subtracting -6 is adding 6; wrote -5-6 instead of -5+6."
+}

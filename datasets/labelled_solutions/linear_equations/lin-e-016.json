@@ -1,0 +1,21 @@
+{
+  "id": "lin-e-016",
+  "concept_id": "linear_equations",
+  "problem_latex": "3x+7=31",
+  "reference_solution": [
+    "3x+7=31",
+    "3x=24",
+    "x=8"
+  ],
+  "learner_attempt": [
+    "3x+7=31",
+    "3x=24",
+    "x=6"
+  ],
+  "expected_correct": false,
+  "first_error_step": 3,
+  "error_type": "arithmetic_slip",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "24 divided by 3 is 8, not 6."
+}

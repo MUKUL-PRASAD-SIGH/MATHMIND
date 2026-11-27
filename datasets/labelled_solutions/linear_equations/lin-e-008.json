@@ -1,0 +1,23 @@
+{
+  "id": "lin-e-008",
+  "concept_id": "linear_equations",
+  "problem_latex": "2(x-3)=10",
+  "reference_solution": [
+    "2(x-3)=10",
+    "2x-6=10",
+    "2x=16",
+    "x=8"
+  ],
+  "learner_attempt": [
+    "2(x-3)=10",
+    "2x-3=10",
+    "2x=13",
+    "x=\\frac{13}{2}"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "algebraic_transformation",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Distributed 2 only to x, not to -3."
+}

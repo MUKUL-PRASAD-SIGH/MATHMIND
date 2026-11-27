@@ -1,0 +1,22 @@
+{
+  "id": "lin-e-014",
+  "concept_id": "linear_equations",
+  "problem_latex": "\\frac{x+4}{5}=3",
+  "reference_solution": [
+    "\\frac{x+4}{5}=3",
+    "x+4=15",
+    "x=11"
+  ],
+  "learner_attempt": [
+    "\\frac{x+4}{5}=3",
+    "x+4=\\frac{3}{5}",
+    "x=\\frac{3}{5}-4",
+    "x=-\\frac{17}{5}"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "algebraic_transformation",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Divided the right-hand side by 5 instead of multiplying both sides by 5."
+}

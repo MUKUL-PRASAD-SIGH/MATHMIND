@@ -1,0 +1,22 @@
+{
+  "id": "frac-e-007",
+  "concept_id": "fractions",
+  "problem_latex": "\\frac{5}{6}\\div\\frac{10}{9}",
+  "reference_solution": [
+    "\\frac{5}{6}\\div\\frac{10}{9}",
+    "\\frac{5}{6}\\times\\frac{9}{10}",
+    "\\frac{45}{60}",
+    "\\frac{3}{4}"
+  ],
+  "learner_attempt": [
+    "\\frac{5}{6}\\div\\frac{10}{9}",
+    "\\frac{5}{6}\\times\\frac{9}{10}",
+    "\\frac{45}{60}"
+  ],
+  "expected_correct": false,
+  "first_error_step": null,
+  "error_type": "incomplete",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Value is correct but the fraction was not simplified to 3/4."
+}

@@ -1,0 +1,22 @@
+{
+  "id": "quad-e-020",
+  "concept_id": "quadratic_equations",
+  "problem_latex": "x^{2}=3x",
+  "reference_solution": [
+    "x^{2}=3x",
+    "x^{2}-3x=0",
+    "x(x-3)=0",
+    "x=0 \\text{ or } x=3"
+  ],
+  "learner_attempt": [
+    "x^{2}=3x",
+    "x^{2}-3x=0",
+    "x(x-3)=0"
+  ],
+  "expected_correct": false,
+  "first_error_step": null,
+  "error_type": "incomplete",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Factorised correctly but did not state the roots (x=0 or x=3)."
+}

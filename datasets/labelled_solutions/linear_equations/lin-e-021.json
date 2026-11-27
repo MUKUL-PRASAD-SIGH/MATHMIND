@@ -1,0 +1,22 @@
+{
+  "id": "lin-e-021",
+  "concept_id": "linear_equations",
+  "problem_latex": "2(x-3)=10",
+  "reference_solution": [
+    "2(x-3)=10",
+    "2x-6=10",
+    "2x=16",
+    "x=8"
+  ],
+  "learner_attempt": [
+    "2(x-3)=10",
+    "2x-6=10",
+    "2x=16"
+  ],
+  "expected_correct": false,
+  "first_error_step": null,
+  "error_type": "incomplete",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "All steps valid but stopped before solving for x (x=8)."
+}

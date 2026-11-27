@@ -1,0 +1,21 @@
+{
+  "id": "int-c-001",
+  "concept_id": "integer_arithmetic",
+  "problem_latex": "(-3)\\times(-4)+5",
+  "reference_solution": [
+    "(-3)\\times(-4)+5",
+    "12+5",
+    "17"
+  ],
+  "learner_attempt": [
+    "(-3)\\times(-4)+5",
+    "12+5",
+    "17"
+  ],
+  "expected_correct": true,
+  "first_error_step": null,
+  "error_type": null,
+  "expected_intervention": "continue",
+  "has_handwriting_image": false,
+  "notes": ""
+}

@@ -1,0 +1,20 @@
+{
+  "id": "fact-e-005",
+  "concept_id": "factorization",
+  "problem_latex": "6x^{2}+9x",
+  "reference_solution": [
+    "6x^{2}+9x",
+    "3x\\cdot 2x+3x\\cdot 3",
+    "3x(2x+3)"
+  ],
+  "learner_attempt": [
+    "6x^{2}+9x",
+    "3x(2x+9)"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "algebraic_transformation",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Took out 3x but did not divide the 9x term by 3x."
+}

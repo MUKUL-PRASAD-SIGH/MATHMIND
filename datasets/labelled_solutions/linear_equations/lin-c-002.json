@@ -1,0 +1,21 @@
+{
+  "id": "lin-c-002",
+  "concept_id": "linear_equations",
+  "problem_latex": "x+3=7",
+  "reference_solution": [
+    "x+3=7",
+    "x=7-3",
+    "x=4"
+  ],
+  "learner_attempt": [
+    "x+3=7",
+    "x=7-3",
+    "x=4"
+  ],
+  "expected_correct": true,
+  "first_error_step": null,
+  "error_type": null,
+  "expected_intervention": "continue",
+  "has_handwriting_image": false,
+  "notes": ""
+}

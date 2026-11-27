@@ -1,0 +1,21 @@
+{
+  "id": "fact-e-003",
+  "concept_id": "factorization",
+  "problem_latex": "2x^{2}+7x+3",
+  "reference_solution": [
+    "2x^{2}+7x+3",
+    "2x^{2}+6x+x+3",
+    "2x(x+3)+(x+3)",
+    "(2x+1)(x+3)"
+  ],
+  "learner_attempt": [
+    "2x^{2}+7x+3",
+    "(2x+3)(x+1)"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "algebraic_transformation",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Wrong factor pair: (2x+3)(x+1) expands to 2x^2+5x+3."
+}

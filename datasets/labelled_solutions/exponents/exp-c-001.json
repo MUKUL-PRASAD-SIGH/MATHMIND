@@ -1,0 +1,23 @@
+{
+  "id": "exp-c-001",
+  "concept_id": "exponents",
+  "problem_latex": "2^{3}\\cdot 2^{4}",
+  "reference_solution": [
+    "2^{3}\\cdot 2^{4}",
+    "2^{3+4}",
+    "2^{7}",
+    "128"
+  ],
+  "learner_attempt": [
+    "2^{3}\\cdot 2^{4}",
+    "2^{3+4}",
+    "2^{7}",
+    "128"
+  ],
+  "expected_correct": true,
+  "first_error_step": null,
+  "error_type": null,
+  "expected_intervention": "continue",
+  "has_handwriting_image": false,
+  "notes": ""
+}

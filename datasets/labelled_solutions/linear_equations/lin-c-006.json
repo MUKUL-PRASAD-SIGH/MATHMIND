@@ -1,0 +1,23 @@
+{
+  "id": "lin-c-006",
+  "concept_id": "linear_equations",
+  "problem_latex": "5x-7=2x+8",
+  "reference_solution": [
+    "5x-7=2x+8",
+    "3x-7=8",
+    "3x=15",
+    "x=5"
+  ],
+  "learner_attempt": [
+    "5x-7=2x+8",
+    "3x-7=8",
+    "3x=15",
+    "x=5"
+  ],
+  "expected_correct": true,
+  "first_error_step": null,
+  "error_type": null,
+  "expected_intervention": "continue",
+  "has_handwriting_image": false,
+  "notes": ""
+}

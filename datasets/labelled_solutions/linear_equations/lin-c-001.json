@@ -1,0 +1,21 @@
+{
+  "id": "lin-c-001",
+  "concept_id": "linear_equations",
+  "problem_latex": "3x+5=20",
+  "reference_solution": [
+    "3x+5=20",
+    "3x=15",
+    "x=5"
+  ],
+  "learner_attempt": [
+    "3x+5=20",
+    "3x=15",
+    "x=5"
+  ],
+  "expected_correct": true,
+  "first_error_step": null,
+  "error_type": null,
+  "expected_intervention": "continue",
+  "has_handwriting_image": false,
+  "notes": ""
+}
