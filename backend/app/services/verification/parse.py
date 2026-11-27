@@ -248,7 +248,8 @@ def parse_expression(latex: str) -> sympy.Expr:
     if not isinstance(expr, sympy.Expr):
         raise UnparseableStep(f"{s!r} is not an expression")
     out = _apply_policy(expr)
-    assert isinstance(out, sympy.Expr)  # noqa: S101 -- xreplace keeps the type
+    if not isinstance(out, sympy.Expr):  # xreplace keeps the type; guard anyway
+        raise UnparseableStep(f"{s!r} is not an expression")
     return out
 
 

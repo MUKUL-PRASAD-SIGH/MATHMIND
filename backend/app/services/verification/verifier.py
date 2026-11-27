@@ -12,7 +12,6 @@ Anything outside ``SUPPORTED_SCOPE.md`` (trig, calculus, several variables in an
 ``inconclusive`` with the reason "outside supported scope". Never guess.
 """
 
-import random
 from dataclasses import dataclass
 
 import sympy
@@ -178,7 +177,8 @@ def _single_variable(*objs: sympy.Basic) -> sympy.Symbol | str:
     if not syms:
         return Dummy("t", real=True)
     (var,) = syms
-    assert isinstance(var, Symbol)  # noqa: S101
+    if not isinstance(var, Symbol):
+        return f"{OUT_OF_SCOPE} (unexpected symbol)"
     return var
 
 
@@ -227,12 +227,13 @@ def compare_statements(prev: sympy.Basic, cur: sympy.Basic, domain: sympy.Set = 
     return _incorrect(changed)
 
 
+# Fixed "random-looking" rationals: deterministic, away from 0 and +-1 where expressions often coincide.
+_SAMPLES = [Rational(3, 7), Rational(-5, 3), Rational(11, 4), Rational(-2, 9), Rational(17, 5), Rational(-13, 6)]
+
+
 def _spot_points(n_vars: int) -> list[list[Rational]]:
-    rng = random.Random(20260101)  # noqa: S311 -- deterministic sample points, not security
-    points = []
-    for _ in range(_SPOT_POINTS):
-        points.append([Rational(rng.choice([-1, 1]) * rng.randint(1, 40), rng.randint(2, 9)) for _ in range(n_vars)])
-    return points
+    """5 points; variable j uses the sample list shifted by j so variables never share a value."""
+    return [[_SAMPLES[(i + j) % len(_SAMPLES)] for j in range(n_vars)] for i in range(_SPOT_POINTS)]
 
 
 def compare_expressions(prev: sympy.Expr, cur: sympy.Expr) -> Comparison:
@@ -397,7 +398,8 @@ def _check_final(
 ) -> int | None:
     """Final-answer checks. Mutates the last verdict when the answer is definitely wrong."""
     last = parsed[-1]
-    assert last is not None  # noqa: S101
+    if last is None:
+        return None
     idx = len(verdicts)
     expected = _try_parse(problem.expected_answer_latex) if problem else None
 
