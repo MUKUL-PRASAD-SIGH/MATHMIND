@@ -74,7 +74,11 @@ export const handlers = [
     const n = (statusPolls.get(id) ?? 0) + 1
     statusPolls.set(id, n)
     const body = example<Schemas['SubmissionStatusResponse']>('SubmissionStatusResponse.verifying')
-    return HttpResponse.json({ ...body, submission_id: id, status: n > 1 ? 'completed' : 'verifying' })
+    return HttpResponse.json({
+      ...body,
+      submission_id: id,
+      status: n > 1 ? 'completed' : 'verifying',
+    })
   }),
 
   http.post(`${API}/submissions/:id/confirm`, () =>

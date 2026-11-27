@@ -29,9 +29,7 @@ export function computeBBox(points: readonly (readonly number[])[]): BBox {
 }
 
 export type PathCommand =
-  | { op: 'M'; p: Point }
-  | { op: 'Q'; c: Point; p: Point }
-  | { op: 'L'; p: Point }
+  { op: 'M'; p: Point } | { op: 'Q'; c: Point; p: Point } | { op: 'L'; p: Point }
 
 const mid = (a: readonly number[], b: readonly number[]): Point => [
   (a[0] + b[0]) / 2,
@@ -97,7 +95,10 @@ export function distanceToSegment(
 
 export function bboxesIntersect(a: BBox, b: BBox, pad = 0): boolean {
   return (
-    a.x - pad <= b.x + b.w && b.x - pad <= a.x + a.w && a.y - pad <= b.y + b.h && b.y - pad <= a.y + a.h
+    a.x - pad <= b.x + b.w &&
+    b.x - pad <= a.x + a.w &&
+    a.y - pad <= b.y + b.h &&
+    b.y - pad <= a.y + a.h
   )
 }
 

@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { NotebookList } from './notebook/pages/NotebookList'
+import { NotebookView } from './notebook/pages/NotebookView'
 
 function useHashRoute(): string {
   const [hash, setHash] = useState(() => window.location.hash || '#/')
@@ -12,10 +14,25 @@ function useHashRoute(): string {
 
 export default function App() {
   const route = useHashRoute()
+  const notebookId = /^#\/nb\/([\w-]+)/.exec(route)?.[1]
+
   return (
-    <main className="p-6">
-      <h1 className="text-2xl font-semibold">MathMind</h1>
-      <p className="text-slate-600">{route === '#/' ? 'Your notebooks' : 'Page not found'}</p>
-    </main>
+    <div className="flex h-full flex-col">
+      {notebookId ? (
+        <>
+          <h1 className="sr-only">MathMind</h1>
+          <NotebookView notebookId={notebookId} />
+        </>
+      ) : (
+        <>
+          <header className="bg-white px-4 py-3 shadow-sm">
+            <h1 className="text-xl font-bold text-blue-700">MathMind</h1>
+          </header>
+          <main className="min-h-0 flex-1 overflow-y-auto">
+            <NotebookList />
+          </main>
+        </>
+      )}
+    </div>
   )
 }

@@ -251,7 +251,11 @@ export function InkCanvas(props: InkCanvasProps) {
         aria-hidden
         className="pointer-events-none absolute inset-0 h-full w-full"
       />
-      <canvas ref={inkRef} aria-hidden className="pointer-events-none absolute inset-0 h-full w-full" />
+      <canvas
+        ref={inkRef}
+        aria-hidden
+        className="pointer-events-none absolute inset-0 h-full w-full"
+      />
       <canvas
         ref={liveRef}
         data-testid="ink-canvas"

@@ -18,6 +18,8 @@ import {
 } from './model'
 import { History, type Command } from './tools/history'
 
+type PageMeta = 'title' | 'chapter' | 'background' | 'bookmarked' | 'order'
+
 export interface ToolSettings {
   color: string
   width: number
@@ -43,7 +45,13 @@ export interface NotebookState {
   createNotebook(title: string, domain?: string | null): Promise<Notebook>
   openNotebook(id: string, pageId?: string | null): Promise<void>
   closeNotebook(): void
+  renameNotebook(id: string, title: string): Promise<void>
+  deleteNotebook(id: string): Promise<void>
   addPage(opts?: { chapter?: string | null; title?: string | null }): Promise<Page>
+  /** Page metadata (title, chapter, background, bookmark). */
+  updatePage(id: string, changes: Partial<Pick<Page, PageMeta>>): void
+  /** Swap a top-level page with its previous (-1) or next (+1) neighbour. */
+  movePage(id: string, dir: -1 | 1): void
   goToPage(id: string): Promise<void>
   loadPage(id: string): Promise<void>
 
@@ -93,7 +101,13 @@ function persist(task: () => Promise<unknown>): void {
 const erasing = new Map<string, Stroke[]>()
 
 export const useNotebookStore = create<NotebookState>()((set, get) => {
-  const translate = (pageId: string, strokeIds: string[], objectIds: string[], dx: number, dy: number) => {
+  const translate = (
+    pageId: string,
+    strokeIds: string[],
+    objectIds: string[],
+    dx: number,
+    dy: number,
+  ) => {
     const sIds = new Set(strokeIds)
     const oIds = new Set(objectIds)
     const moved: Stroke[] = []
@@ -132,7 +146,9 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
     set((s) => ({
       strokes: {
         ...s.strokes,
-        [pageId]: [...(s.strokes[pageId] ?? []).filter((st) => !ids.has(st.id)), ...live].sort(byId),
+        [pageId]: [...(s.strokes[pageId] ?? []).filter((st) => !ids.has(st.id)), ...live].sort(
+          byId,
+        ),
       },
     }))
     persist(() => strokesRepo.bulkPut(live))
@@ -141,7 +157,10 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
   const removeStrokes = (pageId: string, ids: string[]) => {
     const gone = new Set(ids)
     set((s) => ({
-      strokes: { ...s.strokes, [pageId]: (s.strokes[pageId] ?? []).filter((st) => !gone.has(st.id)) },
+      strokes: {
+        ...s.strokes,
+        [pageId]: (s.strokes[pageId] ?? []).filter((st) => !gone.has(st.id)),
+      },
     }))
     persist(() => strokesRepo.softDelete(ids))
   }
@@ -180,10 +199,18 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
     switch (cmd.type) {
       case 'addStrokes':
         if (dir === 1) insertStrokes(cmd.pageId, cmd.strokes)
-        else removeStrokes(cmd.pageId, cmd.strokes.map((s) => s.id))
+        else
+          removeStrokes(
+            cmd.pageId,
+            cmd.strokes.map((s) => s.id),
+          )
         break
       case 'deleteStrokes':
-        if (dir === 1) removeStrokes(cmd.pageId, cmd.strokes.map((s) => s.id))
+        if (dir === 1)
+          removeStrokes(
+            cmd.pageId,
+            cmd.strokes.map((s) => s.id),
+          )
         else insertStrokes(cmd.pageId, cmd.strokes)
         break
       case 'addObject':
@@ -191,7 +218,11 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
         else removeObjects(cmd.pageId, [cmd.object.id])
         break
       case 'deleteObjects':
-        if (dir === 1) removeObjects(cmd.pageId, cmd.objects.map((o) => o.id))
+        if (dir === 1)
+          removeObjects(
+            cmd.pageId,
+            cmd.objects.map((o) => o.id),
+          )
         else insertObjects(cmd.pageId, cmd.objects)
         break
       case 'moveObjects':
@@ -283,9 +314,50 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
         title: opts.title ?? `Page ${top.length + 1}`,
       })
       await pagesRepo.put(page)
-      set((s) => ({ pages: [...s.pages, page], strokes: { ...s.strokes, [page.id]: [] } }))
+      set((s) => ({
+        pages: [...s.pages, page],
+        strokes: { ...s.strokes, [page.id]: [] },
+        objects: { ...s.objects, [page.id]: [] },
+      }))
       await get().goToPage(page.id)
       return page
+    },
+
+    async renameNotebook(id, title) {
+      const updated_at = now()
+      await notebooksRepo.update(id, { title, updated_at })
+      set((s) => ({
+        notebooks: s.notebooks.map((n) => (n.id === id ? { ...n, title, updated_at } : n)),
+        notebook: s.notebook?.id === id ? { ...s.notebook, title, updated_at } : s.notebook,
+      }))
+    },
+
+    async deleteNotebook(id) {
+      await notebooksRepo.remove(id)
+      set((s) => ({ notebooks: s.notebooks.filter((n) => n.id !== id) }))
+      if (get().notebook?.id === id) get().closeNotebook()
+    },
+
+    updatePage(id, changes) {
+      const updated_at = now()
+      set((s) => ({
+        pages: s.pages.map((p) => (p.id === id ? { ...p, ...changes, updated_at } : p)),
+      }))
+      persist(() => pagesRepo.update(id, { ...changes, updated_at }))
+    },
+
+    movePage(id, dir) {
+      const top = get()
+        .pages.filter((p) => !p.parent_page_id)
+        .sort((a, b) => a.order - b.order)
+      const i = top.findIndex((p) => p.id === id)
+      const j = i + dir
+      if (i < 0 || j < 0 || j >= top.length) return
+      const a = top[i]
+      const b = top[j]
+      get().updatePage(a.id, { order: b.order })
+      get().updatePage(b.id, { order: a.order })
+      set((s) => ({ pages: [...s.pages].sort((x, y) => x.order - y.order) }))
     },
 
     async goToPage(id) {
@@ -295,7 +367,12 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
 
     /** Loads a page plus its working-space areas into memory (once). */
     async loadPage(id) {
-      const ids = [id, ...get().pages.filter((p) => p.parent_page_id === id).map((p) => p.id)]
+      const ids = [
+        id,
+        ...get()
+          .pages.filter((p) => p.parent_page_id === id)
+          .map((p) => p.id),
+      ]
       const missing = ids.filter((pid) => !get().strokes[pid] || !get().objects[pid])
       if (missing.length === 0) return
       const loaded = await Promise.all(
@@ -335,7 +412,10 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
         )
         if (hits.length > 0) {
           acc.push(...hits)
-          removeStrokes(pageId, hits.map((s) => s.id))
+          removeStrokes(
+            pageId,
+            hits.map((s) => s.id),
+          )
         }
       }
       erasing.set(pageId, acc)

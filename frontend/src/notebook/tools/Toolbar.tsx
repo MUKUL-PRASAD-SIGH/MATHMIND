@@ -104,7 +104,14 @@ export function Toolbar({ orientation = 'horizontal', large = false, children }:
 
       <span className={vertical ? 'h-px w-8 bg-slate-200' : 'h-6 w-px bg-slate-200'} />
 
-      <button type="button" className={btn} aria-label="Undo" title="Undo (Ctrl+Z)" disabled={!canUndo} onClick={() => undo()}>
+      <button
+        type="button"
+        className={btn}
+        aria-label="Undo"
+        title="Undo (Ctrl+Z)"
+        disabled={!canUndo}
+        onClick={() => undo()}
+      >
         ↶
       </button>
       <button
