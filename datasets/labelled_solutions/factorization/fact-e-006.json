@@ -1,0 +1,23 @@
+{
+  "id": "fact-e-006",
+  "concept_id": "factorization",
+  "problem_latex": "x^{2}+x-12",
+  "reference_solution": [
+    "x^{2}+x-12",
+    "x^{2}+4x-3x-12",
+    "x(x+4)-3(x+4)",
+    "(x+4)(x-3)"
+  ],
+  "learner_attempt": [
+    "x^{2}+x-12",
+    "x^{2}+3x-4x-12",
+    "x(x+3)-4(x+3)",
+    "(x+3)(x-4)"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "sign_error",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Split +x as 3x-4x (which is -x); the signs of the pair are swapped."
+}

@@ -1,0 +1,20 @@
+{
+  "id": "fact-e-002",
+  "concept_id": "factorization",
+  "problem_latex": "x^{2}-9",
+  "reference_solution": [
+    "x^{2}-9",
+    "x^{2}-3^{2}",
+    "(x-3)(x+3)"
+  ],
+  "learner_attempt": [
+    "x^{2}-9",
+    "(x-3)^{2}"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "algebraic_transformation",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Difference of two squares written as a perfect square; (x-3)^2 is x^2-6x+9."
+}

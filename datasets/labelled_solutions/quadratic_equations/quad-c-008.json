@@ -1,0 +1,25 @@
+{
+  "id": "quad-c-008",
+  "concept_id": "quadratic_equations",
+  "problem_latex": "x^{2}-2x-8=0",
+  "reference_solution": [
+    "x^{2}-2x-8=0",
+    "x^{2}-2x=8",
+    "(x-1)^{2}=9",
+    "x-1=\\pm 3",
+    "x=4 \\text{ or } x=-2"
+  ],
+  "learner_attempt": [
+    "x^{2}-2x-8=0",
+    "x^{2}-2x=8",
+    "(x-1)^{2}=9",
+    "x-1=\\pm 3",
+    "x=4 \\text{ or } x=-2"
+  ],
+  "expected_correct": true,
+  "first_error_step": null,
+  "error_type": null,
+  "expected_intervention": "continue",
+  "has_handwriting_image": false,
+  "notes": ""
+}

@@ -1,0 +1,21 @@
+{
+  "id": "lin-e-003",
+  "concept_id": "linear_equations",
+  "problem_latex": "7-2x=13",
+  "reference_solution": [
+    "7-2x=13",
+    "-2x=6",
+    "x=-3"
+  ],
+  "learner_attempt": [
+    "7-2x=13",
+    "-2x=6",
+    "x=3"
+  ],
+  "expected_correct": false,
+  "first_error_step": 3,
+  "error_type": "sign_error",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Divided 6 by -2 but dropped the negative sign."
+}

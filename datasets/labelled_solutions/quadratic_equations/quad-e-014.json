@@ -1,0 +1,22 @@
+{
+  "id": "quad-e-014",
+  "concept_id": "quadratic_equations",
+  "problem_latex": "x^{2}-5x+6=0",
+  "reference_solution": [
+    "x^{2}-5x+6=0",
+    "(x-2)(x-3)=0",
+    "x-2=0 \\text{ or } x-3=0",
+    "x=2 \\text{ or } x=3"
+  ],
+  "learner_attempt": [
+    "x^{2}-5x+6=0",
+    "(x-2)(x-3)=0",
+    "x=-2 \\text{ or } x=-3"
+  ],
+  "expected_correct": false,
+  "first_error_step": 3,
+  "error_type": "sign_error",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Correct factors, but x-2=0 gives x=2, not x=-2 (signs of the roots flipped)."
+}

@@ -160,6 +160,7 @@ erDiagram
 | GET | `/api/v1/health` | Liveness + `{ollama: up/down, pix2tex: loaded/not}` |
 | POST | `/api/v1/notebooks` | Create notebook |
 | GET | `/api/v1/notebooks` | List notebooks |
+| GET | `/api/v1/notebooks/{id}/pages` | List pages of a notebook |
 | PUT | `/api/v1/notebooks/{id}/pages/{page_id}` | Save page state / metadata |
 | POST | `/api/v1/submissions/typed` | Submit typed LaTeX steps |
 | POST | `/api/v1/submissions/image` | Upload image/region crop (multipart) |
@@ -170,6 +171,8 @@ erDiagram
 | GET | `/api/v1/learners/me/mastery` | Mastery profile |
 | GET | `/api/v1/learners/me/revision` | Due revision items |
 | GET | `/api/v1/learners/me/next` | Next recommended activity |
+| GET | `/api/v1/learners/me/export` | Download all my data as one JSON document (privacy) |
+| DELETE | `/api/v1/learners/me/data?confirm=true` | Delete all my data and uploads; 409 while a job is running (privacy) |
 | GET | `/api/v1/concepts` | Concept graph |
 | GET | `/api/v1/problems?concept=…` | Problems for a concept |
 

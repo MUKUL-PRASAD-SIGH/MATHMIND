@@ -189,6 +189,7 @@ python ai/evaluation/run_eval.py         # AI evaluation metrics
 | [docs/08-risks-and-limitations.md](docs/08-risks-and-limitations.md) | Risks and mitigations |
 | [docs/09-ai-disclosure-log.md](docs/09-ai-disclosure-log.md) | Log AI-assisted contributions (hackathon A4) |
 | [docs/10-evaluation-plan.md](docs/10-evaluation-plan.md) | Metrics, dataset, R2/R3 evidence |
+| [docs/11-demo-script.md](docs/11-demo-script.md) | Demo run sheet and fallbacks (draft) |
 | [docs/task-board.md](docs/task-board.md) | Live status of every task |
 | [docs/team/](docs/team/) | **Personal guide per team member — feed yours to your AI agent** |
 | [AGENTS.md](AGENTS.md) | Rules every AI coding agent must follow here |

@@ -1,0 +1,23 @@
+{
+  "id": "lin-c-010",
+  "concept_id": "linear_equations",
+  "problem_latex": "6x+9=4x-3",
+  "reference_solution": [
+    "6x+9=4x-3",
+    "2x+9=-3",
+    "2x=-12",
+    "x=-6"
+  ],
+  "learner_attempt": [
+    "6x+9=4x-3",
+    "2x+9=-3",
+    "2x=-12",
+    "x=-6"
+  ],
+  "expected_correct": true,
+  "first_error_step": null,
+  "error_type": null,
+  "expected_intervention": "continue",
+  "has_handwriting_image": false,
+  "notes": ""
+}

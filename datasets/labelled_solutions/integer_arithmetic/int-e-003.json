@@ -1,0 +1,23 @@
+{
+  "id": "int-e-003",
+  "concept_id": "integer_arithmetic",
+  "problem_latex": "3-4\\times(2-5)",
+  "reference_solution": [
+    "3-4\\times(2-5)",
+    "3-4\\times(-3)",
+    "3+12",
+    "15"
+  ],
+  "learner_attempt": [
+    "3-4\\times(2-5)",
+    "3-4\\times(-3)",
+    "3-12",
+    "-9"
+  ],
+  "expected_correct": false,
+  "first_error_step": 3,
+  "error_type": "sign_error",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "-4 times -3 is +12, so 3-4(-3) is 3+12."
+}

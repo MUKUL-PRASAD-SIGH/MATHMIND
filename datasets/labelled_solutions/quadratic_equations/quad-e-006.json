@@ -1,0 +1,24 @@
+{
+  "id": "quad-e-006",
+  "concept_id": "quadratic_equations",
+  "problem_latex": "x^{2}-4x-1=0",
+  "reference_solution": [
+    "x^{2}-4x-1=0",
+    "x=\\frac{4\\pm\\sqrt{16+4}}{2}",
+    "x=\\frac{4\\pm\\sqrt{20}}{2}",
+    "x=2\\pm\\sqrt{5}",
+    "x=2+\\sqrt{5} \\text{ or } x=2-\\sqrt{5}"
+  ],
+  "learner_attempt": [
+    "x^{2}-4x-1=0",
+    "x=\\frac{-4\\pm\\sqrt{16+4}}{2}",
+    "x=\\frac{-4\\pm\\sqrt{20}}{2}",
+    "x=-2\\pm\\sqrt{5}"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "formula_selection",
+  "expected_intervention": "worked_example",
+  "has_handwriting_image": false,
+  "notes": "Quadratic formula used +b instead of -b (b=-4, so -b=4)."
+}

@@ -1,0 +1,37 @@
+[
+  {
+    "id": "int-001",
+    "concept_id": "integer_arithmetic",
+    "prompt_latex": "7-12",
+    "expected_answer_latex": "-5",
+    "difficulty": 1
+  },
+  {
+    "id": "int-002",
+    "concept_id": "integer_arithmetic",
+    "prompt_latex": "(-3)\\times(-4)+5",
+    "expected_answer_latex": "17",
+    "difficulty": 2
+  },
+  {
+    "id": "int-003",
+    "concept_id": "integer_arithmetic",
+    "prompt_latex": "-24\\div 6-(-7)",
+    "expected_answer_latex": "3",
+    "difficulty": 3
+  },
+  {
+    "id": "int-004",
+    "concept_id": "integer_arithmetic",
+    "prompt_latex": "3-4\\times(2-5)",
+    "expected_answer_latex": "15",
+    "difficulty": 4
+  },
+  {
+    "id": "int-005",
+    "concept_id": "integer_arithmetic",
+    "prompt_latex": "(-2)^{3}-3\\times(4-9)\\div 5",
+    "expected_answer_latex": "-5",
+    "difficulty": 5
+  }
+]

@@ -1,0 +1,20 @@
+{
+  "id": "fact-e-009",
+  "concept_id": "factorization",
+  "problem_latex": "3x^{3}-12x",
+  "reference_solution": [
+    "3x^{3}-12x",
+    "3x(x^{2}-4)",
+    "3x(x-2)(x+2)"
+  ],
+  "learner_attempt": [
+    "3x^{3}-12x",
+    "3x(x^{2}-4)"
+  ],
+  "expected_correct": false,
+  "first_error_step": null,
+  "error_type": "incomplete",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "x^2-4 can still be factorised as (x-2)(x+2)."
+}

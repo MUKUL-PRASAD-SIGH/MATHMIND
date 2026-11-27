@@ -1,0 +1,23 @@
+{
+  "id": "lin-e-015",
+  "concept_id": "linear_equations",
+  "problem_latex": "2(x-3)=10",
+  "reference_solution": [
+    "2(x-3)=10",
+    "2x-6=10",
+    "2x=16",
+    "x=8"
+  ],
+  "learner_attempt": [
+    "2(x-3)=10",
+    "2x-6=10",
+    "2x=16",
+    "x=7"
+  ],
+  "expected_correct": false,
+  "first_error_step": 4,
+  "error_type": "arithmetic_slip",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "16 divided by 2 is 8, not 7."
+}

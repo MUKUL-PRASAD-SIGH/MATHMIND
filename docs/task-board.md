@@ -41,9 +41,9 @@
 | T6.5 | Learner endpoints | T6.3, T6.4 | todo | |
 | T7.3 | E2E Playwright (with M2) | T5.4 | todo | |
 | T7.5 | R2/R3 evidence (with M4) | T7.2, T7.3 | todo | |
-| T7.7 | Security & privacy checks | T2.3 | todo | |
+| T7.7 | Security & privacy checks | T2.3 | in-progress (backend done; npm audit, KaTeX, DevTools check wait for frontend) | `feat/T7.7-security` |
 | T8.1 | docker-compose | T5.3 | todo | |
-| T8.4 | Demo script + recording | T7.5 | todo | |
+| T8.4 | Demo script + recording | T7.5 | in-progress (early prep: `seed_demo.py` + draft run sheet; dry runs wait for T7.5) | `feat/T8.4-demo-seed` |
 | T8.5 | Devpost submission | T8.4 | todo | |
 
 ## M2 — Frontend · Notebook

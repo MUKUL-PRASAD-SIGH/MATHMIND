@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/DeletionSummary.json",
+  "properties": {
+    "deleted": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "type": "object",
+      "title": "Deleted",
+      "description": "Rows removed per table, plus `upload_files`"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "deleted"
+  ],
+  "title": "DeletionSummary"
+}

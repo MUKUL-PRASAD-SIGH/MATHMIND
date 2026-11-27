@@ -1,0 +1,24 @@
+{
+  "id": "lin-e-025",
+  "concept_id": "linear_equations",
+  "problem_latex": "\\frac{2x}{3}+\\frac{x}{4}=11",
+  "reference_solution": [
+    "\\frac{2x}{3}+\\frac{x}{4}=11",
+    "\\frac{8x}{12}+\\frac{3x}{12}=11",
+    "\\frac{11x}{12}=11",
+    "11x=132",
+    "x=12"
+  ],
+  "learner_attempt": [
+    "\\frac{2x}{3}+\\frac{x}{4}=11",
+    "\\frac{3x}{7}=11",
+    "3x=77",
+    "x=\\frac{77}{3}"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "missing_prerequisite",
+  "expected_intervention": "prerequisite_review",
+  "has_handwriting_image": false,
+  "notes": "Added fractions by adding numerators and denominators instead of using a common denominator."
+}

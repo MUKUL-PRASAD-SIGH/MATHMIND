@@ -119,3 +119,22 @@ def reset_stages() -> None:
 
 def is_stub(name: str) -> bool:
     return _STAGES[name] is _DEFAULTS[name]
+
+
+def install_real_stages() -> None:
+    """Register M3's real services in place of the stubs. Called once by app/main.py at import time.
+
+    Tests build apps with ``create_app`` and reset to the stubs per test, so they opt in explicitly.
+    """
+    from app.core.config import get_settings
+    from app.services.reasoning import review
+    from app.services.recognition import engine, recognize_region
+    from app.services.verification import verify_steps
+
+    register_stage("verify", verify_steps)
+    # Without pix2tex this raises RecognitionUnavailable, exactly like the stub (manual typing path).
+    register_stage("recognize", recognize_region)
+    # Without Ollama this raises ReviewUnavailable after a cached health probe -> completed_without_ai.
+    register_stage("reason", review)
+    if get_settings().preload_ocr:
+        engine.preload_in_background()

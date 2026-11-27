@@ -1,0 +1,25 @@
+{
+  "id": "lin-e-007",
+  "concept_id": "linear_equations",
+  "problem_latex": "5(x-2)-3(x+1)=7",
+  "reference_solution": [
+    "5(x-2)-3(x+1)=7",
+    "5x-10-3x-3=7",
+    "2x-13=7",
+    "2x=20",
+    "x=10"
+  ],
+  "learner_attempt": [
+    "5(x-2)-3(x+1)=7",
+    "5x-10-3x+3=7",
+    "2x-7=7",
+    "2x=14",
+    "x=7"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "sign_error",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Expanded -3(x+1) as -3x+3; (-3)(+1) is -3."
+}

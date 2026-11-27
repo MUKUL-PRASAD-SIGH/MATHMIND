@@ -1,0 +1,23 @@
+{
+  "id": "quad-e-008",
+  "concept_id": "quadratic_equations",
+  "problem_latex": "2x^{2}-7x+3=0",
+  "reference_solution": [
+    "2x^{2}-7x+3=0",
+    "(2x-1)(x-3)=0",
+    "2x-1=0 \\text{ or } x-3=0",
+    "x=\\frac{1}{2} \\text{ or } x=3"
+  ],
+  "learner_attempt": [
+    "2x^{2}-7x+3=0",
+    "x=\\frac{7\\pm\\sqrt{49-24}}{2}",
+    "x=\\frac{7\\pm 5}{2}",
+    "x=6 \\text{ or } x=1"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "formula_selection",
+  "expected_intervention": "worked_example",
+  "has_handwriting_image": false,
+  "notes": "Quadratic formula denominator should be 2a=4, not 2."
+}

@@ -1,0 +1,22 @@
+{
+  "id": "quad-e-010",
+  "concept_id": "quadratic_equations",
+  "problem_latex": "x^{2}=3x",
+  "reference_solution": [
+    "x^{2}=3x",
+    "x^{2}-3x=0",
+    "x(x-3)=0",
+    "x=0 \\text{ or } x=3"
+  ],
+  "learner_attempt": [
+    "x^{2}=3x",
+    "\\frac{x^{2}}{x}=\\frac{3x}{x}",
+    "x=3"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "domain_violation",
+  "expected_intervention": "worked_example",
+  "has_handwriting_image": false,
+  "notes": "Divided both sides by x, which may be 0; the root x=0 is lost."
+}
