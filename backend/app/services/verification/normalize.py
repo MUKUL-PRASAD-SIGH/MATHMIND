@@ -17,6 +17,8 @@ _UNICODE = {
     chr(0x2264): r"\le ",
     chr(0x2265): r"\ge ",
     chr(0x2260): r"\neq ",
+    chr(0x00B1): r"\pm ",
+    chr(0x2213): r"\mp ",
     chr(0x221A): r"\sqrt",
     chr(0x03C0): r"\pi ",
     chr(0x00B2): "^{2}",

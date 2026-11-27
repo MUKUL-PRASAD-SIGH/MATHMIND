@@ -10,6 +10,8 @@ What `verify_steps` can decide. Anything else is returned as `inconclusive` with
 - Powers `x^2`, `x^{-2}`, fractions `\frac`, `\dfrac`, roots `\sqrt{}`, `\sqrt[n]{}`, `|x|`, `\ln`, `\log`, `e^{x}`, `\pi`.
 - One relation per step: `=`, `<`, `>`, `\le`, `\ge`, `\neq`; compound inequalities such as `1<x\le 3`.
 - Answer lists: `x=2 \text{ or } x=3`, `x \in \{2,3\}`, `x=2, x=3`, `x=2, 3`.
+- `\pm` / `\mp` / `±` in an answer: `x=\frac{1\pm 7}{2}` means `x=4 or x=-3`. Every `\pm` in one answer takes the
+  same branch. A `\pm` outside an `x = …` answer is unreadable (inconclusive).
 - A line starting with `=` continues an expression rewrite.
 - Layout noise is ignored: `\left`/`\right`, `\,` `\!` `\;`, `\displaystyle`, `$`, trailing `.` `,`.
 - A decimal comma (`2,5`) is read as a list separator, not as 2.5.
