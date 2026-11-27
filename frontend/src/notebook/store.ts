@@ -3,6 +3,7 @@ import { notebooksRepo } from '../services/db/repos/notebooks'
 import { objectsRepo } from '../services/db/repos/objects'
 import { pagesRepo } from '../services/db/repos/pages'
 import { strokesRepo } from '../services/db/repos/strokes'
+import { debounce, forgetLast, rememberLast, saveQueue, type Debounced } from './autosave'
 import { strokeHit } from './canvas/geometry'
 import { uuidv7 } from './ids'
 import {
@@ -92,9 +93,31 @@ export function newPage(notebookId: string, order: number, extra: Partial<Page> 
 
 export const history = new History<Command>()
 
-/** Persist a change to IndexedDB. */
-function persist(task: () => Promise<unknown>): void {
-  void task()
+/** Persist a change to IndexedDB through the autosave queue (retried on failure). */
+function persist(pageId: string, task: () => Promise<unknown>, key?: string): void {
+  saveQueue.enqueue(task, { pageId, key })
+}
+
+/** Page metadata saves are debounced by 500 ms per page; changes accumulate meanwhile. */
+const pendingMeta = new Map<string, Partial<Page>>()
+const metaSavers = new Map<string, Debounced<[]>>()
+function saveMetaLater(pageId: string, changes: Partial<Page>): void {
+  pendingMeta.set(pageId, { ...pendingMeta.get(pageId), ...changes })
+  let d = metaSavers.get(pageId)
+  if (!d) {
+    d = debounce(() => {
+      const meta = pendingMeta.get(pageId)
+      pendingMeta.delete(pageId)
+      if (meta) persist(pageId, () => pagesRepo.update(pageId, meta), `meta:${pageId}`)
+    }, 500)
+    metaSavers.set(pageId, d)
+  }
+  d()
+}
+
+/** Write any debounced metadata now (e.g. before the tab closes). */
+export function flushPendingMeta(): void {
+  metaSavers.forEach((d) => d.flush())
 }
 
 /** Strokes erased by the gesture in progress, per page. */
@@ -136,8 +159,10 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
         }),
       },
     }))
-    persist(() => strokesRepo.bulkPut(moved))
-    persist(() => Promise.all(movedObjects.map((o) => objectsRepo.update(o.id, { bbox: o.bbox }))))
+    persist(pageId, () => strokesRepo.bulkPut(moved))
+    persist(pageId, () =>
+      Promise.all(movedObjects.map((o) => objectsRepo.update(o.id, { bbox: o.bbox }))),
+    )
   }
 
   const insertStrokes = (pageId: string, strokes: Stroke[]) => {
@@ -151,7 +176,7 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
         ),
       },
     }))
-    persist(() => strokesRepo.bulkPut(live))
+    persist(pageId, () => strokesRepo.bulkPut(live))
   }
 
   const removeStrokes = (pageId: string, ids: string[]) => {
@@ -162,7 +187,7 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
         [pageId]: (s.strokes[pageId] ?? []).filter((st) => !gone.has(st.id)),
       },
     }))
-    persist(() => strokesRepo.softDelete(ids))
+    persist(pageId, () => strokesRepo.softDelete(ids))
   }
 
   const insertObjects = (pageId: string, objects: NotebookObject[]) => {
@@ -174,7 +199,7 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
         [pageId]: [...(s.objects[pageId] ?? []).filter((o) => !ids.has(o.id)), ...live].sort(byId),
       },
     }))
-    persist(() => Promise.all(live.map((o) => objectsRepo.put(o))))
+    persist(pageId, () => Promise.all(live.map((o) => objectsRepo.put(o))))
   }
 
   const removeObjects = (pageId: string, ids: string[]) => {
@@ -182,7 +207,7 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
     set((s) => ({
       objects: { ...s.objects, [pageId]: (s.objects[pageId] ?? []).filter((o) => !gone.has(o.id)) },
     }))
-    persist(() => objectsRepo.softDelete(ids))
+    persist(pageId, () => objectsRepo.softDelete(ids))
   }
 
   const setObjectBBox = (pageId: string, id: string, bbox: NotebookObject['bbox']) => {
@@ -192,7 +217,7 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
         [pageId]: (s.objects[pageId] ?? []).map((o) => (o.id === id ? { ...o, bbox } : o)),
       },
     }))
-    persist(() => objectsRepo.update(id, { bbox }))
+    persist(pageId, () => objectsRepo.update(id, { bbox }))
   }
 
   const apply = (cmd: Command, dir: 1 | -1) => {
@@ -288,6 +313,7 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
         strokes: {},
         objects: {},
       })
+      rememberLast(id, current?.id ?? null)
       if (current) await get().loadPage(current.id)
     },
 
@@ -313,7 +339,7 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
         chapter: opts.chapter !== undefined ? opts.chapter : (current?.chapter ?? null),
         title: opts.title ?? `Page ${top.length + 1}`,
       })
-      await pagesRepo.put(page)
+      persist(page.id, () => pagesRepo.put(page))
       set((s) => ({
         pages: [...s.pages, page],
         strokes: { ...s.strokes, [page.id]: [] },
@@ -334,6 +360,7 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
 
     async deleteNotebook(id) {
       await notebooksRepo.remove(id)
+      forgetLast()
       set((s) => ({ notebooks: s.notebooks.filter((n) => n.id !== id) }))
       if (get().notebook?.id === id) get().closeNotebook()
     },
@@ -343,7 +370,7 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
       set((s) => ({
         pages: s.pages.map((p) => (p.id === id ? { ...p, ...changes, updated_at } : p)),
       }))
-      persist(() => pagesRepo.update(id, { ...changes, updated_at }))
+      saveMetaLater(id, { ...changes, updated_at })
     },
 
     movePage(id, dir) {
@@ -362,6 +389,8 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
 
     async goToPage(id) {
       set({ currentPageId: id, activePageId: id })
+      const nb = get().notebook
+      if (nb) rememberLast(nb.id, id)
       await get().loadPage(id)
     },
 

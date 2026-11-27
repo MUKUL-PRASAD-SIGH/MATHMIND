@@ -1,9 +1,19 @@
 import { useEffect, useState } from 'react'
+import { readLast } from './notebook/autosave'
 import { NotebookList } from './notebook/pages/NotebookList'
 import { NotebookView } from './notebook/pages/NotebookView'
 
+/** On a fresh start (no route in the URL) reopen the last notebook and page. */
+function initialRoute(): string {
+  if (window.location.hash) return window.location.hash
+  const last = readLast()
+  if (!last) return '#/'
+  window.history.replaceState(null, '', `#/nb/${last.notebookId}`)
+  return window.location.hash
+}
+
 function useHashRoute(): string {
-  const [hash, setHash] = useState(() => window.location.hash || '#/')
+  const [hash, setHash] = useState(initialRoute)
   useEffect(() => {
     const onChange = () => setHash(window.location.hash || '#/')
     window.addEventListener('hashchange', onChange)

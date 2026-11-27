@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
+import { readLast } from '../autosave'
 import type { Background } from '../model'
+import { SaveStatus } from '../SaveStatus'
 import { useNotebookStore } from '../store'
 import { Toolbar } from '../tools/Toolbar'
 import { isEditableTarget } from '../tools/shortcuts'
@@ -18,7 +20,9 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
 
   useEffect(() => {
     if (useNotebookStore.getState().notebook?.id === notebookId) return
-    openNotebook(notebookId).catch((e: unknown) => setError(String(e)))
+    const last = readLast()
+    const pageId = last?.notebookId === notebookId ? last.pageId : null
+    openNotebook(notebookId, pageId).catch((e: unknown) => setError(String(e)))
   }, [notebookId, openNotebook])
 
   const top = pages.filter((p) => !p.parent_page_id).sort((a, b) => a.order - b.order)
@@ -65,6 +69,7 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
           ← Notebooks
         </a>
         <h2 className="flex-1 truncate font-semibold">{notebook.title}</h2>
+        <SaveStatus />
       </header>
       <div className="flex min-h-0 flex-1">
         <aside className="w-56 shrink-0 border-r bg-slate-50">
