@@ -79,19 +79,6 @@ def list_mastery(session: Session, user_id: str) -> list[tuple[MasteryProfileRow
     return [(m, c) for m, c in session.exec(stmt)]
 
 
-def list_due_revision(session: Session, user_id: str, now: datetime) -> list[tuple[RevisionQueueRow, ConceptRow]]:
-    stmt = (
-        select(RevisionQueueRow, ConceptRow)
-        .where(
-            RevisionQueueRow.user_id == user_id,
-            RevisionQueueRow.concept_id == ConceptRow.id,
-            col(RevisionQueueRow.due_at) <= now,
-        )
-        .order_by(col(RevisionQueueRow.due_at))
-    )
-    return [(r, c) for r, c in session.exec(stmt)]
-
-
 def list_revision(session: Session, user_id: str) -> list[tuple[RevisionQueueRow, ConceptRow]]:
     """All queued items; which are due is decided by ``adaptation.due_revisions`` (timezone-safe)."""
     stmt = select(RevisionQueueRow, ConceptRow).where(
