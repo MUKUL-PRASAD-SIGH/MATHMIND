@@ -25,7 +25,7 @@ _UNICODE = {
 
 # Commands that only affect layout or spacing.
 _DROP = re.compile(
-    r"\\(?:left|right|displaystyle|textstyle|bigl|bigr|Bigl|Bigr|big|Big|biggl|biggr|bigg|Bigg)(?![a-zA-Z])"
+    r"\\(?:left|right|displaystyle|textstyle|scriptstyle|scriptscriptstyle|bigl|bigr|Bigl|Bigr|big|Big|biggl|biggr|bigg|Bigg)(?![a-zA-Z])"
     r"|\\[,!;:> ]|\\(?:quad|qquad)(?![a-zA-Z])|~"
 )
 _SPACES = re.compile(r"\s+")

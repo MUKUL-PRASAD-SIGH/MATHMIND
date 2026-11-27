@@ -23,6 +23,7 @@ def test_install_registers_the_real_verifier() -> None:
     assert stages.is_stub("verify")
     stages.install_real_stages()
     assert stages.get_stage("verify") is verify_steps
+    assert not stages.is_stub("recognize")
 
 
 def test_r2a_typed_submission_all_supported_without_ai(client: TestClient) -> None:

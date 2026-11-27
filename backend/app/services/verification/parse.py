@@ -14,7 +14,9 @@ Safety: model/OCR text is never evaluated as Python. The ``parse_expr`` fallback
 passed a strict character + identifier whitelist (no underscores, quotes, brackets, dots-after-names...).
 """
 
+import contextlib
 import re
+import threading
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import TimeoutError as FutureTimeout
@@ -175,6 +177,23 @@ def _parse_latex(s: str) -> sympy.Basic:
     return parse_latex(s, strict=True)
 
 
+_warm_lock = threading.Lock()
+_warm = False
+
+
+def _warm_up() -> None:
+    """Load the ANTLR parser once *outside* the timeout: a cold load can exceed 2 s on a busy CPU
+    (e.g. while pix2tex runs) and would wrongly make the first step "unparseable"."""
+    global _warm
+    if _warm:
+        return
+    with _warm_lock:
+        if not _warm:
+            with contextlib.suppress(Exception):  # a broken install surfaces on the real call instead
+                _parse_latex("1")
+            _warm = True
+
+
 _ALLOWED_TEXT = re.compile(r"^[0-9A-Za-z+\-*/()\s.]*$")
 _ALLOWED_NAMES = {"sqrt", "pi", "log", "ln", "exp", "sin", "cos", "tan", "abs"}
 _TRANSFORMS = (*standard_transformations, implicit_multiplication_application, convert_xor)
@@ -214,6 +233,7 @@ def parse_expression(latex: str) -> sympy.Expr:
     s = latex.strip()
     if not s:
         raise UnparseableStep("empty expression")
+    _warm_up()
     try:
         expr = with_timeout(_parse_latex, PARSE_TIMEOUT_S, s)
     except SympyTimeout as exc:

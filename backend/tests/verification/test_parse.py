@@ -67,6 +67,7 @@ def test_symbols_are_real_and_e_is_eulers_number() -> None:
         ("3 \\cdot 4 \\times 5 \\div 6", "3 * 4 * 5 / 6"),
         (chr(0x2212) + "x", "-x"),
         ("  x   =  1 ,", "x = 1"),
+        ("\\scriptstyle 3x=15", "3x=15"),  # pix2tex emits sizing commands
     ],
 )
 def test_normalize(raw: str, clean: str) -> None:
