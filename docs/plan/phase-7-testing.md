@@ -161,6 +161,14 @@
 5. Privacy: confirm no network calls other than localhost (DevTools Network tab during a full flow). Add **Export notebook (JSON)** and **Delete all my data** buttons (M2 builds the UI, M1 builds the endpoint).
 6. Secrets scan: `git log -p | grep -i "key\|token\|secret"` sanity check, or use `gitleaks`.
 
+**Status (M1, 2026-11-26), backend half done on `feat/T7.7-security`:**
+- Step 1: `bandit` clean, `pip-audit` no known vulnerabilities. `npm audit` waits for `frontend/` (T0.2).
+- Step 2: `tests/test_fuzz_api.py` fuzzes every operation (schemathesis). It found and we fixed: missing/incomplete `Allow` header on 405, undocumented 400 for non-UTF-8 bodies.
+- Step 3: no `eval`/`exec`/shell in `app/` (the `session.exec` hits are SQLModel queries). KaTeX `trust: false` is checked when M2 adds it.
+- Step 4: `tests/test_privacy_and_ownership.py` checks every id-taking endpoint returns 404 for another learner's id (mutation-checked).
+- Step 5: endpoints `GET /learners/me/export` and `DELETE /learners/me/data?confirm=true` built; contract examples ready for M2's buttons. `OLLAMA_URL` must be a local/LAN host unless `ALLOW_REMOTE_OLLAMA=true`. The DevTools network check needs the frontend.
+- Step 6: history scanned, no secrets or `.env` files ever committed.
+
 ---
 
 ## T7.8 — Accessibility & keyboard-only audit (M2, M4 assists)

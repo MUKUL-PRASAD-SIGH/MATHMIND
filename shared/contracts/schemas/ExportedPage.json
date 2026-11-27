@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/ExportedPage.json",
+  "properties": {
+    "id": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "title": "Id"
+    },
+    "notebook_id": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "title": "Notebook Id"
+    },
+    "chapter": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Chapter"
+    },
+    "order": {
+      "type": "integer",
+      "title": "Order"
+    },
+    "title": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Title"
+    },
+    "background": {
+      "$ref": "Background.json"
+    },
+    "bookmarked": {
+      "type": "boolean",
+      "title": "Bookmarked"
+    },
+    "version": {
+      "type": "integer",
+      "title": "Version"
+    },
+    "stroke_count": {
+      "type": "integer",
+      "title": "Stroke Count"
+    },
+    "strokes": {
+      "items": {
+        "$ref": "Stroke.json"
+      },
+      "type": "array",
+      "title": "Strokes",
+      "description": "Includes soft-deleted strokes (deleted=true)"
+    },
+    "objects": {
+      "items": {
+        "$ref": "ExportedObject.json"
+      },
+      "type": "array",
+      "title": "Objects"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "id",
+    "notebook_id",
+    "chapter",
+    "order",
+    "title",
+    "background",
+    "bookmarked",
+    "version",
+    "stroke_count",
+    "strokes",
+    "objects"
+  ],
+  "title": "ExportedPage"
+}

@@ -18,6 +18,7 @@ from pydantic import BaseModel  # noqa: E402
 from app.schemas.common import Health  # noqa: E402
 from app.schemas.learning import Concept, Mastery, NextAction, Problem, Revision  # noqa: E402
 from app.schemas.notebooks import Notebook, Page, Stroke  # noqa: E402
+from app.schemas.privacy import DeletionSummary, LearnerExport  # noqa: E402
 from app.schemas.review import ReviewResult  # noqa: E402
 from app.schemas.submissions import (  # noqa: E402
     ConfirmRequest,
@@ -237,6 +238,69 @@ EXAMPLES: dict[str, BaseModel] = {
         reason="You distributed only to the first term twice this week; let's practise brackets.",
     ),
 }
+
+
+def _dump(name: str) -> dict[str, object]:
+    return EXAMPLES[name].model_dump(mode="json")
+
+
+EXAMPLES["LearnerExport.small"] = LearnerExport.model_validate(
+    {
+        "app_version": "0.1.0",
+        "exported_at": T,
+        "notebooks": [
+            {
+                **_dump("Notebook.algebra"),
+                "pages": [{**_dump("Page.ruled"), "stroke_count": 1, "strokes": [_dump("Stroke.pen")], "objects": []}],
+            }
+        ],
+        "submissions": [
+            {
+                "id": SID,
+                "page_id": "pg_1",
+                "problem_id": None,
+                "input_mode": "typed",
+                "status": "completed",
+                "created_at": T,
+                "has_source_image": False,
+                "steps": ["2(x-3)=10", "2x-3=10", "2x=13", "x=6.5"],
+                "regions": [],
+                "verification": verification_incorrect,
+                "review": review_incorrect,
+                "ai_status": "ok",
+            }
+        ],
+        "mastery": _dump("Mastery.some_progress")["items"],
+        "learning_events": [
+            {
+                "id": "ev_1",
+                "kind": "attempt",
+                "concept_id": "linear_equations",
+                "submission_id": SID,
+                "score": 0.4,
+                "hints_used": 1,
+                "error_type": "algebraic_transformation",
+                "at": T,
+            }
+        ],
+    }
+)
+EXAMPLES["DeletionSummary.deleted"] = DeletionSummary(
+    deleted={
+        "strokes": 42,
+        "objects": 0,
+        "pages": 1,
+        "notebooks": 1,
+        "recognized_regions": 0,
+        "solution_steps": 4,
+        "evaluations": 1,
+        "submissions": 1,
+        "mastery_profiles": 2,
+        "learning_events": 1,
+        "revision_queue": 0,
+        "upload_files": 0,
+    }
+)
 
 
 def main() -> None:

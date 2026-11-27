@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/LearnerExport.json",
+  "properties": {
+    "format_version": {
+      "type": "integer",
+      "const": 1,
+      "title": "Format Version",
+      "default": 1
+    },
+    "app_version": {
+      "type": "string",
+      "title": "App Version"
+    },
+    "exported_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Exported At"
+    },
+    "notebooks": {
+      "items": {
+        "$ref": "ExportedNotebook.json"
+      },
+      "type": "array",
+      "title": "Notebooks"
+    },
+    "submissions": {
+      "items": {
+        "$ref": "ExportedSubmission.json"
+      },
+      "type": "array",
+      "title": "Submissions"
+    },
+    "mastery": {
+      "items": {
+        "$ref": "MasteryEntry.json"
+      },
+      "type": "array",
+      "title": "Mastery"
+    },
+    "learning_events": {
+      "items": {
+        "$ref": "ExportedLearningEvent.json"
+      },
+      "type": "array",
+      "title": "Learning Events"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "app_version",
+    "exported_at",
+    "notebooks",
+    "submissions",
+    "mastery",
+    "learning_events"
+  ],
+  "title": "LearnerExport"
+}
