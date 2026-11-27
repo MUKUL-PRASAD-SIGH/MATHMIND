@@ -293,6 +293,24 @@ def _parse_alternatives(parts: list[str]) -> sympy.Basic:
     return Or(*eqs, evaluate=False)
 
 
+_PM = re.compile(r"\\(?:pm|mp)(?![a-zA-Z])")
+
+
+def _expand_pm(part: str) -> list[str]:
+    """``x=\\frac{1\\pm 7}{2}`` -> ``x=\\frac{1+7}{2}`` and ``x=\\frac{1-7}{2}``.
+
+    Every ``\\pm`` in a part takes the same branch (``\\mp`` the opposite), the usual reading of the
+    quadratic formula. The branches must then be ``x = value`` equations (checked by ``_parse_alternatives``).
+    """
+    if not _PM.search(part):
+        return [part]
+
+    def branch(sign: str, other: str) -> str:
+        return _PM.sub(lambda m: sign if m.group(0) == r"\pm" else other, part)
+
+    return [branch("+", "-"), branch("-", "+")]
+
+
 def parse_step(latex: str) -> sympy.Basic:
     s = normalize_latex(latex)
     if not s:
@@ -304,9 +322,9 @@ def parse_step(latex: str) -> sympy.Basic:
         return _roots(m.group(1), _split_top(m.group(2), ","))
     s = _OR_SEP.sub(";", s)
     parts = [p for chunk in _split_top(s, ";") for p in _split_top(chunk, ",")]
-    parts = [p for p in parts if p]
+    parts = [branch for p in parts if p for branch in _expand_pm(p)]
     if not parts:
         raise UnparseableStep("empty step")
-    if len(parts) > 1:
+    if len(parts) > 1 or _PM.search(s):
         return _parse_alternatives(parts)
     return _parse_relation(parts[0])
