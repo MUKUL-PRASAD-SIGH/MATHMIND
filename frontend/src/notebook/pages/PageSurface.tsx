@@ -1,3 +1,4 @@
+import { useDeviceSettings } from '../../services/device/capabilities'
 import { InkCanvas } from '../canvas/InkCanvas'
 import { PAGE_ASPECT, type Background, type InkTool, type Stroke } from '../model'
 import { useNotebookStore } from '../store'
@@ -39,6 +40,7 @@ export function PageSurface({ pageId, background = 'ruled', zoom = 1, label }: P
   const settings = useNotebookStore((s) => s.toolSettings[isInk(s.tool) ? s.tool : 'pen'])
   const addStroke = useNotebookStore((s) => s.addStroke)
   const erase = useNotebookStore((s) => s.erase)
+  const ignoreTouchWithPen = useDeviceSettings((s) => s.ignoreTouchWithPen)
 
   return (
     <section
@@ -54,6 +56,7 @@ export function PageSurface({ pageId, background = 'ruled', zoom = 1, label }: P
         color={settings.color}
         width={settings.width}
         resolution={zoom}
+        ignoreTouchWithPen={ignoreTouchWithPen}
         onStrokeComplete={addStroke}
         onErase={(segment, phase) => erase(pageId, segment, phase)}
       />

@@ -45,8 +45,8 @@ export function Toolbar({ orientation = 'horizontal', large = false, children }:
       role="toolbar"
       aria-label="Drawing tools"
       aria-orientation={orientation}
-      className={`flex flex-wrap items-center gap-1 bg-white p-1 shadow-sm ${
-        vertical ? 'flex-col' : 'flex-row'
+      className={`flex items-center gap-1 bg-white p-1 shadow-sm ${
+        vertical ? 'flex-col' : large ? 'flex-row overflow-x-auto' : 'flex-row flex-wrap'
       }`}
     >
       {TOOLS.map((t) => (
@@ -66,7 +66,7 @@ export function Toolbar({ orientation = 'horizontal', large = false, children }:
       <span className={vertical ? 'h-px w-8 bg-slate-200' : 'h-6 w-px bg-slate-200'} />
 
       {settings && isInk(tool) && (
-        <fieldset className={`flex items-center gap-1 ${vertical ? 'flex-col' : ''}`}>
+        <fieldset className={`flex shrink-0 items-center gap-1 ${vertical ? 'flex-col' : ''}`}>
           <legend className="sr-only">Colour and width</legend>
           {SWATCHES.map((c) => (
             <button

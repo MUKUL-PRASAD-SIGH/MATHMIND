@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it } from 'vitest'
 import App from '../../App'
 import { pagesRepo } from '../../services/db/repos/pages'
+import { useDeviceSettings } from '../../services/device/capabilities'
 import { resetDb } from '../../test/factories'
 import { useNotebookStore } from '../store'
 
@@ -11,6 +12,7 @@ beforeEach(async () => {
   useNotebookStore.getState().closeNotebook()
   useNotebookStore.setState({ notebooks: [] })
   window.location.hash = '#/'
+  useDeviceSettings.getState().update({ modeOverride: 'auto' })
 })
 
 const currentTitle = () => screen.getByTestId('current-page-title').textContent
@@ -98,5 +100,46 @@ describe('notebooks and pages', () => {
     await user.click(screen.getByRole('button', { name: 'Delete Scratch' }))
     await user.click(screen.getByRole('button', { name: 'Delete' }))
     await waitFor(() => expect(screen.queryByRole('link', { name: 'Scratch' })).toBeNull())
+  })
+})
+
+describe('device modes', () => {
+  async function openWithMode(mode: 'phone' | 'tablet' | 'laptop') {
+    useDeviceSettings.getState().update({ modeOverride: mode })
+    const nb = await useNotebookStore.getState().createNotebook(`Mode ${mode}`)
+    window.location.hash = `#/nb/${nb.id}`
+    const view = render(<App />)
+    await screen.findByRole('heading', { name: `Mode ${mode}` })
+    return view.container.querySelector('[data-mode]')!
+  }
+
+  it('laptop: top toolbar and docked page list', async () => {
+    const root = await openWithMode('laptop')
+    expect(root).toHaveAttribute('data-mode', 'laptop')
+    expect(screen.getByRole('toolbar', { name: 'Drawing tools' })).toHaveAttribute(
+      'aria-orientation',
+      'horizontal',
+    )
+    expect(screen.getByRole('navigation', { name: 'Pages' })).toBeInTheDocument()
+  })
+
+  it('tablet: side toolbar with large touch targets', async () => {
+    await openWithMode('tablet')
+    const toolbar = screen.getByRole('toolbar', { name: 'Drawing tools' })
+    expect(toolbar).toHaveAttribute('aria-orientation', 'vertical')
+    expect(within(toolbar).getByRole('button', { name: 'Pen' }).className).toContain('min-h-11')
+  })
+
+  it('phone: page list in a drawer and the manual override switches modes', async () => {
+    const user = userEvent.setup()
+    await openWithMode('phone')
+    expect(screen.queryByRole('navigation', { name: 'Pages' })).toBeNull()
+    await user.click(screen.getByRole('button', { name: 'Pages' }))
+    expect(screen.getByRole('navigation', { name: 'Pages' })).toBeInTheDocument()
+
+    await user.click(screen.getByText('Settings'))
+    await user.selectOptions(screen.getByLabelText('Device mode'), 'laptop')
+    expect(screen.queryByRole('button', { name: 'Pages' })).toBeNull()
+    expect(document.querySelector('[data-mode]')).toHaveAttribute('data-mode', 'laptop')
   })
 })

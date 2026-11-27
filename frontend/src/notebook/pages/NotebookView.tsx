@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { SettingsMenu } from '../../components/SettingsMenu'
+import { useDeviceMode } from '../../services/device/capabilities'
 import { readLast } from '../autosave'
 import type { Background } from '../model'
 import { SaveStatus } from '../SaveStatus'
@@ -17,6 +19,10 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
   const goToPage = useNotebookStore((s) => s.goToPage)
   const updatePage = useNotebookStore((s) => s.updatePage)
   const [error, setError] = useState<string | null>(null)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const { mode } = useDeviceMode()
+  const phone = mode === 'phone'
+  const tablet = mode === 'tablet'
 
   useEffect(() => {
     if (useNotebookStore.getState().notebook?.id === notebookId) return
@@ -62,62 +68,96 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
   const navBtn =
     'min-h-9 rounded px-3 text-sm hover:bg-slate-200 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-blue-600'
 
+  const pageBar = page && (
+    <div className="flex flex-wrap items-center gap-2 border-b bg-white px-3 py-1 text-sm">
+      <button type="button" className={navBtn} disabled={index <= 0} onClick={() => go(-1)}>
+        ← Previous page
+      </button>
+      <span aria-live="polite" className="font-medium" data-testid="current-page-title">
+        {pageTitle}
+      </span>
+      <button
+        type="button"
+        className={navBtn}
+        disabled={index >= top.length - 1}
+        onClick={() => go(1)}
+      >
+        Next page →
+      </button>
+      <button
+        type="button"
+        className={navBtn}
+        aria-pressed={page.bookmarked}
+        aria-label="Bookmark page"
+        onClick={() => updatePage(page.id, { bookmarked: !page.bookmarked })}
+      >
+        {page.bookmarked ? '★' : '☆'}
+      </button>
+      <label className="ml-auto flex items-center gap-1">
+        Background
+        <select
+          value={page.background}
+          onChange={(e) => updatePage(page.id, { background: e.target.value as Background })}
+          className="rounded border px-1 py-0.5"
+        >
+          <option value="ruled">Ruled</option>
+          <option value="squared">Squared</option>
+          <option value="blank">Blank</option>
+        </select>
+      </label>
+    </div>
+  )
+
+  const toolbar = (orientation: 'horizontal' | 'vertical', large: boolean) => (
+    <Toolbar orientation={orientation} large={large} />
+  )
+
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col" data-mode={mode}>
       <header className="flex items-center gap-2 border-b bg-white px-3 py-2">
         <a href="#/" className="rounded px-2 py-1 text-sm text-blue-700 hover:bg-slate-100">
           ← Notebooks
         </a>
         <h2 className="flex-1 truncate font-semibold">{notebook.title}</h2>
         <SaveStatus />
+        {phone && (
+          <button
+            type="button"
+            aria-expanded={drawerOpen}
+            aria-controls="page-drawer"
+            onClick={() => setDrawerOpen((o) => !o)}
+            className="min-h-11 rounded px-3 text-sm hover:bg-slate-100"
+          >
+            Pages
+          </button>
+        )}
+        <SettingsMenu mode={mode} />
       </header>
-      <div className="flex min-h-0 flex-1">
-        <aside className="w-56 shrink-0 border-r bg-slate-50">
-          <PageSidebar />
-        </aside>
-        <main className="flex min-w-0 flex-1 flex-col">
-          <Toolbar />
-          {page && (
-            <div className="flex flex-wrap items-center gap-2 border-b bg-white px-3 py-1 text-sm">
-              <button type="button" className={navBtn} disabled={index <= 0} onClick={() => go(-1)}>
-                ← Previous page
-              </button>
-              <span aria-live="polite" className="font-medium" data-testid="current-page-title">
-                {pageTitle}
-              </span>
-              <button
-                type="button"
-                className={navBtn}
-                disabled={index >= top.length - 1}
-                onClick={() => go(1)}
-              >
-                Next page →
-              </button>
-              <button
-                type="button"
-                className={navBtn}
-                aria-pressed={page.bookmarked}
-                aria-label="Bookmark page"
-                onClick={() => updatePage(page.id, { bookmarked: !page.bookmarked })}
-              >
-                {page.bookmarked ? '★' : '☆'}
-              </button>
-              <label className="ml-auto flex items-center gap-1">
-                Background
-                <select
-                  value={page.background}
-                  onChange={(e) =>
-                    updatePage(page.id, { background: e.target.value as Background })
-                  }
-                  className="rounded border px-1 py-0.5"
-                >
-                  <option value="ruled">Ruled</option>
-                  <option value="squared">Squared</option>
-                  <option value="blank">Blank</option>
-                </select>
-              </label>
+      {phone && (
+        <p className="bg-amber-50 px-3 py-1 text-xs text-amber-900">
+          Phone mode is for short practice and photos of your work. Use a tablet or laptop for long
+          solutions.
+        </p>
+      )}
+      <div className="relative flex min-h-0 flex-1">
+        {phone ? (
+          drawerOpen && (
+            <div
+              id="page-drawer"
+              className="absolute inset-y-0 left-0 z-30 w-72 max-w-[85%] border-r bg-slate-50 shadow-xl"
+            >
+              <PageSidebar onNavigate={() => setDrawerOpen(false)} />
             </div>
-          )}
+          )
+        ) : (
+          <aside className={`${tablet ? 'w-48' : 'w-56'} shrink-0 border-r bg-slate-50`}>
+            <PageSidebar />
+          </aside>
+        )}
+        {tablet && <div className="shrink-0 border-r bg-white">{toolbar('vertical', true)}</div>}
+        <main className="flex min-w-0 flex-1 flex-col">
+          {!phone && !tablet && toolbar('horizontal', false)}
+          {pageBar}
           {page && (
             <PageViewport>
               {(zoom) => (
@@ -142,6 +182,7 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
               )}
             </PageViewport>
           )}
+          {phone && <div className="border-t">{toolbar('horizontal', true)}</div>}
         </main>
       </div>
     </div>
