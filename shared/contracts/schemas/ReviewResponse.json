@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/ReviewResponse.json",
+  "properties": {
+    "submission_id": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "title": "Submission Id"
+    },
+    "status": {
+      "$ref": "SubmissionStatus.json"
+    },
+    "verification": {
+      "anyOf": [
+        {
+          "$ref": "VerificationResult.json"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "review": {
+      "anyOf": [
+        {
+          "$ref": "ReviewResult.json"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ai_status": {
+      "$ref": "AiStatus.json"
+    },
+    "regions": {
+      "items": {
+        "$ref": "RecognizedRegion.json"
+      },
+      "type": "array",
+      "title": "Regions"
+    },
+    "step_to_region": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "type": "object",
+      "title": "Step To Region",
+      "description": "1-based step index (as string) -> region id"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "submission_id",
+    "status",
+    "verification",
+    "review",
+    "ai_status",
+    "regions"
+  ],
+  "title": "ReviewResponse"
+}

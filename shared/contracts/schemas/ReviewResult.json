@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/ReviewResult.json",
+  "properties": {
+    "status": {
+      "$ref": "Overall.json"
+    },
+    "first_error_step": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1.0
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "First Error Step"
+    },
+    "concept": {
+      "type": "string",
+      "maxLength": 64,
+      "title": "Concept"
+    },
+    "error_type": {
+      "anyOf": [
+        {
+          "$ref": "ErrorType.json"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "explanation": {
+      "type": "string",
+      "maxLength": 600,
+      "title": "Explanation"
+    },
+    "hint": {
+      "type": "string",
+      "maxLength": 400,
+      "title": "Hint"
+    },
+    "confidence": {
+      "type": "number",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Confidence"
+    },
+    "recommended_action": {
+      "$ref": "RecommendedAction.json"
+    },
+    "overridden": {
+      "type": "boolean",
+      "title": "Overridden",
+      "default": false
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "status",
+    "concept",
+    "explanation",
+    "hint",
+    "confidence",
+    "recommended_action"
+  ],
+  "title": "ReviewResult",
+  "description": "Validated LLM output. status/first_error_step are overridden by SymPy if they disagree."
+}

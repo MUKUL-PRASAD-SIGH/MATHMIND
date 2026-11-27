@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/ErrorType.json",
+  "type": "string",
+  "enum": [
+    "arithmetic_slip",
+    "algebraic_transformation",
+    "sign_error",
+    "formula_selection",
+    "domain_violation",
+    "missing_prerequisite",
+    "incomplete",
+    "other"
+  ],
+  "title": "ErrorType"
+}

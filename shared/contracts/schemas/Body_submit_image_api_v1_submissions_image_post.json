@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/Body_submit_image_api_v1_submissions_image_post.json",
+  "properties": {
+    "file": {
+      "type": "string",
+      "contentMediaType": "application/octet-stream",
+      "title": "File",
+      "description": "PNG/JPEG/WebP crop of the selected region"
+    },
+    "page_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Page Id"
+    },
+    "problem_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Problem Id"
+    },
+    "bbox": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Bbox",
+      "description": "Page-normalized JSON, e.g. {\"x\":0.1,\"y\":0.2,\"w\":0.5,\"h\":0.3}"
+    },
+    "stroke_ids": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Stroke Ids",
+      "description": "JSON array of stroke ids in the region"
+    }
+  },
+  "type": "object",
+  "required": [
+    "file"
+  ],
+  "title": "Body_submit_image_api_v1_submissions_image_post"
+}

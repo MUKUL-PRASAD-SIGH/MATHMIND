@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/StepVerdict.json",
+  "properties": {
+    "index": {
+      "type": "integer",
+      "minimum": 1.0,
+      "title": "Index",
+      "description": "1-based step index"
+    },
+    "latex": {
+      "type": "string",
+      "title": "Latex"
+    },
+    "verdict": {
+      "$ref": "Verdict.json"
+    },
+    "reason": {
+      "type": "string",
+      "title": "Reason"
+    },
+    "domain_warning": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Domain Warning"
+    },
+    "after_error": {
+      "type": "boolean",
+      "title": "After Error",
+      "default": false
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "index",
+    "latex",
+    "verdict",
+    "reason"
+  ],
+  "title": "StepVerdict"
+}

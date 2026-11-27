@@ -1,0 +1,14 @@
+{
+  "regions": [
+    {
+      "id": "rg_1",
+      "confirmed": true,
+      "corrected_latex": null
+    },
+    {
+      "id": "rg_2",
+      "confirmed": true,
+      "corrected_latex": "2x-3=10"
+    }
+  ]
+}

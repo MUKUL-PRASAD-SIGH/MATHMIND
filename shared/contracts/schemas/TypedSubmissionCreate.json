@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/TypedSubmissionCreate.json",
+  "properties": {
+    "page_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Page Id"
+    },
+    "problem_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Problem Id"
+    },
+    "steps": {
+      "items": {
+        "$ref": "TypedStep.json"
+      },
+      "type": "array",
+      "maxItems": 50,
+      "minItems": 1,
+      "title": "Steps"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "steps"
+  ],
+  "title": "TypedSubmissionCreate"
+}

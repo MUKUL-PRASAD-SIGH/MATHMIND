@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/RegionConfirmation.json",
+  "properties": {
+    "id": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "title": "Id"
+    },
+    "confirmed": {
+      "type": "boolean",
+      "title": "Confirmed",
+      "default": true
+    },
+    "corrected_latex": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 2000,
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Corrected Latex"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "id"
+  ],
+  "title": "RegionConfirmation"
+}

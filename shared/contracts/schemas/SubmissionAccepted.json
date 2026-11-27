@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/SubmissionAccepted.json",
+  "properties": {
+    "submission_id": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "title": "Submission Id"
+    },
+    "status": {
+      "$ref": "SubmissionStatus.json"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "submission_id",
+    "status"
+  ],
+  "title": "SubmissionAccepted"
+}

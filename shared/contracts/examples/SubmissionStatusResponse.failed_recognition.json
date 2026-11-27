@@ -1,0 +1,7 @@
+{
+  "submission_id": "sub_messy",
+  "input_mode": "image",
+  "status": "failed_recognition",
+  "message": "We couldn't read this region. Type it instead or re-crop.",
+  "updated_at": "2026-01-01T10:00:00Z"
+}

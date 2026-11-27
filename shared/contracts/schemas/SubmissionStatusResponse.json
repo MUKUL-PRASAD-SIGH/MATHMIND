@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/SubmissionStatusResponse.json",
+  "properties": {
+    "submission_id": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "title": "Submission Id"
+    },
+    "input_mode": {
+      "$ref": "InputMode.json"
+    },
+    "status": {
+      "$ref": "SubmissionStatus.json"
+    },
+    "message": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Message"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Updated At"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "submission_id",
+    "input_mode",
+    "status",
+    "updated_at"
+  ],
+  "title": "SubmissionStatusResponse"
+}

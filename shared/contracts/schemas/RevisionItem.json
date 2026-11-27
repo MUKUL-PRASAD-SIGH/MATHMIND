@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/RevisionItem.json",
+  "properties": {
+    "concept_id": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "title": "Concept Id"
+    },
+    "concept_name": {
+      "type": "string",
+      "title": "Concept Name"
+    },
+    "due_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Due At"
+    },
+    "reason": {
+      "type": "string",
+      "title": "Reason"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "concept_id",
+    "concept_name",
+    "due_at",
+    "reason"
+  ],
+  "title": "RevisionItem"
+}

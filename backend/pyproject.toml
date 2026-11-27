@@ -1,0 +1,46 @@
+[project]
+name = "mathmind-backend"
+version = "0.1.0"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+markers = [
+  "unit: fast, no I/O beyond memory",
+  "integration: API + DB + job runner (ML stubbed)",
+  "slow: takes more than a few seconds",
+  "ml: needs pix2tex / torch installed",
+  "llm: needs a running Ollama model",
+]
+filterwarnings = [
+  "ignore::DeprecationWarning:starlette.*",
+  "ignore::DeprecationWarning:fastapi.*",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "SIM", "RUF"]
+ignore = [
+  "B008",   # FastAPI Depends/Path defaults
+  "RUF012", # mutable class attrs (SQLModel)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106", "S311"]
+"scripts/**" = ["S603", "S607"]
+
+[tool.mypy]
+python_version = "3.11"
+plugins = ["pydantic.mypy"]
+ignore_missing_imports = true
+warn_unused_ignores = false
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = ["app.core.*", "app.schemas.*", "app.services.jobs.*"]
+disallow_untyped_defs = true
+disallow_incomplete_defs = true

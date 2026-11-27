@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/InputMode.json",
+  "type": "string",
+  "enum": [
+    "typed",
+    "image",
+    "ink"
+  ],
+  "title": "InputMode"
+}

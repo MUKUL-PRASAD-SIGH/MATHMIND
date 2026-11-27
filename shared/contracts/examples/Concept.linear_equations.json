@@ -1,0 +1,10 @@
+{
+  "id": "linear_equations",
+  "name": "Linear equations",
+  "domain": "algebra",
+  "description": "Equations of the form ax + b = c.",
+  "prerequisites": [
+    "algebraic_expressions",
+    "fractions"
+  ]
+}

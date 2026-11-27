@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/PageUpsert.json",
+  "properties": {
+    "chapter": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 200
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Chapter"
+    },
+    "order": {
+      "type": "integer",
+      "minimum": 0.0,
+      "title": "Order"
+    },
+    "title": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 200
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Title"
+    },
+    "background": {
+      "$ref": "Background.json",
+      "default": "ruled"
+    },
+    "bookmarked": {
+      "type": "boolean",
+      "title": "Bookmarked",
+      "default": false
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 0.0,
+      "title": "Version"
+    },
+    "strokes": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "Stroke.json"
+          },
+          "type": "array",
+          "maxItems": 5000
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Strokes"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "order",
+    "version"
+  ],
+  "title": "PageUpsert",
+  "description": "Client sends the version it last saw (0 for a new page). Mismatch -> 409."
+}

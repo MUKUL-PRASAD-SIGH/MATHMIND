@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/RecommendedAction.json",
+  "type": "string",
+  "enum": [
+    "continue",
+    "increase_difficulty",
+    "targeted_practice",
+    "prerequisite_review",
+    "worked_example",
+    "schedule_revision",
+    "ask_another_question"
+  ],
+  "title": "RecommendedAction"
+}

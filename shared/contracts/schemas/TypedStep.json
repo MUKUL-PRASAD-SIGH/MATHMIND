@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/TypedStep.json",
+  "properties": {
+    "latex": {
+      "type": "string",
+      "maxLength": 2000,
+      "minLength": 1,
+      "title": "Latex"
+    },
+    "region_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Region Id"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "latex"
+  ],
+  "title": "TypedStep"
+}

@@ -1,0 +1,127 @@
+{
+  "submission_id": "sub_r2b_image",
+  "status": "completed",
+  "verification": {
+    "steps": [
+      {
+        "index": 1,
+        "latex": "2(x-3)=10",
+        "verdict": "supported",
+        "reason": "Problem statement",
+        "domain_warning": null,
+        "after_error": false
+      },
+      {
+        "index": 2,
+        "latex": "2x-3=10",
+        "verdict": "incorrect",
+        "reason": "Solution set changed from {8} to {13/2}",
+        "domain_warning": null,
+        "after_error": false
+      },
+      {
+        "index": 3,
+        "latex": "2x=13",
+        "verdict": "supported",
+        "reason": "Equivalent to previous step",
+        "domain_warning": null,
+        "after_error": true
+      },
+      {
+        "index": 4,
+        "latex": "x=6.5",
+        "verdict": "supported",
+        "reason": "Equivalent to previous step",
+        "domain_warning": null,
+        "after_error": true
+      }
+    ],
+    "first_error_step": 2,
+    "overall": "incorrect",
+    "verifier_version": "sympy-1.14"
+  },
+  "review": {
+    "status": "incorrect",
+    "first_error_step": 2,
+    "concept": "linear_equations",
+    "error_type": "algebraic_transformation",
+    "explanation": "When expanding 2(x-3), the 2 multiplies both x and -3, giving 2x-6.",
+    "hint": "Multiply every term inside the bracket by 2.",
+    "confidence": 0.72,
+    "recommended_action": "targeted_practice",
+    "overridden": false
+  },
+  "ai_status": "ok",
+  "regions": [
+    {
+      "id": "rg_1",
+      "submission_id": "sub_r2b_image",
+      "line_index": 0,
+      "bbox": {
+        "x": 0.1,
+        "y": 0.2,
+        "w": 0.6,
+        "h": 0.08
+      },
+      "latex": "2(x-3)=10",
+      "confidence": 0.9,
+      "confirmed": true,
+      "corrected_latex": null,
+      "recognizer_version": "pix2tex-0.1.2"
+    },
+    {
+      "id": "rg_2",
+      "submission_id": "sub_r2b_image",
+      "line_index": 1,
+      "bbox": {
+        "x": 0.1,
+        "y": 0.29000000000000004,
+        "w": 0.6,
+        "h": 0.08
+      },
+      "latex": "2x-3=10",
+      "confidence": 0.9,
+      "confirmed": true,
+      "corrected_latex": null,
+      "recognizer_version": "pix2tex-0.1.2"
+    },
+    {
+      "id": "rg_3",
+      "submission_id": "sub_r2b_image",
+      "line_index": 2,
+      "bbox": {
+        "x": 0.1,
+        "y": 0.38,
+        "w": 0.6,
+        "h": 0.08
+      },
+      "latex": "2x=13",
+      "confidence": 0.9,
+      "confirmed": true,
+      "corrected_latex": null,
+      "recognizer_version": "pix2tex-0.1.2"
+    },
+    {
+      "id": "rg_4",
+      "submission_id": "sub_r2b_image",
+      "line_index": 3,
+      "bbox": {
+        "x": 0.1,
+        "y": 0.47000000000000003,
+        "w": 0.6,
+        "h": 0.08
+      },
+      "latex": "x=6.5",
+      "confidence": 0.9,
+      "confirmed": true,
+      "corrected_latex": null,
+      "recognizer_version": "pix2tex-0.1.2"
+    }
+  ],
+  "step_to_region": {
+    "1": "rg_1",
+    "2": "rg_2",
+    "3": "rg_3",
+    "4": "rg_4"
+  }
+}

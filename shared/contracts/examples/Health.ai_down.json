@@ -1,0 +1,7 @@
+{
+  "status": "ok",
+  "version": "0.1.0",
+  "ollama": "down",
+  "ollama_model": "qwen2.5:3b",
+  "pix2tex": "not_installed"
+}

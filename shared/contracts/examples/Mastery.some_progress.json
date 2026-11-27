@@ -1,0 +1,28 @@
+{
+  "items": [
+    {
+      "concept_id": "integer_arithmetic",
+      "concept_name": "Integer arithmetic",
+      "mastery": 0.82,
+      "attempts": 9,
+      "confidence_level": "high",
+      "last_practised_at": "2026-01-01T10:00:00Z"
+    },
+    {
+      "concept_id": "linear_equations",
+      "concept_name": "Linear equations",
+      "mastery": 0.46,
+      "attempts": 4,
+      "confidence_level": "medium",
+      "last_practised_at": "2026-01-01T10:00:00Z"
+    },
+    {
+      "concept_id": "quadratic_equations",
+      "concept_name": "Quadratic equations",
+      "mastery": 0.3,
+      "attempts": 1,
+      "confidence_level": "low",
+      "last_practised_at": "2026-01-01T10:00:00Z"
+    }
+  ]
+}
