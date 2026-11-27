@@ -62,6 +62,10 @@ export interface NotebookState {
   addStroke(stroke: Stroke): void
   /** Stroke eraser: soft-deletes strokes hit by the eraser path; one undo step per gesture. */
   erase(pageId: string, segment: Point[], phase: 'start' | 'move' | 'end'): void
+  /** Add an object (undoable unless `record` is false). */
+  addObject(object: NotebookObject, opts?: { record?: boolean }): void
+  /** Edit an object's content (solution steps, note text). MathLive/textarea own that undo. */
+  updateObjectPayload<O extends NotebookObject>(object: O, payload: O['payload']): void
   execute(cmd: Command): void
   undo(pageId?: string): void
   redo(pageId?: string): void
@@ -119,6 +123,8 @@ function saveMetaLater(pageId: string, changes: Partial<Page>): void {
 export function flushPendingMeta(): void {
   metaSavers.forEach((d) => d.flush())
 }
+
+let opening: { id: string; promise: Promise<void> } | null = null
 
 /** Strokes erased by the gesture in progress, per page. */
 const erasing = new Map<string, Stroke[]>()
@@ -220,6 +226,10 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
     persist(pageId, () => objectsRepo.update(id, { bbox }))
   }
 
+  /** Latest in-memory version of each object (falls back to the given copy). */
+  const current = (pageId: string, objs: NotebookObject[]) =>
+    objs.map((o) => get().objects[pageId]?.find((m) => m.id === o.id) ?? o)
+
   const apply = (cmd: Command, dir: 1 | -1) => {
     switch (cmd.type) {
       case 'addStrokes':
@@ -240,15 +250,20 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
         break
       case 'addObject':
         if (dir === 1) insertObjects(cmd.pageId, [cmd.object])
-        else removeObjects(cmd.pageId, [cmd.object.id])
+        else {
+          // Keep edits made since the object was added, so redo restores them.
+          cmd.object = current(cmd.pageId, [cmd.object])[0]
+          removeObjects(cmd.pageId, [cmd.object.id])
+        }
         break
       case 'deleteObjects':
-        if (dir === 1)
+        if (dir === 1) {
+          cmd.objects = current(cmd.pageId, cmd.objects)
           removeObjects(
             cmd.pageId,
             cmd.objects.map((o) => o.id),
           )
-        else insertObjects(cmd.pageId, cmd.objects)
+        } else insertObjects(cmd.pageId, cmd.objects)
         break
       case 'moveObjects':
         translate(cmd.pageId, cmd.strokeIds, cmd.objectIds, cmd.dx * dir, cmd.dy * dir)
@@ -257,6 +272,25 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
         setObjectBBox(cmd.pageId, cmd.id, dir === 1 ? cmd.to : cmd.from)
         break
     }
+  }
+
+  const openNotebookNow = async (id: string, pageId: string | null) => {
+    const notebook = await notebooksRepo.get(id)
+    if (!notebook) throw new Error(`Notebook ${id} not found`)
+    const pages = await pagesRepo.listByNotebook(id)
+    const top = pages.filter((p) => !p.parent_page_id)
+    const current = top.find((p) => p.id === pageId) ?? top[0] ?? null
+    history.clear()
+    set({
+      notebook,
+      pages,
+      currentPageId: current?.id ?? null,
+      activePageId: current?.id ?? null,
+      strokes: {},
+      objects: {},
+    })
+    rememberLast(id, current?.id ?? null)
+    if (current) await get().loadPage(current.id)
   }
 
   const bump = () => set((s) => ({ historyVersion: s.historyVersion + 1 }))
@@ -298,23 +332,14 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
       return notebook
     },
 
-    async openNotebook(id, pageId = null) {
-      const notebook = await notebooksRepo.get(id)
-      if (!notebook) throw new Error(`Notebook ${id} not found`)
-      const pages = await pagesRepo.listByNotebook(id)
-      const top = pages.filter((p) => !p.parent_page_id)
-      const current = top.find((p) => p.id === pageId) ?? top[0] ?? null
-      history.clear()
-      set({
-        notebook,
-        pages,
-        currentPageId: current?.id ?? null,
-        activePageId: current?.id ?? null,
-        strokes: {},
-        objects: {},
+    openNotebook(id, pageId = null) {
+      // Concurrent opens of the same notebook (e.g. React StrictMode effects) share one load.
+      if (opening?.id === id) return opening.promise
+      const promise = openNotebookNow(id, pageId).finally(() => {
+        if (opening?.promise === promise) opening = null
       })
-      rememberLast(id, current?.id ?? null)
-      if (current) await get().loadPage(current.id)
+      opening = { id, promise }
+      return promise
     },
 
     closeNotebook() {
@@ -456,6 +481,28 @@ export const useNotebookStore = create<NotebookState>()((set, get) => {
           bump()
         }
       }
+    },
+
+    addObject(object, { record = true } = {}) {
+      if (record) get().execute({ type: 'addObject', pageId: object.page_id, object })
+      else insertObjects(object.page_id, [object])
+    },
+
+    updateObjectPayload(object, payload) {
+      const pageId = object.page_id
+      set((s) => ({
+        objects: {
+          ...s.objects,
+          [pageId]: (s.objects[pageId] ?? []).map((o) =>
+            o.id === object.id ? ({ ...o, payload } as NotebookObject) : o,
+          ),
+        },
+      }))
+      persist(
+        pageId,
+        () => objectsRepo.update(object.id, { payload } as Partial<NotebookObject>),
+        `obj:${object.id}`,
+      )
     },
 
     execute(cmd) {

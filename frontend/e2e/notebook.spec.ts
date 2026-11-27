@@ -11,7 +11,7 @@ async function drawZigzag(page: Page) {
   const canvas = page.getByTestId('ink-canvas').first()
   const box = (await canvas.boundingBox())!
   const x0 = box.x + box.width * 0.6
-  const y0 = box.y + 120
+  const y0 = box.y + Math.min(box.height * 0.6, 500)
   await page.mouse.move(x0, y0)
   await page.mouse.down()
   for (let i = 1; i <= 12; i++) await page.mouse.move(x0 + i * 12, y0 + (i % 2 ? 30 : 0))

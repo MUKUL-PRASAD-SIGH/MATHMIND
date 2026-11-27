@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { SettingsMenu } from '../../components/SettingsMenu'
 import { useDeviceMode } from '../../services/device/capabilities'
 import { readLast } from '../autosave'
+import { newSolutionBlock, newTextNote } from '../objects'
 import type { Background } from '../model'
 import { SaveStatus } from '../SaveStatus'
 import { useNotebookStore } from '../store'
@@ -11,6 +12,9 @@ import { PageSidebar } from './PageSidebar'
 import { PageSurface } from './PageSurface'
 import { PageViewport } from './PageViewport'
 
+/** Pages that already got their automatic solution block this session. */
+const autoBlocked = new Set<string>()
+
 export function NotebookView({ notebookId }: { notebookId: string }) {
   const notebook = useNotebookStore((s) => s.notebook)
   const pages = useNotebookStore((s) => s.pages)
@@ -18,11 +22,16 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
   const openNotebook = useNotebookStore((s) => s.openNotebook)
   const goToPage = useNotebookStore((s) => s.goToPage)
   const updatePage = useNotebookStore((s) => s.updatePage)
+  const addObject = useNotebookStore((s) => s.addObject)
+  const loaded = useNotebookStore((s) =>
+    s.currentPageId ? !!s.strokes[s.currentPageId] && !!s.objects[s.currentPageId] : false,
+  )
   const [error, setError] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const { mode } = useDeviceMode()
   const phone = mode === 'phone'
   const tablet = mode === 'tablet'
+  const keyboardFirst = mode === 'laptop' || mode === 'hybrid'
 
   useEffect(() => {
     if (useNotebookStore.getState().notebook?.id === notebookId) return
@@ -30,6 +39,16 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
     const pageId = last?.notebookId === notebookId ? last.pageId : null
     openNotebook(notebookId, pageId).catch((e: unknown) => setError(String(e)))
   }, [notebookId, openNotebook])
+
+  // Laptop mode is keyboard-first: an empty page starts with a solution block (not an undo step).
+  useEffect(() => {
+    if (!keyboardFirst || !loaded || !currentPageId) return
+    const s = useNotebookStore.getState()
+    if (s.strokes[currentPageId].length > 0 || s.objects[currentPageId].length > 0) return
+    if (autoBlocked.has(currentPageId)) return
+    autoBlocked.add(currentPageId)
+    s.addObject(newSolutionBlock(currentPageId, []), { record: false })
+  }, [keyboardFirst, loaded, currentPageId])
 
   const top = pages.filter((p) => !p.parent_page_id).sort((a, b) => a.order - b.order)
   const index = top.findIndex((p) => p.id === currentPageId)
@@ -108,8 +127,27 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
     </div>
   )
 
+  const actionBtn = (large: boolean) =>
+    `${large ? 'min-h-11' : 'min-h-9'} rounded-md px-2 text-sm font-medium hover:bg-slate-200 focus-visible:outline-2 focus-visible:outline-blue-600`
+  const add = (factory: typeof newSolutionBlock | typeof newTextNote) => {
+    const pageId = useNotebookStore.getState().activePageId ?? currentPageId
+    if (!pageId) return
+    addObject(factory(pageId, useNotebookStore.getState().objects[pageId] ?? []))
+  }
   const toolbar = (orientation: 'horizontal' | 'vertical', large: boolean) => (
-    <Toolbar orientation={orientation} large={large} />
+    <Toolbar orientation={orientation} large={large}>
+      <button
+        type="button"
+        className={actionBtn(large)}
+        title="Add a typed solution block"
+        onClick={() => add(newSolutionBlock)}
+      >
+        ∑ Solution
+      </button>
+      <button type="button" className={actionBtn(large)} onClick={() => add(newTextNote)}>
+        ✎ Note
+      </button>
+    </Toolbar>
   )
 
   return (
@@ -168,6 +206,7 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
                     background={page.background}
                     zoom={zoom}
                     label={pageTitle}
+                    virtualKeyboard={!keyboardFirst}
                   />
                   {areas.map((a, i) => (
                     <PageSurface
@@ -176,6 +215,7 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
                       background={a.background}
                       zoom={zoom}
                       label={`${pageTitle} — working space ${i + 1}`}
+                      virtualKeyboard={!keyboardFirst}
                     />
                   ))}
                 </div>

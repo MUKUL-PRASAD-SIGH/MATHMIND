@@ -2,6 +2,7 @@ import { useDeviceSettings } from '../../services/device/capabilities'
 import { InkCanvas } from '../canvas/InkCanvas'
 import { PAGE_ASPECT, type Background, type InkTool, type Stroke } from '../model'
 import { useNotebookStore } from '../store'
+import { ObjectLayer } from './ObjectLayer'
 
 const EMPTY: Stroke[] = []
 
@@ -31,10 +32,18 @@ export interface PageSurfaceProps {
   /** Current zoom, used to keep the canvas backing store sharp. */
   zoom?: number
   label?: string
+  /** Show MathLive's on-screen keyboard (touch devices). */
+  virtualKeyboard?: boolean
 }
 
 /** One writable page: background, ink layers and (later) overlays, bound to the store. */
-export function PageSurface({ pageId, background = 'ruled', zoom = 1, label }: PageSurfaceProps) {
+export function PageSurface({
+  pageId,
+  background = 'ruled',
+  zoom = 1,
+  label,
+  virtualKeyboard = false,
+}: PageSurfaceProps) {
   const strokes = useNotebookStore((s) => s.strokes[pageId] ?? EMPTY)
   const tool = useNotebookStore((s) => s.tool)
   const settings = useNotebookStore((s) => s.toolSettings[isInk(s.tool) ? s.tool : 'pen'])
@@ -60,6 +69,7 @@ export function PageSurface({ pageId, background = 'ruled', zoom = 1, label }: P
         onStrokeComplete={addStroke}
         onErase={(segment, phase) => erase(pageId, segment, phase)}
       />
+      <ObjectLayer pageId={pageId} virtualKeyboard={virtualKeyboard} />
     </section>
   )
 }
