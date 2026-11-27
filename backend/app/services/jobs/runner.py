@@ -15,17 +15,18 @@ from pathlib import Path
 from typing import Any, Literal, TypeVar
 
 from sqlalchemy import Engine
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from app.core.config import Settings
-from app.models import ProblemRow, RecognizedRegionRow, SubmissionRow
+from app.models import PrerequisiteRow, ProblemRow, RecognizedRegionRow, SolutionStepRow, SubmissionRow
 from app.repositories import submissions as repo
 from app.schemas.common import BBox
-from app.schemas.review import ReviewResult
+from app.schemas.review import ErrorType, ReviewResult
 from app.schemas.submissions import AiStatus
 from app.schemas.submissions import SubmissionStatus as S
 from app.schemas.verification import Overall, StepVerdict, Verdict, VerificationResult
-from app.services.jobs import stages
+from app.services.jobs import learning, stages
+from app.services.jobs.completeness import mark_unfinished
 from app.services.jobs.state_machine import NON_TERMINAL, check_transition
 
 log = logging.getLogger(__name__)
@@ -205,40 +206,97 @@ class JobRunner:
         except Exception as exc:
             log.warning("verification failed for %s: %s", sub.id, exc)
             verification = all_inconclusive(steps, f"Verification could not complete ({type(exc).__name__})")
-        repo.save_evaluation(
-            s, sub.id, verification=verification.model_dump(mode="json"), review=None, ai_status=AiStatus.pending
-        )
-
-        self._move(s, sub, S.reasoning)
-        review_input = stages.ReviewInput(
-            problem=problem,
-            steps=steps,
-            verification=verification,
-            concept_id=problem.concept_id if problem else None,
-        )
+        unfinished = False
         try:
-            review: ReviewResult = self._call(stages.get_stage("reason"), self.settings.timeout_llm, review_input)
-            review = ReviewResult.model_validate(review.model_dump())  # re-validate at the boundary
-            review = enforce_sympy_authority(review, verification)
-        except stages.ReviewUnavailable as exc:
-            status = AiStatus.invalid_output if exc.invalid_output else AiStatus.unavailable
-            repo.save_evaluation(s, sub.id, ai_status=status)
-            self._move(s, sub, S.completed_without_ai, "AI explanation unavailable; showing verified checks only.")
-            return
-        except Exception as exc:
-            log.warning("reasoning failed for %s: %s", sub.id, exc)
-            repo.save_evaluation(s, sub.id, ai_status=AiStatus.unavailable)
-            self._move(s, sub, S.completed_without_ai, "AI explanation unavailable; showing verified checks only.")
-            return
-
+            verification, unfinished = self._call(
+                mark_unfinished, self.settings.timeout_verify, verification, steps, problem
+            )
+        except Exception as exc:  # the check only ever downgrades "correct"; without it, keep the verdicts
+            log.warning("completeness check failed for %s: %s", sub.id, exc)
         repo.save_evaluation(
             s,
             sub.id,
-            review=review.model_dump(mode="json"),
-            ai_status=AiStatus.ok,
-            model_version=self.settings.ollama_model,
+            verification=verification.model_dump(mode="json"),
+            review=None,
+            ai_status=AiStatus.pending,
+            model_version=None,
+            prompt_version=None,
         )
-        self._move(s, sub, S.completed)
+
+        self._move(s, sub, S.reasoning)
+        concept_id = problem.concept_id if problem else None
+        review_input = self._review_input(s, sub, problem, steps, step_rows, verification)
+        review: ReviewResult | None = None
+        try:
+            review = self._call(stages.get_stage("reason"), self.settings.timeout_llm, review_input)
+            review = ReviewResult.model_validate(review.model_dump())  # re-validate at the boundary
+            review = enforce_sympy_authority(review, verification)
+            if unfinished and review.error_type != ErrorType.incomplete:
+                review = review.model_copy(update={"error_type": ErrorType.incomplete})
+        except stages.ReviewUnavailable as exc:
+            ai_status = AiStatus.invalid_output if exc.invalid_output else AiStatus.unavailable
+        except Exception as exc:
+            log.warning("reasoning failed for %s: %s", sub.id, exc)
+            ai_status = AiStatus.unavailable
+        else:
+            ai_status = AiStatus.ok
+
+        if review is not None and ai_status == AiStatus.ok:
+            repo.save_evaluation(
+                s,
+                sub.id,
+                review=review.model_dump(mode="json"),
+                ai_status=ai_status,
+                model_version=self.settings.ollama_model,
+                prompt_version=self._prompt_version(),
+            )
+            self._move(s, sub, S.completed)
+        else:
+            prompt_version = self._prompt_version() if ai_status == AiStatus.invalid_output else None
+            repo.save_evaluation(s, sub.id, ai_status=ai_status, prompt_version=prompt_version)
+            self._move(s, sub, S.completed_without_ai, "AI explanation unavailable; showing verified checks only.")
+
+        error_type = ErrorType.incomplete if unfinished else (review.error_type if review is not None else None)
+        try:
+            learning.record_attempt(s, sub, concept_id, verification, error_type, unfinished)
+        except Exception:  # the review is stored and shown; mastery bookkeeping must not undo that
+            log.exception("could not record the learning event for %s", sub.id)
+            s.rollback()
+
+    @staticmethod
+    def _prompt_version() -> str:
+        from app.services.reasoning import PROMPT_VERSION  # lazy: the reasoning package imports this module
+
+        return PROMPT_VERSION
+
+    @staticmethod
+    def _review_input(
+        s: Session,
+        sub: SubmissionRow,
+        problem: stages.ProblemContext | None,
+        steps: list[str],
+        step_rows: list[SolutionStepRow],
+        verification: VerificationResult,
+    ) -> stages.ReviewInput:
+        concept_id = problem.concept_id if problem else None
+        prerequisites: list[str] = []
+        prior: list[str] = []
+        if concept_id:
+            prerequisites = [
+                r.requires_concept_id
+                for r in s.exec(select(PrerequisiteRow).where(PrerequisiteRow.concept_id == concept_id))
+            ]
+            prior = learning.prior_errors(s, sub.owner_id, concept_id)
+        corrected = {r.id: r.corrected_latex for r in repo.list_regions(s, sub.id) if r.corrected_latex}
+        return stages.ReviewInput(
+            problem=problem,
+            steps=steps,
+            verification=verification,
+            concept_id=concept_id,
+            prerequisites=sorted(prerequisites),
+            prior_errors=prior,
+            ocr_corrections={st.index: corrected[st.region_id] for st in step_rows if st.region_id in corrected},
+        )
 
     @staticmethod
     def _problem(s: Session, problem_id: str | None) -> stages.ProblemContext | None:
