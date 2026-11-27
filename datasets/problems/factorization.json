@@ -1,0 +1,37 @@
+[
+  {
+    "id": "fact-001",
+    "concept_id": "factorization",
+    "prompt_latex": "3x+6",
+    "expected_answer_latex": "3(x+2)",
+    "difficulty": 1
+  },
+  {
+    "id": "fact-002",
+    "concept_id": "factorization",
+    "prompt_latex": "x^{2}-5x+6",
+    "expected_answer_latex": "(x-2)(x-3)",
+    "difficulty": 2
+  },
+  {
+    "id": "fact-003",
+    "concept_id": "factorization",
+    "prompt_latex": "x^{2}-9",
+    "expected_answer_latex": "(x-3)(x+3)",
+    "difficulty": 3
+  },
+  {
+    "id": "fact-004",
+    "concept_id": "factorization",
+    "prompt_latex": "2x^{2}+7x+3",
+    "expected_answer_latex": "(2x+1)(x+3)",
+    "difficulty": 4
+  },
+  {
+    "id": "fact-005",
+    "concept_id": "factorization",
+    "prompt_latex": "3x^{3}-12x",
+    "expected_answer_latex": "3x(x-2)(x+2)",
+    "difficulty": 5
+  }
+]

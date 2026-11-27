@@ -1,0 +1,37 @@
+[
+  {
+    "id": "lin-001",
+    "concept_id": "linear_equations",
+    "prompt_latex": "x+3=7",
+    "expected_answer_latex": "x=4",
+    "difficulty": 1
+  },
+  {
+    "id": "lin-002",
+    "concept_id": "linear_equations",
+    "prompt_latex": "3x+5=20",
+    "expected_answer_latex": "x=5",
+    "difficulty": 2
+  },
+  {
+    "id": "lin-003",
+    "concept_id": "linear_equations",
+    "prompt_latex": "2(x-3)=10",
+    "expected_answer_latex": "x=8",
+    "difficulty": 3
+  },
+  {
+    "id": "lin-004",
+    "concept_id": "linear_equations",
+    "prompt_latex": "\\frac{x}{3}+2=5",
+    "expected_answer_latex": "x=9",
+    "difficulty": 4
+  },
+  {
+    "id": "lin-005",
+    "concept_id": "linear_equations",
+    "prompt_latex": "3(x+1)-2(x-4)=17",
+    "expected_answer_latex": "x=6",
+    "difficulty": 5
+  }
+]
