@@ -104,7 +104,7 @@ describe('image import and region export', () => {
   it('phone: Capture → crop → Use this keeps the photo and uploads the crop', async () => {
     const user = userEvent.setup()
     const pageId = await openNotebook('phone')
-    await user.click(screen.getByRole('button', { name: '📷 Capture' }))
+    await user.click(screen.getByRole('button', { name: 'Capture' }))
     await user.upload(screen.getByLabelText('Take a photo'), fixture())
 
     const dialog = await screen.findByRole('dialog', { name: 'Crop your photo' })

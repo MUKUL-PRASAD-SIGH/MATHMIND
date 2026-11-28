@@ -151,7 +151,7 @@ export function ConfirmPanel({ onRecrop }: { onRecrop?(): void }) {
         </button>
       </header>
 
-      <div className="flex-1 overflow-y-auto p-3">
+      <div className="min-h-0 flex-1 overflow-y-auto p-3">
         {regions.length === 0 ? (
           <p className="text-sm text-slate-700">
             We can't show the lines we read right now. You can re-crop the work or type the steps

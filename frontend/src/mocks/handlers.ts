@@ -224,7 +224,13 @@ export const handlers = [
   }),
 
   http.get(`${API}/concepts`, () => HttpResponse.json([example('Concept.linear_equations')])),
-  http.get(`${API}/problems`, () => HttpResponse.json([example('Problem.lin-003')])),
+  http.get(`${API}/problems`, () => {
+    const p = example<Schemas['Problem']>('Problem.lin-003')
+    return HttpResponse.json([
+      p,
+      { ...p, id: 'lin-004', prompt_latex: '3(x+2)=21', expected_answer_latex: 'x=5' },
+    ])
+  }),
   http.get(`${API}/learners/me/mastery`, () => HttpResponse.json(example('Mastery.some_progress'))),
   http.get(`${API}/learners/me/revision`, () => HttpResponse.json(example('Revision.one_due'))),
   http.get(`${API}/learners/me/next`, () =>

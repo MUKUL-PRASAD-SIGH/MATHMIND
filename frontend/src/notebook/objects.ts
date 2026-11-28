@@ -7,17 +7,27 @@ export function nextSlotY(objects: readonly NotebookObject[], height: number): n
   return Math.min(bottom + 0.02, Math.max(0, 1 - height))
 }
 
+/** A typed solution block. With a problem, step 1 restates it (dataset convention) and step 2 is empty. */
 export function newSolutionBlock(
   pageId: string,
   existing: readonly NotebookObject[],
+  problem?: { id: string; prompt_latex: string },
 ): EquationObject {
-  const h = 0.18
+  const h = problem ? 0.24 : 0.18
+  const steps = problem
+    ? [
+        { id: uuidv7(), latex: problem.prompt_latex },
+        { id: uuidv7(), latex: '' },
+      ]
+    : [{ id: uuidv7(), latex: '' }]
   return {
     id: uuidv7(),
     page_id: pageId,
     kind: 'equation',
     bbox: { x: 0.06, y: nextSlotY(existing, h), w: 0.7, h },
-    payload: { steps: [{ id: uuidv7(), latex: '' }] },
+    payload: problem
+      ? { steps, problemId: problem.id, problemPrompt: problem.prompt_latex }
+      : { steps },
     deleted: false,
   }
 }

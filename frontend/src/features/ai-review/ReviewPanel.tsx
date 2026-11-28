@@ -130,7 +130,7 @@ export function ReviewPanel() {
           ✕
         </button>
       </header>
-      <div className="flex-1 overflow-y-auto p-3">
+      <div className="min-h-0 flex-1 overflow-y-auto p-3">
         <ReviewBody key={cached.submission_id} response={cached.response} />
       </div>
     </aside>

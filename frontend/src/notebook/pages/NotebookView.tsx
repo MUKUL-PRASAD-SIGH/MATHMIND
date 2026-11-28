@@ -259,11 +259,15 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
 
   return (
     <div className="flex h-full flex-col" data-mode={mode}>
-      <header className="flex items-center gap-2 border-b bg-white px-3 py-2">
-        <a href="#/" className="rounded px-2 py-1 text-sm text-blue-700 hover:bg-slate-100">
-          ← Notebooks
+      <header className="flex items-center gap-1 border-b bg-white px-2 py-2 sm:gap-2 sm:px-3">
+        <a
+          href="#/"
+          className="shrink-0 rounded px-2 py-1 text-sm text-blue-700 hover:bg-slate-100"
+        >
+          <span aria-hidden>←</span>
+          <span className="sr-only sm:not-sr-only sm:ml-1">Notebooks</span>
         </a>
-        <h2 className="flex-1 truncate font-semibold">{notebook.title}</h2>
+        <h2 className="min-w-16 flex-1 truncate font-semibold">{notebook.title}</h2>
         <SaveStatus />
         {phone && (
           <button
@@ -271,7 +275,7 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
             aria-expanded={drawerOpen}
             aria-controls="page-drawer"
             onClick={() => setDrawerOpen((o) => !o)}
-            className="min-h-11 rounded px-3 text-sm hover:bg-slate-100"
+            className="min-h-11 shrink-0 rounded px-2 text-sm hover:bg-slate-100"
           >
             Pages
           </button>
@@ -280,13 +284,22 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
           <button
             type="button"
             onClick={() => captureInput.current?.click()}
-            className="min-h-11 rounded bg-blue-600 px-3 text-sm font-semibold text-white"
+            title="Capture a photo of your work"
+            className="min-h-11 min-w-11 shrink-0 rounded bg-blue-600 px-2 text-sm font-semibold text-white"
           >
-            📷 Capture
+            <span aria-hidden>📷</span>
+            <span className="sr-only">Capture</span>
           </button>
         )}
-        <a href="#/progress" className="rounded px-2 py-1 text-sm text-blue-700 hover:bg-slate-100">
-          Progress
+        <a
+          href="#/progress"
+          title="Progress"
+          className="shrink-0 rounded px-2 py-1 text-sm text-blue-700 hover:bg-slate-100"
+        >
+          <span aria-hidden className="sm:hidden">
+            📈
+          </span>
+          <span className="sr-only sm:not-sr-only">Progress</span>
         </a>
         <SettingsMenu mode={mode} />
       </header>

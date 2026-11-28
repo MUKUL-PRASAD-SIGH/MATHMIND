@@ -115,6 +115,11 @@ export const api = {
   getReview: (id: string) =>
     request<Schemas['ReviewResponse']>('GET', `/submissions/${enc(id)}/review`),
 
+  problems: (conceptId?: string) =>
+    request<Schemas['Problem'][]>(
+      'GET',
+      conceptId ? `/problems?concept_id=${enc(conceptId)}` : '/problems',
+    ),
   mastery: () => request<Schemas['Mastery']>('GET', '/learners/me/mastery'),
   revision: () => request<Schemas['Revision']>('GET', '/learners/me/revision'),
   next: () => request<Schemas['NextAction']>('GET', '/learners/me/next'),

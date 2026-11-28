@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import type { MathfieldElement } from 'mathlive'
 import { shownReview, useReviewStore } from '../../features/ai-review/reviewStore'
 import { SubmissionStatus } from '../../features/ai-review/SubmissionStatus'
+import { KatexMath } from '../../components/KatexMath'
 import { api } from '../../services/api/client'
 import { uuidv7 } from '../ids'
 import type { EquationObject, SolutionStep } from '../model'
@@ -206,6 +207,15 @@ export function SolutionBlock({
   return (
     <ObjectFrame object={object} title="Solution">
       <div className="flex flex-col gap-2 p-2">
+        {object.payload.problemPrompt && (
+          <p className="text-sm text-slate-700" data-testid="problem-prompt">
+            <span className="mr-1 font-semibold">Problem:</span>
+            <KatexMath
+              latex={object.payload.problemPrompt}
+              label={`Problem: ${object.payload.problemPrompt}`}
+            />
+          </p>
+        )}
         <ol aria-label="Solution steps" className="flex flex-col gap-1">
           {steps.map((step, index) => (
             <MathStep
@@ -226,12 +236,12 @@ export function SolutionBlock({
               key={s.label}
               type="button"
               className={btn}
-              aria-label={s.label}
               title={s.label}
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => insertSymbol(s.latex)}
             >
-              {s.text}
+              <span aria-hidden>{s.text}</span>
+              <span className="sr-only">{s.label}</span>
             </button>
           ))}
         </div>

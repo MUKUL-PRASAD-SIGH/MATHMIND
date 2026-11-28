@@ -183,13 +183,8 @@ export function PageViewport({ children }: PageViewportProps) {
         >
           −
         </button>
-        <button
-          type="button"
-          className={btn}
-          aria-label="Reset zoom"
-          onClick={() => zoomBy(1 / zoom)}
-        >
-          {Math.round(clampZoom(zoom) * 100)}%
+        <button type="button" className={btn} title="Reset zoom" onClick={() => zoomBy(1 / zoom)}>
+          {Math.round(clampZoom(zoom) * 100)}%<span className="sr-only"> (reset zoom)</span>
         </button>
         <button type="button" className={btn} aria-label="Zoom in" onClick={() => zoomBy(1.25)}>
           +

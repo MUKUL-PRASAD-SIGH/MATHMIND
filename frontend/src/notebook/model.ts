@@ -59,7 +59,8 @@ interface ObjectBase {
 
 export type EquationObject = ObjectBase & {
   kind: 'equation'
-  payload: { steps: SolutionStep[]; problemId?: string }
+  /** problemId links the attempt to the problem bank (mastery); the prompt is kept for offline display. */
+  payload: { steps: SolutionStep[]; problemId?: string; problemPrompt?: string }
 }
 export type TextObject = ObjectBase & { kind: 'text'; payload: { text: string } }
 export type ImageObject = ObjectBase & {

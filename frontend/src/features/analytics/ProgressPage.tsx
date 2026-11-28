@@ -3,6 +3,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { api, type Schemas } from '../../services/api/client'
 import { describeError } from '../ai-review/reviewStore'
 import { RECOMMENDED_ACTION } from '../ai-review/annotations'
+import { findProblem, startPractice } from './practice'
 
 type Entry = Schemas['MasteryEntry']
 
@@ -40,6 +41,20 @@ function useLoad<T>(fetcher: () => Promise<T>): Load<T> {
 export function ProgressPage() {
   const mastery = useLoad(api.mastery)
   const next = useLoad(api.next)
+  const [practiceError, setPracticeError] = useState<string | null>(null)
+
+  const practise = async (action: Schemas['NextAction']) => {
+    setPracticeError(null)
+    try {
+      const problem = action.problem_id
+        ? await findProblem(action.problem_id, action.concept_id)
+        : null
+      if (!problem) return setPracticeError('That problem is not in the problem bank.')
+      await startPractice(problem)
+    } catch (err) {
+      setPracticeError(describeError(err))
+    }
+  }
 
   if (mastery.state === 'loading') return <p className="p-6">Loading your progress…</p>
   if (mastery.state === 'error') {
@@ -138,6 +153,20 @@ export function ProgressPage() {
             {' — '}
             {next.data.reason}
           </p>
+          {next.data.problem_id && (
+            <button
+              type="button"
+              onClick={() => void practise(next.data)}
+              className="mt-2 min-h-9 rounded bg-blue-600 px-3 text-sm font-medium text-white hover:bg-blue-700"
+            >
+              Practise this problem
+            </button>
+          )}
+          {practiceError && (
+            <p role="alert" className="mt-1 text-sm text-red-700">
+              {practiceError}
+            </p>
+          )}
         </section>
       )}
     </div>
