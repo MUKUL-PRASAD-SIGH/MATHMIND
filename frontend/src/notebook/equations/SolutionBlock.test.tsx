@@ -86,8 +86,8 @@ describe('SolutionBlock', () => {
     const user = userEvent.setup()
     await user.click(await renderBlock())
     await user.keyboard('2x+3=7{Enter}2x=4')
-    await user.click(screen.getByRole('button', { name: 'Check these steps' }))
-    expect(await screen.findByText(/Sent for checking/)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Review my solution' }))
+    expect(await screen.findByRole('list', { name: 'Review progress' })).toBeInTheDocument()
     expect(sent).toEqual({
       page_id: pageId,
       problem_id: null,
@@ -103,7 +103,7 @@ describe('SolutionBlock', () => {
     const user = userEvent.setup()
     await user.click(await renderBlock())
     await user.keyboard('1=1')
-    await user.click(screen.getByRole('button', { name: 'Check these steps' }))
+    await user.click(screen.getByRole('button', { name: 'Review my solution' }))
     expect(await screen.findByText(/checker is offline/)).toBeInTheDocument()
   })
 })

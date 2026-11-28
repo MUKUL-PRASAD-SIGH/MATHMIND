@@ -1,13 +1,13 @@
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { useRef, useState } from 'react'
 import type { MathfieldElement } from 'mathlive'
+import { shownReview, useReviewStore } from '../../features/ai-review/reviewStore'
 import { SubmissionStatus } from '../../features/ai-review/SubmissionStatus'
-import { useSubmission } from '../../features/ai-review/useSubmission'
 import { api } from '../../services/api/client'
 import { uuidv7 } from '../ids'
 import type { EquationObject, SolutionStep } from '../model'
 import { ObjectFrame } from '../pages/ObjectFrame'
 import { useNotebookStore } from '../store'
-import { loadMathLive } from './mathlive'
+import { MathField } from './MathField'
 
 const SYMBOLS: { label: string; text: string; latex: string }[] = [
   { label: 'Fraction', text: 'a⁄b', latex: '\\frac{#@}{#?}' },
@@ -23,76 +23,50 @@ const SYMBOLS: { label: string; text: string; latex: string }[] = [
   { label: 'Matrix', text: '[ ]', latex: '\\begin{pmatrix}#0 & #?\\\\ #? & #?\\end{pmatrix}' },
 ]
 
+const VERDICT_MARK: Record<string, { icon: string; label: string; cls: string }> = {
+  supported: { icon: '✓', label: 'supported', cls: 'text-green-700' },
+  incorrect: { icon: '✗', label: 'not supported by the previous step', cls: 'text-red-700' },
+  inconclusive: { icon: '?', label: 'inconclusive', cls: 'text-slate-500' },
+}
+
 interface StepProps {
   step: SolutionStep
   index: number
   virtualKeyboard: boolean
+  verdict?: string
   onChange(id: string, latex: string): void
   onKey(e: KeyboardEvent, id: string, mf: MathfieldElement): void
   register(id: string, mf: MathfieldElement | null): void
 }
 
-/** One `<math-field>`, created imperatively once MathLive has loaded. */
-function MathStep(props: StepProps) {
-  const host = useRef<HTMLDivElement>(null)
-  const field = useRef<MathfieldElement | null>(null)
-  const latest = useRef(props)
-  useLayoutEffect(() => {
-    latest.current = props
-  })
-  const { step, index } = props
-
-  useEffect(() => {
-    let cancelled = false
-    let mf: MathfieldElement | null = null
-    const onInput = () => mf && latest.current.onChange(step.id, mf.value)
-    const onKeyDown = (e: KeyboardEvent) => mf && latest.current.onKey(e, step.id, mf)
-    void loadMathLive().then((MF) => {
-      if (cancelled || !host.current) return
-      mf = new MF()
-      mf.value = latest.current.step.latex
-      mf.setAttribute('aria-label', `Step ${latest.current.index + 1}`)
-      mf.mathVirtualKeyboardPolicy = latest.current.virtualKeyboard ? 'auto' : 'manual'
-      mf.className = 'block w-full rounded border border-slate-200 px-1 text-lg'
-      mf.addEventListener('input', onInput)
-      mf.addEventListener('keydown', onKeyDown, { capture: true })
-      host.current.appendChild(mf)
-      field.current = mf
-      latest.current.register(step.id, mf)
-    })
-    return () => {
-      cancelled = true
-      mf?.removeEventListener('input', onInput)
-      mf?.removeEventListener('keydown', onKeyDown, { capture: true })
-      mf?.remove()
-      field.current = null
-      latest.current.register(step.id, null)
-    }
-  }, [step.id])
-
-  useEffect(() => {
-    field.current?.setAttribute('aria-label', `Step ${index + 1}`)
-  }, [index])
-
-  // External changes (e.g. undo of the whole block) flow back into an unfocused field.
-  useEffect(() => {
-    const mf = field.current
-    if (mf && mf.value !== step.latex && document.activeElement !== mf) mf.value = step.latex
-  }, [step.latex])
-
+function MathStep({ step, index, virtualKeyboard, verdict, onChange, onKey, register }: StepProps) {
+  const mark = verdict ? VERDICT_MARK[verdict] : undefined
   return (
     <li className="flex items-center gap-2">
-      <span aria-hidden className="w-6 shrink-0 text-right text-xs text-slate-400">
+      <span aria-hidden className="w-6 shrink-0 text-right text-xs text-slate-500">
         {index + 1}
       </span>
-      <div ref={host} className="min-w-0 flex-1" />
+      <MathField
+        value={step.latex}
+        label={`Step ${index + 1}`}
+        virtualKeyboard={virtualKeyboard}
+        onChange={(latex) => onChange(step.id, latex)}
+        onKeyDown={(e, mf) => onKey(e, step.id, mf)}
+        onMount={(mf) => register(step.id, mf)}
+      />
+      {mark && (
+        <span className={`w-5 shrink-0 text-center font-bold ${mark.cls}`} title={mark.label}>
+          <span aria-hidden>{mark.icon}</span>
+          <span className="sr-only">{`Step ${index + 1}: ${mark.label}`}</span>
+        </span>
+      )}
     </li>
   )
 }
 
 /**
  * Keyboard-first solution: one MathLive field per step. Enter adds a step below, Backspace on
- * an empty step removes it, ↑/↓ move between steps. "Check these steps" submits them.
+ * an empty step removes it, ↑/↓ move between steps. "Review my solution" submits them.
  */
 export function SolutionBlock({
   object,
@@ -105,8 +79,28 @@ export function SolutionBlock({
   const fields = useRef(new Map<string, MathfieldElement>())
   const lastFocused = useRef<string | null>(null)
   const pendingFocus = useRef<string | null>(null)
-  const check = useSubmission()
+  /** Keys typed after Enter, before the new step's field exists, go into the new step. */
+  const typedAhead = useRef('')
+  const [hint, setHint] = useState<string | null>(null)
   const steps = object.payload.steps
+  const active = useReviewStore((s) => (s.active?.origin === object.id ? s.active : null))
+  const startReview = useReviewStore((s) => s.start)
+  const [submitted, setSubmitted] = useState<{ ids: string[]; submissionId: string | null }>({
+    ids: [],
+    submissionId: null,
+  })
+  const result = useReviewStore((s) => {
+    if (active?.result) return active.result
+    const cached = submitted.submissionId
+      ? shownReview({ byPage: s.byPage, shownId: submitted.submissionId })
+      : null
+    return cached?.response ?? null
+  })
+  const verdicts = new Map<string, string>()
+  result?.verification?.steps.forEach((v) => {
+    const id = submitted.ids[v.index - 1]
+    if (id) verdicts.set(id, v.verdict)
+  })
 
   /** Latest copy from the store, so rapid key presses never work on a stale payload. */
   const latest = (): EquationObject =>
@@ -132,6 +126,11 @@ export function SolutionBlock({
       if (pendingFocus.current === id) {
         pendingFocus.current = null
         mf.focus()
+        if (typedAhead.current) {
+          mf.executeCommand(['insert', typedAhead.current])
+          typedAhead.current = ''
+          onChange(id, mf.value)
+        }
       }
     } else fields.current.delete(id)
   }
@@ -141,6 +140,12 @@ export function SolutionBlock({
 
   const onKey = (e: KeyboardEvent, id: string, mf: MathfieldElement) => {
     if (e.altKey || e.ctrlKey || e.metaKey) return
+    if (pendingFocus.current && e.key.length === 1) {
+      e.preventDefault()
+      e.stopPropagation()
+      typedAhead.current += e.key
+      return
+    }
     const list = latest().payload.steps
     const i = list.findIndex((s) => s.id === id)
     const stop = () => {
@@ -177,14 +182,22 @@ export function SolutionBlock({
 
   const submit = () => {
     const filled = latest().payload.steps.filter((s) => s.latex.trim() !== '')
-    if (filled.length === 0) return check.fail('Write at least one step first.')
-    void check.submit(() =>
-      api.submitTyped({
-        page_id: object.page_id,
-        problem_id: object.payload.problemId ?? null,
-        steps: filled.map((s) => ({ latex: s.latex, region_id: null })),
-      }),
-    )
+    if (filled.length === 0) return setHint('Write at least one step first.')
+    setHint(null)
+    setSubmitted({ ids: filled.map((s) => s.id), submissionId: null })
+    void startReview({
+      pageId: object.page_id,
+      origin: object.id,
+      send: async () => {
+        const res = await api.submitTyped({
+          page_id: object.page_id,
+          problem_id: object.payload.problemId ?? null,
+          steps: filled.map((s) => ({ latex: s.latex, region_id: null })),
+        })
+        setSubmitted((prev) => ({ ...prev, submissionId: res.submission_id }))
+        return res
+      },
+    })
   }
 
   const btn =
@@ -200,6 +213,7 @@ export function SolutionBlock({
               step={step}
               index={index}
               virtualKeyboard={virtualKeyboard}
+              verdict={verdicts.get(step.id)}
               onChange={onChange}
               onKey={onKey}
               register={register}
@@ -225,12 +239,18 @@ export function SolutionBlock({
           <button
             type="button"
             onClick={submit}
-            disabled={check.state.kind === 'sending'}
+            disabled={active?.phase === 'sending' || active?.phase === 'working'}
             className="min-h-9 rounded bg-blue-600 px-3 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
           >
-            Check these steps
+            Review my solution
           </button>
-          <SubmissionStatus state={check.state} />
+          {hint ? (
+            <span role="status" className="text-sm text-red-700">
+              {hint}
+            </span>
+          ) : (
+            active && <SubmissionStatus review={active} />
+          )}
         </div>
       </div>
     </ObjectFrame>

@@ -156,7 +156,14 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Review */
+        /**
+         * Get Review
+         * @description The finished review, or, while recognition is being checked, just the recognized regions.
+         *
+         *     In `awaiting_confirmation` / `failed_recognition` the response carries the regions to confirm
+         *     with `verification` and `review` set to null and `ai_status: "pending"` (spec 8.3: no verdict
+         *     before the learner confirms what was read). Any other unfinished state is 404 `review_not_ready`.
+         */
         get: operations["get_review_api_v1_submissions__submission_id__review_get"];
         put?: never;
         /**
@@ -255,6 +262,49 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/learners/me/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export My Data
+         * @description Everything the server stores about the current learner, as one JSON document.
+         */
+        get: operations["export_my_data_api_v1_learners_me_export_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/learners/me/data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete My Data
+         * @description Permanently delete the learner's notebooks, submissions, uploads and progress.
+         *
+         *     Concepts and problems are shared content and stay. Refused while a submission is still processing,
+         *     so a background job never writes into rows that were just deleted.
+         */
+        delete: operations["delete_my_data_api_v1_learners_me_data_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -328,6 +378,16 @@ export interface components {
             /** Regions */
             regions: components["schemas"]["RegionConfirmation"][];
         };
+        /** DeletionSummary */
+        DeletionSummary: {
+            /**
+             * Deleted
+             * @description Rows removed per table, plus `upload_files`
+             */
+            deleted: {
+                [key: string]: number;
+            };
+        };
         /** ErrorDetail */
         ErrorDetail: {
             /** Code */
@@ -348,6 +408,113 @@ export interface components {
          * @enum {string}
          */
         ErrorType: "arithmetic_slip" | "algebraic_transformation" | "sign_error" | "formula_selection" | "domain_violation" | "missing_prerequisite" | "incomplete" | "other";
+        /** ExportedLearningEvent */
+        ExportedLearningEvent: {
+            /** Id */
+            id: string;
+            /** Kind */
+            kind: string;
+            /** Concept Id */
+            concept_id: string | null;
+            /** Submission Id */
+            submission_id: string | null;
+            /** Score */
+            score: number | null;
+            /** Hints Used */
+            hints_used: number;
+            /** Error Type */
+            error_type: string | null;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+        };
+        /** ExportedNotebook */
+        ExportedNotebook: {
+            /** Id */
+            id: string;
+            /** Title */
+            title: string;
+            /** Domain */
+            domain: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Pages */
+            pages: components["schemas"]["ExportedPage"][];
+        };
+        /** ExportedObject */
+        ExportedObject: {
+            /** Id */
+            id: string;
+            /** Kind */
+            kind: string;
+            bbox: components["schemas"]["BBox"];
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+        };
+        /** ExportedPage */
+        ExportedPage: {
+            /** Id */
+            id: string;
+            /** Notebook Id */
+            notebook_id: string;
+            /** Chapter */
+            chapter: string | null;
+            /** Order */
+            order: number;
+            /** Title */
+            title: string | null;
+            background: components["schemas"]["Background"];
+            /** Bookmarked */
+            bookmarked: boolean;
+            /** Version */
+            version: number;
+            /** Stroke Count */
+            stroke_count: number;
+            /**
+             * Strokes
+             * @description Includes soft-deleted strokes (deleted=true)
+             */
+            strokes: components["schemas"]["Stroke"][];
+            /** Objects */
+            objects: components["schemas"]["ExportedObject"][];
+        };
+        /** ExportedSubmission */
+        ExportedSubmission: {
+            /** Id */
+            id: string;
+            /** Page Id */
+            page_id: string | null;
+            /** Problem Id */
+            problem_id: string | null;
+            input_mode: components["schemas"]["InputMode"];
+            status: components["schemas"]["SubmissionStatus"];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Has Source Image */
+            has_source_image: boolean;
+            /** Steps */
+            steps: string[];
+            /** Regions */
+            regions: components["schemas"]["RecognizedRegion"][];
+            verification: components["schemas"]["VerificationResult"] | null;
+            review: components["schemas"]["ReviewResult"] | null;
+            ai_status: components["schemas"]["AiStatus"];
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -372,6 +539,30 @@ export interface components {
          * @enum {string}
          */
         InputMode: "typed" | "image" | "ink";
+        /** LearnerExport */
+        LearnerExport: {
+            /**
+             * Format Version
+             * @default 1
+             * @constant
+             */
+            format_version: 1;
+            /** App Version */
+            app_version: string;
+            /**
+             * Exported At
+             * Format: date-time
+             */
+            exported_at: string;
+            /** Notebooks */
+            notebooks: components["schemas"]["ExportedNotebook"][];
+            /** Submissions */
+            submissions: components["schemas"]["ExportedSubmission"][];
+            /** Mastery */
+            mastery: components["schemas"]["MasteryEntry"][];
+            /** Learning Events */
+            learning_events: components["schemas"]["ExportedLearningEvent"][];
+        };
         /** Mastery */
         Mastery: {
             /** Items */
@@ -750,6 +941,15 @@ export interface operations {
                     "application/json": components["schemas"]["Health"];
                 };
             };
+            /** @description Malformed request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     list_notebooks_api_v1_notebooks_get: {
@@ -768,6 +968,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Notebook"][];
+                };
+            };
+            /** @description Malformed request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };
@@ -792,6 +1001,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Notebook"];
+                };
+            };
+            /** @description Malformed request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not Found */
@@ -841,6 +1059,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Page"][];
+                };
+            };
+            /** @description Malformed request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not Found */
@@ -897,6 +1124,15 @@ export interface operations {
                     "application/json": components["schemas"]["Page"];
                 };
             };
+            /** @description Malformed request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Not Found */
             404: {
                 headers: {
@@ -946,6 +1182,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SubmissionAccepted"];
+                };
+            };
+            /** @description Malformed request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not Found */
@@ -1017,6 +1262,15 @@ export interface operations {
                     "application/json": components["schemas"]["SubmissionAccepted"];
                 };
             };
+            /** @description Malformed request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Not Found */
             404: {
                 headers: {
@@ -1082,6 +1336,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SubmissionStatusResponse"];
+                };
+            };
+            /** @description Malformed request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not Found */
@@ -1155,6 +1418,15 @@ export interface operations {
                     "application/json": components["schemas"]["SubmissionAccepted"];
                 };
             };
+            /** @description Malformed request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Not Found */
             404: {
                 headers: {
@@ -1220,6 +1492,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReviewResponse"];
+                };
+            };
+            /** @description Malformed request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Not Found */
@@ -1289,6 +1570,15 @@ export interface operations {
                     "application/json": components["schemas"]["SubmissionAccepted"];
                 };
             };
+            /** @description Malformed request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Not Found */
             404: {
                 headers: {
@@ -1354,6 +1644,15 @@ export interface operations {
                     "application/json": components["schemas"]["Concept"][];
                 };
             };
+            /** @description Malformed request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     list_problems_api_v1_problems_get: {
@@ -1374,6 +1673,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Problem"][];
+                };
+            };
+            /** @description Malformed request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Validation Error */
@@ -1405,6 +1713,15 @@ export interface operations {
                     "application/json": components["schemas"]["Mastery"];
                 };
             };
+            /** @description Malformed request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     my_revision_api_v1_learners_me_revision_get: {
@@ -1423,6 +1740,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Revision"];
+                };
+            };
+            /** @description Malformed request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };
@@ -1445,6 +1771,15 @@ export interface operations {
                     "application/json": components["schemas"]["NextAction"];
                 };
             };
+            /** @description Malformed request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Not Found */
             404: {
                 headers: {
@@ -1452,6 +1787,85 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    export_my_data_api_v1_learners_me_export_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LearnerExport"];
+                };
+            };
+            /** @description Malformed request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    delete_my_data_api_v1_learners_me_data_delete: {
+        parameters: {
+            query?: {
+                /** @description Must be true. Guards against an accidental call. */
+                confirm?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeletionSummary"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

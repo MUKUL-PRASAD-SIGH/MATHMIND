@@ -1,3 +1,4 @@
+import { AnnotationLayer } from '../../features/ai-review/AnnotationLayer'
 import { useDeviceSettings } from '../../services/device/capabilities'
 import { useMemo, useState } from 'react'
 import { InkCanvas } from '../canvas/InkCanvas'
@@ -40,7 +41,7 @@ export interface PageSurfaceProps {
   onReview?(kind: ReviewKind): void
 }
 
-/** One writable page: background, ink layers and (later) overlays, bound to the store. */
+/** One writable page: background, ink layers, objects, review annotations and the selection. */
 export function PageSurface({
   pageId,
   background = 'ruled',
@@ -84,6 +85,7 @@ export function PageSurface({
         moving={moving}
       />
       <ObjectLayer pageId={pageId} virtualKeyboard={virtualKeyboard} />
+      <AnnotationLayer pageId={pageId} />
       <SelectionOverlay pageId={pageId} onPreview={setPreview} onReview={onReview} />
     </section>
   )

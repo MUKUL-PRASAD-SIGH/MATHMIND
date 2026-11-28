@@ -1,12 +1,18 @@
 import { cropImage, exportRegion, newImageObject, prepareImage } from '../../notebook/images/image'
 import type { BBox, ImageObject } from '../../notebook/model'
 import { getSelection, useNotebookStore } from '../../notebook/store'
-import { api } from '../../services/api/client'
+import { api, type Schemas } from '../../services/api/client'
+
+export interface SentRegion {
+  accepted: Schemas['SubmissionAccepted']
+  /** The PNG that was uploaded and its page bbox, for recognition thumbnails. */
+  upload: { blob: Blob; bbox: BBox }
+}
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
 
 /** Crop the current selection to a PNG and upload it with its bbox and stroke ids. */
-export async function sendSelectionForReview() {
+export async function sendSelectionForReview(): Promise<SentRegion> {
   const sel = getSelection()
   if (!sel) throw new Error('Select some work with the lasso first.')
   const state = useNotebookStore.getState()
@@ -16,14 +22,24 @@ export async function sendSelectionForReview() {
     (o): o is ImageObject => o.kind === 'image',
   )
   const file = await exportRegion(sel.bbox, { strokes, images })
-  return api.submitImage({ file, pageId: sel.pageId, bbox: sel.bbox, strokeIds: sel.strokeIds })
+  const accepted = await api.submitImage({
+    file,
+    pageId: sel.pageId,
+    bbox: sel.bbox,
+    strokeIds: sel.strokeIds,
+  })
+  return { accepted, upload: { blob: file, bbox: sel.bbox } }
 }
 
 /**
  * Phone capture: keep the photo on the page (original untouched), then upload the cropped
  * part with its page-normalized bbox.
  */
-export async function sendCaptureForReview(file: File, crop: BBox, pageId: string) {
+export async function sendCaptureForReview(
+  file: File,
+  crop: BBox,
+  pageId: string,
+): Promise<SentRegion> {
   const prepared = await prepareImage(file)
   const state = useNotebookStore.getState()
   const obj = newImageObject(pageId, state.objects[pageId] ?? [], prepared)
@@ -36,5 +52,6 @@ export async function sendCaptureForReview(file: File, crop: BBox, pageId: strin
     w: clamp01(crop.w * b.w),
     h: clamp01(crop.h * b.h),
   }
-  return api.submitImage({ file: png, pageId, bbox })
+  const accepted = await api.submitImage({ file: png, pageId, bbox })
+  return { accepted, upload: { blob: png, bbox } }
 }
