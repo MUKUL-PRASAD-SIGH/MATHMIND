@@ -4,10 +4,17 @@ This log is required by the hackathon rubric (A4). **Everyone adds rows as they 
 
 ## Summary (filled in T8.3)
 
-- **Development tools used:** _e.g. Claude Code, Copilot, Cursor_
-- **Kinds of help:** _scaffolding, parser code, test generation, prompt drafting, UI components, docs_
-- **How outputs were verified:** _unit/property tests, manual review, labelled evaluation, browser checks_
-- **Runtime AI in the product:** pix2tex (local OCR), Ollama + `<model>` (local explanations). No paid APIs. SymPy is the correctness authority.
+_Draft by M1 (2026-11-28); M4 finalises in T8.3._
+
+- **Development tools used:** Claude Code (an AI coding assistant), commits marked with a `Co-Authored-By: Claude` trailer.
+- **Kinds of help:** backend and frontend code, Docker setup, the evaluation harness, the reviewer prompt, Playwright
+  tests and evidence capture, and docs.
+- **How outputs were verified:** pytest / Vitest / Playwright suites in CI, axe accessibility checks, the labelled
+  evaluation (120 items), screenshots inspected by a person, and AI explanations read against the maths. Each row below
+  lists what the check found and what changed.
+- **Runtime AI in the product:** Ollama + `qwen2.5:3b` (local explanations, prompt `reviewer_v2`) and pix2tex (local
+  OCR, optional install). No paid APIs. SymPy is the correctness authority; model output is schema-validated and never
+  executed.
 
 ## Log
 
@@ -23,6 +30,9 @@ This log is required by the hackathon rubric (A4). **Everyone adds rows as they 
 | 2026-11-28 | M3 | T7.2 | AI coding assistant | `ai/evaluation/` harness, metric functions, unit tests, first reports | 9 unit tests on tiny fixtures; ran on all 120 labelled items | Tests caught the threshold-tuning rounding back onto the misread confidence (would let that line skip confirmation); changed to the next observed confidence |
 | 2026-11-28 | M4 / M1 | T6.6, T7.7, T7.3 | AI coding assistant | Progress page, practise-this-problem flow, export/delete-my-data UI, 25 Playwright specs | Component tests; real-backend E2E (practise → solve → attempts +1) | Building the mastery E2E showed there was no way in the UI to attach a problem to a solution block, so mastery could never change; added the practise flow |
 | 2026-11-28 | M1 | T7.5 | AI coding assistant | Playwright evidence capture (`r2r3.evidence.spec.ts`), evidence notes | Ran against docker compose; screenshots inspected by eye; AI explanations read against the maths | Human check of R2-D found a wrong LLM explanation (verdict correct) — recorded, not hidden. Capturing R3-1 exposed a revoked blob URL in the confirm panel; fixed. Two test bugs (bare `/` reopens the last notebook; `count()` not waiting after reload) fixed |
+| 2026-11-28 | M1 | T8.4 | AI coding assistant | Automated demo dry run (`e2e/demo.evidence.spec.ts`), run-sheet findings, seed script in the image | Ran against docker compose; timings and screenshots checked | Found the AI text wrong on the demo problem, review 30–114 s vs a 45 s slot, the seeded notebook invisible in the browser and mastery not moving from a free block; run sheet changed for each |
+| 2026-11-28 | M1 / M3 | T5.2 | AI coding assistant | `reviewer_v2` prompt + `checker_facts` (SymPy-expanded steps) and unit tests | 5 unit tests; live check on R2-B / R2-D; 40-item re-evaluation | R2-B explanation correct 2/2 (was wrong); R2-D vague but no longer wrong. v1 kept for reproducibility. Needs M3 review |
+| 2026-11-28 | M1 | T8.2 | AI coding assistant | README status / measured results / quick start, risks update | Every number checked against the linked report; relative links checked by script | Removed planning-only wording; device claims limited to what was tested |
 | | | | | | | |
 
 ### Categories to cover (from spec §14.5)
