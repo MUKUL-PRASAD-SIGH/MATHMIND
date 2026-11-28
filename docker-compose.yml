@@ -2,6 +2,8 @@
 #   docker compose up --build                 → web app on http://localhost:8080 (typed + verified review, no AI text)
 #   docker compose --profile ai up --build    → + local Ollama; then pull a model once:
 #       docker compose exec ollama ollama pull qwen2.5:3b
+#     and warm it before a demo (the first load can take over a minute on CPU):
+#       docker compose exec ollama ollama run qwen2.5:3b "hi"
 #   WITH_ML=true docker compose up --build    → backend image includes pix2tex (CPU, large download)
 # Non-Docker path: see README "Run locally".
 name: mathmind
@@ -20,6 +22,8 @@ services:
       OLLAMA_URL: http://ollama:11434
       OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:3b}
       OCR_CONFIDENCE_THRESHOLD: ${OCR_CONFIDENCE_THRESHOLD:-0.75}
+      # CPU inference in a container is slower than native Ollama; the first call also loads the model.
+      TIMEOUT_LLM: ${TIMEOUT_LLM:-120}
     volumes:
       - backend-data:/app/backend/data
     ports:
