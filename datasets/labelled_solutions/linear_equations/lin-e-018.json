@@ -1,0 +1,23 @@
+{
+  "id": "lin-e-018",
+  "concept_id": "linear_equations",
+  "problem_latex": "3(x+1)-2(x-4)=17",
+  "reference_solution": [
+    "3(x+1)-2(x-4)=17",
+    "3x+3-2x+8=17",
+    "x+11=17",
+    "x=6"
+  ],
+  "learner_attempt": [
+    "3(x+1)-2(x-4)=17",
+    "3x+3-2x+8=17",
+    "x+11=17",
+    "x=5"
+  ],
+  "expected_correct": false,
+  "first_error_step": 4,
+  "error_type": "arithmetic_slip",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "17-11 is 6, not 5."
+}

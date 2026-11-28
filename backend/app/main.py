@@ -8,14 +8,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session
 
-from app.api.v1 import health, learners, notebooks, submissions
+from app.api.v1 import health, learners, notebooks, privacy, submissions
 from app.core.config import Settings, get_settings
 from app.core.db import init_db, make_engine
 from app.core.errors import install_error_handlers
 from app.core.logging import configure_logging
 from app.repositories.learning import get_or_create_default_user
+from app.schemas.common import ErrorResponse
 from app.seed import seed
 from app.services.jobs.runner import JobRunner
+from app.services.jobs.stages import install_real_stages
 
 log = logging.getLogger(__name__)
 API_PREFIX = "/api/v1"
@@ -53,6 +55,8 @@ def create_app(settings: Settings | None = None, *, synchronous_jobs: bool = Fal
         description="Intelligent mathematics notebook — local-first API. Contract: shared/contracts/.",
         lifespan=lifespan,
         separate_input_output_schemas=False,
+        # Any endpoint can get a body it cannot parse at all (e.g. not UTF-8): documented once here.
+        responses={400: {"model": ErrorResponse, "description": "Malformed request"}},
     )
     app.state.settings = settings
     app.add_middleware(
@@ -62,9 +66,10 @@ def create_app(settings: Settings | None = None, *, synchronous_jobs: bool = Fal
         allow_headers=["*"],
     )
     install_error_handlers(app)
-    for module in (health, notebooks, submissions, learners):
+    for module in (health, notebooks, submissions, learners, privacy):
         app.include_router(module.router, prefix=API_PREFIX)
     return app
 
 
+install_real_stages()
 app = create_app()

@@ -1,0 +1,21 @@
+{
+  "id": "int-e-002",
+  "concept_id": "integer_arithmetic",
+  "problem_latex": "(-3)\\times(-4)+5",
+  "reference_solution": [
+    "(-3)\\times(-4)+5",
+    "12+5",
+    "17"
+  ],
+  "learner_attempt": [
+    "(-3)\\times(-4)+5",
+    "-12+5",
+    "-7"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "sign_error",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "A negative times a negative is positive: (-3)(-4) is 12."
+}

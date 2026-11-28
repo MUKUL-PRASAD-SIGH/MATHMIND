@@ -1,0 +1,23 @@
+{
+  "id": "lin-e-010",
+  "concept_id": "linear_equations",
+  "problem_latex": "4(2x+1)=36",
+  "reference_solution": [
+    "4(2x+1)=36",
+    "8x+4=36",
+    "8x=32",
+    "x=4"
+  ],
+  "learner_attempt": [
+    "4(2x+1)=36",
+    "8x+1=36",
+    "8x=35",
+    "x=\\frac{35}{8}"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "algebraic_transformation",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Multiplied only 2x by 4 when expanding the bracket."
+}

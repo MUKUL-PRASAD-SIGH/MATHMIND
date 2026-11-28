@@ -1,0 +1,21 @@
+{
+  "id": "lin-e-001",
+  "concept_id": "linear_equations",
+  "problem_latex": "x+5=12",
+  "reference_solution": [
+    "x+5=12",
+    "x=12-5",
+    "x=7"
+  ],
+  "learner_attempt": [
+    "x+5=12",
+    "x=12+5",
+    "x=17"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "sign_error",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Moved +5 across the equals sign without changing its sign."
+}

@@ -1,0 +1,23 @@
+{
+  "id": "exp-c-005",
+  "concept_id": "exponents",
+  "problem_latex": "3^{x+1}=81",
+  "reference_solution": [
+    "3^{x+1}=81",
+    "3^{x+1}=3^{4}",
+    "x+1=4",
+    "x=3"
+  ],
+  "learner_attempt": [
+    "3^{x+1}=81",
+    "3^{x+1}=3^{4}",
+    "x+1=4",
+    "x=3"
+  ],
+  "expected_correct": true,
+  "first_error_step": null,
+  "error_type": null,
+  "expected_intervention": "continue",
+  "has_handwriting_image": false,
+  "notes": ""
+}

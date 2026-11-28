@@ -1,0 +1,54 @@
+# One-command run (T8.1).
+#   docker compose up --build                 → web app on http://localhost:8080 (typed + verified review, no AI text)
+#   docker compose --profile ai up --build    → + local Ollama; then pull a model once:
+#       docker compose exec ollama ollama pull qwen2.5:3b
+#     and warm it before a demo (the first load can take over a minute on CPU):
+#       docker compose exec ollama ollama run qwen2.5:3b "hi"
+#   WITH_ML=true docker compose up --build    → backend image includes pix2tex (CPU, large download)
+# Non-Docker path: see README "Run locally".
+name: mathmind
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      args:
+        WITH_ML: ${WITH_ML:-false}
+    environment:
+      DATABASE_URL: sqlite:////app/backend/data/mathmind.db
+      UPLOAD_DIR: /app/backend/data/uploads
+      CORS_ORIGINS: '["http://localhost:8080"]'
+      OLLAMA_URL: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:3b}
+      OCR_CONFIDENCE_THRESHOLD: ${OCR_CONFIDENCE_THRESHOLD:-0.75}
+      # CPU inference in a container is slower than native Ollama; the first call also loads the model.
+      TIMEOUT_LLM: ${TIMEOUT_LLM:-120}
+    volumes:
+      - backend-data:/app/backend/data
+    ports:
+      - "127.0.0.1:${BACKEND_HOST_PORT:-8000}:8000"   # localhost only; optional (nginx proxies /api)
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${WEB_HOST_PORT:-8080}:80"
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:0.12.6
+    profiles: ["ai"]
+    volumes:
+      - ollama-models:/root/.ollama
+    # No host port: only the backend talks to it, over the compose network.
+    restart: unless-stopped
+
+volumes:
+  backend-data:
+  ollama-models:

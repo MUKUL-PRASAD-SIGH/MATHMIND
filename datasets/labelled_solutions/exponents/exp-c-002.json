@@ -1,0 +1,21 @@
+{
+  "id": "exp-c-002",
+  "concept_id": "exponents",
+  "problem_latex": "\\frac{x^{7}}{x^{3}}",
+  "reference_solution": [
+    "\\frac{x^{7}}{x^{3}}",
+    "x^{7-3}",
+    "x^{4}"
+  ],
+  "learner_attempt": [
+    "\\frac{x^{7}}{x^{3}}",
+    "x^{7-3}",
+    "x^{4}"
+  ],
+  "expected_correct": true,
+  "first_error_step": null,
+  "error_type": null,
+  "expected_intervention": "continue",
+  "has_handwriting_image": false,
+  "notes": ""
+}

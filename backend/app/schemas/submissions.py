@@ -28,6 +28,8 @@ class SubmissionStatus(StrEnum):
 
 
 REVIEW_READY_STATUSES = frozenset({SubmissionStatus.completed, SubmissionStatus.completed_without_ai})
+# GET /review also answers while the learner checks recognition: regions only, never a verdict.
+RECOGNITION_CHECK_STATUSES = frozenset({SubmissionStatus.awaiting_confirmation, SubmissionStatus.failed_recognition})
 
 
 class AiStatus(StrEnum):

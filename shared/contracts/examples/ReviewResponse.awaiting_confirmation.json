@@ -1,0 +1,58 @@
+{
+  "submission_id": "sub_r2b_image",
+  "status": "awaiting_confirmation",
+  "verification": null,
+  "review": null,
+  "ai_status": "pending",
+  "regions": [
+    {
+      "id": "rg_1",
+      "submission_id": "sub_r2b_image",
+      "line_index": 0,
+      "bbox": {
+        "x": 0.1,
+        "y": 0.2,
+        "w": 0.6,
+        "h": 0.08
+      },
+      "latex": "2(x-3)=10",
+      "confidence": 0.92,
+      "confirmed": false,
+      "corrected_latex": null,
+      "recognizer_version": "pix2tex-0.1.2"
+    },
+    {
+      "id": "rg_2",
+      "submission_id": "sub_r2b_image",
+      "line_index": 1,
+      "bbox": {
+        "x": 0.1,
+        "y": 0.29000000000000004,
+        "w": 0.6,
+        "h": 0.08
+      },
+      "latex": "2x-3=1O",
+      "confidence": 0.41,
+      "confirmed": false,
+      "corrected_latex": null,
+      "recognizer_version": "pix2tex-0.1.2"
+    },
+    {
+      "id": "rg_3",
+      "submission_id": "sub_r2b_image",
+      "line_index": 2,
+      "bbox": {
+        "x": 0.1,
+        "y": 0.38,
+        "w": 0.6,
+        "h": 0.08
+      },
+      "latex": "2x=13",
+      "confidence": 0.88,
+      "confirmed": false,
+      "corrected_latex": null,
+      "recognizer_version": "pix2tex-0.1.2"
+    }
+  ],
+  "step_to_region": {}
+}

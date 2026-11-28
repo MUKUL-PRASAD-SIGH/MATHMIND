@@ -1,0 +1,21 @@
+{
+  "id": "frac-c-002",
+  "concept_id": "fractions",
+  "problem_latex": "\\frac{3}{4}-\\frac{2}{3}",
+  "reference_solution": [
+    "\\frac{3}{4}-\\frac{2}{3}",
+    "\\frac{9}{12}-\\frac{8}{12}",
+    "\\frac{1}{12}"
+  ],
+  "learner_attempt": [
+    "\\frac{3}{4}-\\frac{2}{3}",
+    "\\frac{9}{12}-\\frac{8}{12}",
+    "\\frac{1}{12}"
+  ],
+  "expected_correct": true,
+  "first_error_step": null,
+  "error_type": null,
+  "expected_intervention": "continue",
+  "has_handwriting_image": false,
+  "notes": ""
+}

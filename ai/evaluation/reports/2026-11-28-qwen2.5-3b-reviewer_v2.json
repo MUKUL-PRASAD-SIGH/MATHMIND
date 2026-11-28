@@ -1,0 +1,767 @@
+{
+  "date": "2026-11-28",
+  "label": "qwen2.5-3b",
+  "dataset": "datasets/labelled_solutions",
+  "verifier_version": "sympy-1.14.0/verifier-1",
+  "llm": "qwen2.5:3b",
+  "llm_note": null,
+  "summary": {
+    "items": 40,
+    "with_error": 22,
+    "first_error_accuracy": 1.0,
+    "incorrect_precision": 1.0,
+    "incorrect_recall": 1.0,
+    "false_incorrect_items": [],
+    "steps_wrongly_blamed": 0,
+    "correct_confirmed": 1.0,
+    "inconclusive_rate": 0.0,
+    "step_inconclusive_rate": 0.0,
+    "schema_valid_rate": 1.0,
+    "override_rate": 0.0,
+    "error_type_accuracy": 0.5217391304347826,
+    "confusion_matrix": {
+      "algebraic_transformation": {
+        "algebraic_transformation": 10
+      },
+      "arithmetic_slip": {
+        "arithmetic_slip": 2,
+        "algebraic_transformation": 1
+      },
+      "incomplete": {
+        "none": 1
+      },
+      "missing_prerequisite": {
+        "algebraic_transformation": 2,
+        "arithmetic_slip": 2
+      },
+      "sign_error": {
+        "algebraic_transformation": 5
+      }
+    },
+    "per_concept": {
+      "exponents": {
+        "items": 15,
+        "first_error_accuracy": 1.0,
+        "incorrect_precision": 1.0,
+        "inconclusive_rate": 0.0
+      },
+      "factorization": {
+        "items": 15,
+        "first_error_accuracy": 1.0,
+        "incorrect_precision": 1.0,
+        "inconclusive_rate": 0.0
+      },
+      "fractions": {
+        "items": 10,
+        "first_error_accuracy": 1.0,
+        "incorrect_precision": 1.0,
+        "inconclusive_rate": 0.0
+      }
+    }
+  },
+  "image": null,
+  "latency": {
+    "verify": {
+      "n": 40.0,
+      "p50": 0.0999485040010768,
+      "p95": 0.32239835200016387
+    },
+    "llm": {
+      "n": 40.0,
+      "p50": 36.83214980100456,
+      "p95": 63.50145570199675
+    },
+    "ocr": {
+      "n": 0.0,
+      "p50": null,
+      "p95": null
+    }
+  },
+  "ratings": null,
+  "items": [
+    {
+      "id": "exp-c-001",
+      "concept_id": "exponents",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "exp-c-002",
+      "concept_id": "exponents",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "exp-c-003",
+      "concept_id": "exponents",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "exp-c-004",
+      "concept_id": "exponents",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "exp-c-005",
+      "concept_id": "exponents",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "exp-c-006",
+      "concept_id": "exponents",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "exp-e-001",
+      "concept_id": "exponents",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": "algebraic_transformation",
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "exp-e-002",
+      "concept_id": "exponents",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": "algebraic_transformation",
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "exp-e-003",
+      "concept_id": "exponents",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": "algebraic_transformation",
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "exp-e-004",
+      "concept_id": "exponents",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": "algebraic_transformation",
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "exp-e-005",
+      "concept_id": "exponents",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": "algebraic_transformation",
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "exp-e-006",
+      "concept_id": "exponents",
+      "expected_correct": false,
+      "expected_first_error": 4,
+      "expected_error_type": "arithmetic_slip",
+      "overall": "incorrect",
+      "first_error": 4,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": "arithmetic_slip",
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "exp-e-007",
+      "concept_id": "exponents",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "arithmetic_slip",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": "algebraic_transformation",
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "exp-e-008",
+      "concept_id": "exponents",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": "algebraic_transformation",
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "exp-e-009",
+      "concept_id": "exponents",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": "algebraic_transformation",
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "fact-c-001",
+      "concept_id": "factorization",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "fact-c-002",
+      "concept_id": "factorization",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "fact-c-003",
+      "concept_id": "factorization",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "fact-c-004",
+      "concept_id": "factorization",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "fact-c-005",
+      "concept_id": "factorization",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "fact-c-006",
+      "concept_id": "factorization",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "fact-e-001",
+      "concept_id": "factorization",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": "algebraic_transformation",
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "fact-e-002",
+      "concept_id": "factorization",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": "algebraic_transformation",
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "fact-e-003",
+      "concept_id": "factorization",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": "algebraic_transformation",
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "fact-e-004",
+      "concept_id": "factorization",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": "algebraic_transformation",
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "fact-e-005",
+      "concept_id": "factorization",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": "algebraic_transformation",
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "fact-e-006",
+      "concept_id": "factorization",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": "algebraic_transformation",
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "fact-e-007",
+      "concept_id": "factorization",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": "algebraic_transformation",
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "fact-e-008",
+      "concept_id": "factorization",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": "algebraic_transformation",
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "fact-e-009",
+      "concept_id": "factorization",
+      "expected_correct": false,
+      "expected_first_error": null,
+      "expected_error_type": "incomplete",
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "frac-c-001",
+      "concept_id": "fractions",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "frac-c-002",
+      "concept_id": "fractions",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "frac-c-003",
+      "concept_id": "fractions",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "frac-c-004",
+      "concept_id": "fractions",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "frac-c-005",
+      "concept_id": "fractions",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "frac-e-001",
+      "concept_id": "fractions",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "missing_prerequisite",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": "algebraic_transformation",
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "frac-e-002",
+      "concept_id": "fractions",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "missing_prerequisite",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": "arithmetic_slip",
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "frac-e-003",
+      "concept_id": "fractions",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "missing_prerequisite",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": "algebraic_transformation",
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "frac-e-004",
+      "concept_id": "fractions",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "missing_prerequisite",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": "arithmetic_slip",
+      "llm_valid": true,
+      "llm_overridden": false
+    },
+    {
+      "id": "frac-e-005",
+      "concept_id": "fractions",
+      "expected_correct": false,
+      "expected_first_error": 3,
+      "expected_error_type": "arithmetic_slip",
+      "overall": "incorrect",
+      "first_error": 3,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": "arithmetic_slip",
+      "llm_valid": true,
+      "llm_overridden": false
+    }
+  ],
+  "seconds": 1631.0320479429938
+}

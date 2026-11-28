@@ -1,0 +1,22 @@
+{
+  "id": "lin-e-022",
+  "concept_id": "linear_equations",
+  "problem_latex": "5x-7=2x+8",
+  "reference_solution": [
+    "5x-7=2x+8",
+    "3x-7=8",
+    "3x=15",
+    "x=5"
+  ],
+  "learner_attempt": [
+    "5x-7=2x+8",
+    "3x-7=8",
+    "3x=15"
+  ],
+  "expected_correct": false,
+  "first_error_step": null,
+  "error_type": "incomplete",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "All steps valid but stopped before dividing by 3 (x=5)."
+}

@@ -1,0 +1,20 @@
+{
+  "id": "exp-e-004",
+  "concept_id": "exponents",
+  "problem_latex": "\\frac{x^{8}}{x^{2}}",
+  "reference_solution": [
+    "\\frac{x^{8}}{x^{2}}",
+    "x^{8-2}",
+    "x^{6}"
+  ],
+  "learner_attempt": [
+    "\\frac{x^{8}}{x^{2}}",
+    "x^{4}"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "algebraic_transformation",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "Divided the exponents; when dividing powers of the same base, subtract them."
+}

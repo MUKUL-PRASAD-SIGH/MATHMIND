@@ -1,0 +1,667 @@
+import { create } from 'zustand'
+import { notebooksRepo } from '../services/db/repos/notebooks'
+import { objectsRepo } from '../services/db/repos/objects'
+import { pagesRepo } from '../services/db/repos/pages'
+import { strokesRepo } from '../services/db/repos/strokes'
+import { debounce, forgetLast, rememberLast, saveQueue, type Debounced } from './autosave'
+import {
+  bboxCenter,
+  isStrokeSelected,
+  pointInPolygon,
+  strokeHit,
+  unionBBox,
+} from './canvas/geometry'
+import { uuidv7 } from './ids'
+import {
+  PAGE_ASPECT,
+  type Background,
+  type BBox,
+  type InkTool,
+  type Notebook,
+  type NotebookObject,
+  type Page,
+  type Point,
+  type Stroke,
+  type ToolName,
+} from './model'
+import { History, type Command } from './tools/history'
+
+type PageMeta = 'title' | 'chapter' | 'background' | 'bookmarked' | 'order'
+
+export interface Selection {
+  pageId: string
+  strokeIds: string[]
+  objectIds: string[]
+}
+
+export interface ToolSettings {
+  color: string
+  width: number
+}
+
+export interface NotebookState {
+  notebooks: Notebook[]
+  notebook: Notebook | null
+  /** Pages and working-space areas of the open notebook, by `order`. */
+  pages: Page[]
+  currentPageId: string | null
+  /** Surface (page or working-space area) last edited; undo/redo target it. */
+  activePageId: string | null
+  /** Live (non-deleted) strokes per page id, in insertion order. */
+  strokes: Record<string, Stroke[]>
+  objects: Record<string, NotebookObject[]>
+  tool: ToolName
+  toolSettings: Record<InkTool, ToolSettings>
+  /** Bumped on every history change so undo/redo buttons re-render. */
+  historyVersion: number
+  selection: Selection | null
+
+  loadNotebooks(): Promise<void>
+  createNotebook(title: string, domain?: string | null): Promise<Notebook>
+  openNotebook(id: string, pageId?: string | null): Promise<void>
+  closeNotebook(): void
+  renameNotebook(id: string, title: string): Promise<void>
+  deleteNotebook(id: string): Promise<void>
+  addPage(opts?: { chapter?: string | null; title?: string | null }): Promise<Page>
+  /** Page metadata (title, chapter, background, bookmark). */
+  updatePage(id: string, changes: Partial<Pick<Page, PageMeta>>): void
+  /** Swap a top-level page with its previous (-1) or next (+1) neighbour. */
+  movePage(id: string, dir: -1 | 1): void
+  goToPage(id: string): Promise<void>
+  loadPage(id: string): Promise<void>
+
+  /** Attach a working-space area below a page (same notebook, linked by parent_page_id). */
+  addWorkspace(parentPageId: string): Promise<Page>
+  setTool(tool: ToolName): void
+  setToolSettings(tool: InkTool, settings: Partial<ToolSettings>): void
+
+  addStroke(stroke: Stroke): void
+  /** Stroke eraser: soft-deletes strokes hit by the eraser path; one undo step per gesture. */
+  erase(pageId: string, segment: Point[], phase: 'start' | 'move' | 'end'): void
+  /** Add an object (undoable unless `record` is false). */
+  addObject(object: NotebookObject, opts?: { record?: boolean }): void
+  /** Edit an object's content (solution steps, note text). MathLive/textarea own that undo. */
+  updateObjectPayload<O extends NotebookObject>(object: O, payload: O['payload']): void
+  execute(cmd: Command): void
+  /** Select strokes/objects inside a lasso or rectangle polygon. */
+  selectArea(pageId: string, polygon: Point[]): Selection | null
+  clearSelection(): void
+  moveSelection(dx: number, dy: number): void
+  deleteSelection(): void
+  /** Duplicate the selection slightly offset and select the copy. */
+  copySelection(): void
+  undo(pageId?: string): void
+  redo(pageId?: string): void
+  canUndo(pageId?: string): boolean
+  canRedo(pageId?: string): boolean
+}
+
+/** Eraser radius in page-width units (≈ 10 px on a 1000 px page). */
+export const ERASER_RADIUS = 0.01
+
+const now = () => new Date().toISOString()
+const byId = <T extends { id: string }>(a: T, b: T) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
+
+export function newPage(notebookId: string, order: number, extra: Partial<Page> = {}): Page {
+  return {
+    id: uuidv7(),
+    notebook_id: notebookId,
+    chapter: null,
+    order,
+    title: null,
+    background: 'ruled' as Background,
+    bookmarked: false,
+    version: 0,
+    parent_page_id: null,
+    updated_at: now(),
+    ...extra,
+  }
+}
+
+export const history = new History<Command>()
+
+/** Persist a change to IndexedDB through the autosave queue (retried on failure). */
+function persist(pageId: string, task: () => Promise<unknown>, key?: string): void {
+  saveQueue.enqueue(task, { pageId, key })
+}
+
+/** Page metadata saves are debounced by 500 ms per page; changes accumulate meanwhile. */
+const pendingMeta = new Map<string, Partial<Page>>()
+const metaSavers = new Map<string, Debounced<[]>>()
+function saveMetaLater(pageId: string, changes: Partial<Page>): void {
+  pendingMeta.set(pageId, { ...pendingMeta.get(pageId), ...changes })
+  let d = metaSavers.get(pageId)
+  if (!d) {
+    d = debounce(() => {
+      const meta = pendingMeta.get(pageId)
+      pendingMeta.delete(pageId)
+      if (meta) persist(pageId, () => pagesRepo.update(pageId, meta), `meta:${pageId}`)
+    }, 500)
+    metaSavers.set(pageId, d)
+  }
+  d()
+}
+
+/** Write any debounced metadata now (e.g. before the tab closes). */
+export function flushPendingMeta(): void {
+  metaSavers.forEach((d) => d.flush())
+}
+
+let opening: { id: string; promise: Promise<void> } | null = null
+
+/** Strokes erased by the gesture in progress, per page. */
+const erasing = new Map<string, Stroke[]>()
+
+export const useNotebookStore = create<NotebookState>()((set, get) => {
+  const translate = (
+    pageId: string,
+    strokeIds: string[],
+    objectIds: string[],
+    dx: number,
+    dy: number,
+  ) => {
+    const sIds = new Set(strokeIds)
+    const oIds = new Set(objectIds)
+    const moved: Stroke[] = []
+    const movedObjects: NotebookObject[] = []
+    set((s) => ({
+      strokes: {
+        ...s.strokes,
+        [pageId]: (s.strokes[pageId] ?? []).map((st) => {
+          if (!sIds.has(st.id)) return st
+          const next = {
+            ...st,
+            points: st.points.map(([x, y]) => [x + dx, y + dy]),
+            bbox: { ...st.bbox, x: st.bbox.x + dx, y: st.bbox.y + dy },
+          }
+          moved.push(next)
+          return next
+        }),
+      },
+      objects: {
+        ...s.objects,
+        [pageId]: (s.objects[pageId] ?? []).map((o) => {
+          if (!oIds.has(o.id)) return o
+          const next = { ...o, bbox: { ...o.bbox, x: o.bbox.x + dx, y: o.bbox.y + dy } }
+          movedObjects.push(next)
+          return next
+        }),
+      },
+    }))
+    persist(pageId, () => strokesRepo.bulkPut(moved))
+    persist(pageId, () =>
+      Promise.all(movedObjects.map((o) => objectsRepo.update(o.id, { bbox: o.bbox }))),
+    )
+  }
+
+  const insertStrokes = (pageId: string, strokes: Stroke[]) => {
+    const live = strokes.map((st) => ({ ...st, deleted: false }))
+    const ids = new Set(live.map((st) => st.id))
+    set((s) => ({
+      strokes: {
+        ...s.strokes,
+        [pageId]: [...(s.strokes[pageId] ?? []).filter((st) => !ids.has(st.id)), ...live].sort(
+          byId,
+        ),
+      },
+    }))
+    persist(pageId, () => strokesRepo.bulkPut(live))
+  }
+
+  const removeStrokes = (pageId: string, ids: string[]) => {
+    const gone = new Set(ids)
+    set((s) => ({
+      strokes: {
+        ...s.strokes,
+        [pageId]: (s.strokes[pageId] ?? []).filter((st) => !gone.has(st.id)),
+      },
+    }))
+    persist(pageId, () => strokesRepo.softDelete(ids))
+  }
+
+  const insertObjects = (pageId: string, objects: NotebookObject[]) => {
+    const live = objects.map((o) => ({ ...o, deleted: false }) as NotebookObject)
+    const ids = new Set(live.map((o) => o.id))
+    set((s) => ({
+      objects: {
+        ...s.objects,
+        [pageId]: [...(s.objects[pageId] ?? []).filter((o) => !ids.has(o.id)), ...live].sort(byId),
+      },
+    }))
+    persist(pageId, () => Promise.all(live.map((o) => objectsRepo.put(o))))
+  }
+
+  const removeObjects = (pageId: string, ids: string[]) => {
+    const gone = new Set(ids)
+    set((s) => ({
+      objects: { ...s.objects, [pageId]: (s.objects[pageId] ?? []).filter((o) => !gone.has(o.id)) },
+    }))
+    persist(pageId, () => objectsRepo.softDelete(ids))
+  }
+
+  const setObjectBBox = (pageId: string, id: string, bbox: NotebookObject['bbox']) => {
+    set((s) => ({
+      objects: {
+        ...s.objects,
+        [pageId]: (s.objects[pageId] ?? []).map((o) => (o.id === id ? { ...o, bbox } : o)),
+      },
+    }))
+    persist(pageId, () => objectsRepo.update(id, { bbox }))
+  }
+
+  /** Latest in-memory version of each object (falls back to the given copy). */
+  const current = (pageId: string, objs: NotebookObject[]) =>
+    objs.map((o) => get().objects[pageId]?.find((m) => m.id === o.id) ?? o)
+
+  const apply = (cmd: Command, dir: 1 | -1) => {
+    switch (cmd.type) {
+      case 'addStrokes':
+        if (dir === 1) insertStrokes(cmd.pageId, cmd.strokes)
+        else
+          removeStrokes(
+            cmd.pageId,
+            cmd.strokes.map((s) => s.id),
+          )
+        break
+      case 'deleteStrokes':
+        if (dir === 1)
+          removeStrokes(
+            cmd.pageId,
+            cmd.strokes.map((s) => s.id),
+          )
+        else insertStrokes(cmd.pageId, cmd.strokes)
+        break
+      case 'addObject':
+        if (dir === 1) insertObjects(cmd.pageId, [cmd.object])
+        else {
+          // Keep edits made since the object was added, so redo restores them.
+          cmd.object = current(cmd.pageId, [cmd.object])[0]
+          removeObjects(cmd.pageId, [cmd.object.id])
+        }
+        break
+      case 'deleteObjects':
+        if (dir === 1) {
+          cmd.objects = current(cmd.pageId, cmd.objects)
+          removeObjects(
+            cmd.pageId,
+            cmd.objects.map((o) => o.id),
+          )
+        } else insertObjects(cmd.pageId, cmd.objects)
+        break
+      case 'moveObjects':
+        translate(cmd.pageId, cmd.strokeIds, cmd.objectIds, cmd.dx * dir, cmd.dy * dir)
+        break
+      case 'batch':
+        for (const c of dir === 1 ? cmd.commands : [...cmd.commands].reverse()) apply(c, dir)
+        break
+      case 'resizeObject':
+        setObjectBBox(cmd.pageId, cmd.id, dir === 1 ? cmd.to : cmd.from)
+        break
+    }
+  }
+
+  const openNotebookNow = async (id: string, pageId: string | null) => {
+    const notebook = await notebooksRepo.get(id)
+    if (!notebook) throw new Error(`Notebook ${id} not found`)
+    const pages = await pagesRepo.listByNotebook(id)
+    const top = pages.filter((p) => !p.parent_page_id)
+    const current = top.find((p) => p.id === pageId) ?? top[0] ?? null
+    history.clear()
+    set({
+      notebook,
+      pages,
+      currentPageId: current?.id ?? null,
+      activePageId: current?.id ?? null,
+      strokes: {},
+      objects: {},
+      selection: null,
+    })
+    rememberLast(id, current?.id ?? null)
+    if (current) await get().loadPage(current.id)
+  }
+
+  const bump = () => set((s) => ({ historyVersion: s.historyVersion + 1 }))
+  const target = () => get().activePageId ?? get().currentPageId ?? ''
+
+  return {
+    notebooks: [],
+    notebook: null,
+    pages: [],
+    currentPageId: null,
+    activePageId: null,
+    strokes: {},
+    objects: {},
+    tool: 'pen',
+    toolSettings: {
+      pen: { color: '#1f2937', width: 2 },
+      pencil: { color: '#374151', width: 1.5 },
+      highlighter: { color: '#facc15', width: 16 },
+    },
+    historyVersion: 0,
+    selection: null,
+
+    async loadNotebooks() {
+      set({ notebooks: await notebooksRepo.list() })
+    },
+
+    async createNotebook(title, domain = null) {
+      const t = now()
+      const notebook: Notebook = {
+        id: uuidv7(),
+        title,
+        domain,
+        created_at: t,
+        updated_at: t,
+        remote_id: null,
+      }
+      await notebooksRepo.put(notebook)
+      await pagesRepo.put(newPage(notebook.id, 0, { title: 'Page 1' }))
+      set((s) => ({ notebooks: [notebook, ...s.notebooks] }))
+      return notebook
+    },
+
+    openNotebook(id, pageId = null) {
+      // Concurrent opens of the same notebook (e.g. React StrictMode effects) share one load.
+      if (opening?.id === id) return opening.promise
+      const promise = openNotebookNow(id, pageId).finally(() => {
+        if (opening?.promise === promise) opening = null
+      })
+      opening = { id, promise }
+      return promise
+    },
+
+    closeNotebook() {
+      history.clear()
+      set({
+        notebook: null,
+        pages: [],
+        currentPageId: null,
+        activePageId: null,
+        strokes: {},
+        objects: {},
+      })
+    },
+
+    async addPage(opts = {}) {
+      const { notebook, pages, currentPageId } = get()
+      if (!notebook) throw new Error('No notebook open')
+      const current = pages.find((p) => p.id === currentPageId)
+      const order = pages.reduce((max, p) => Math.max(max, p.order), -1) + 1
+      const top = pages.filter((p) => !p.parent_page_id)
+      const page = newPage(notebook.id, order, {
+        chapter: opts.chapter !== undefined ? opts.chapter : (current?.chapter ?? null),
+        title: opts.title ?? `Page ${top.length + 1}`,
+      })
+      persist(page.id, () => pagesRepo.put(page))
+      set((s) => ({
+        pages: [...s.pages, page],
+        strokes: { ...s.strokes, [page.id]: [] },
+        objects: { ...s.objects, [page.id]: [] },
+      }))
+      await get().goToPage(page.id)
+      return page
+    },
+
+    async renameNotebook(id, title) {
+      const updated_at = now()
+      await notebooksRepo.update(id, { title, updated_at })
+      set((s) => ({
+        notebooks: s.notebooks.map((n) => (n.id === id ? { ...n, title, updated_at } : n)),
+        notebook: s.notebook?.id === id ? { ...s.notebook, title, updated_at } : s.notebook,
+      }))
+    },
+
+    async deleteNotebook(id) {
+      await notebooksRepo.remove(id)
+      forgetLast()
+      set((s) => ({ notebooks: s.notebooks.filter((n) => n.id !== id) }))
+      if (get().notebook?.id === id) get().closeNotebook()
+    },
+
+    updatePage(id, changes) {
+      const updated_at = now()
+      set((s) => ({
+        pages: s.pages.map((p) => (p.id === id ? { ...p, ...changes, updated_at } : p)),
+      }))
+      saveMetaLater(id, { ...changes, updated_at })
+    },
+
+    movePage(id, dir) {
+      const top = get()
+        .pages.filter((p) => !p.parent_page_id)
+        .sort((a, b) => a.order - b.order)
+      const i = top.findIndex((p) => p.id === id)
+      const j = i + dir
+      if (i < 0 || j < 0 || j >= top.length) return
+      const a = top[i]
+      const b = top[j]
+      get().updatePage(a.id, { order: b.order })
+      get().updatePage(b.id, { order: a.order })
+      set((s) => ({ pages: [...s.pages].sort((x, y) => x.order - y.order) }))
+    },
+
+    async goToPage(id) {
+      set({ currentPageId: id, activePageId: id, selection: null })
+      const nb = get().notebook
+      if (nb) rememberLast(nb.id, id)
+      await get().loadPage(id)
+    },
+
+    /** Loads a page plus its working-space areas into memory (once). */
+    async loadPage(id) {
+      const ids = [
+        id,
+        ...get()
+          .pages.filter((p) => p.parent_page_id === id)
+          .map((p) => p.id),
+      ]
+      const missing = ids.filter((pid) => !get().strokes[pid] || !get().objects[pid])
+      if (missing.length === 0) return
+      const loaded = await Promise.all(
+        missing.map(async (pid) => ({
+          pid,
+          strokes: await strokesRepo.listByPage(pid),
+          objects: await objectsRepo.listByPage(pid),
+        })),
+      )
+      set((s) => {
+        const strokes = { ...s.strokes }
+        const objects = { ...s.objects }
+        for (const l of loaded) {
+          strokes[l.pid] = l.strokes
+          objects[l.pid] = l.objects
+        }
+        return { strokes, objects }
+      })
+    },
+
+    setTool: (tool) => set({ tool, selection: null }),
+    setToolSettings: (tool, settings) =>
+      set((s) => ({
+        toolSettings: { ...s.toolSettings, [tool]: { ...s.toolSettings[tool], ...settings } },
+      })),
+
+    addStroke(stroke) {
+      get().execute({ type: 'addStrokes', pageId: stroke.page_id, strokes: [stroke] })
+    },
+
+    erase(pageId, segment, phase) {
+      if (phase === 'start') erasing.set(pageId, [])
+      const acc = erasing.get(pageId) ?? []
+      if (segment.length > 0) {
+        const hits = (get().strokes[pageId] ?? []).filter((s) =>
+          strokeHit(s, segment, ERASER_RADIUS, PAGE_ASPECT),
+        )
+        if (hits.length > 0) {
+          acc.push(...hits)
+          removeStrokes(
+            pageId,
+            hits.map((s) => s.id),
+          )
+        }
+      }
+      erasing.set(pageId, acc)
+      if (phase === 'end') {
+        erasing.delete(pageId)
+        if (acc.length > 0) {
+          history.push(pageId, { type: 'deleteStrokes', pageId, strokes: acc })
+          set({ activePageId: pageId })
+          bump()
+        }
+      }
+    },
+
+    async addWorkspace(parentPageId) {
+      const { notebook, pages } = get()
+      if (!notebook) throw new Error('No notebook open')
+      const order = pages.reduce((max, p) => Math.max(max, p.order), -1) + 1
+      const parent = pages.find((p) => p.id === parentPageId)
+      const area = newPage(notebook.id, order, {
+        parent_page_id: parentPageId,
+        chapter: parent?.chapter ?? null,
+        background: parent?.background ?? 'ruled',
+      })
+      persist(area.id, () => pagesRepo.put(area))
+      set((s) => ({
+        pages: [...s.pages, area],
+        strokes: { ...s.strokes, [area.id]: [] },
+        objects: { ...s.objects, [area.id]: [] },
+        activePageId: area.id,
+      }))
+      return area
+    },
+
+    selectArea(pageId, polygon) {
+      const strokeIds = (get().strokes[pageId] ?? [])
+        .filter((s) => isStrokeSelected(s, polygon))
+        .map((s) => s.id)
+      const objectIds = (get().objects[pageId] ?? [])
+        .filter((o) => polygon.length >= 3 && pointInPolygon(bboxCenter(o.bbox), polygon))
+        .map((o) => o.id)
+      const selection =
+        strokeIds.length + objectIds.length > 0 ? { pageId, strokeIds, objectIds } : null
+      set({ selection, activePageId: pageId })
+      return selection
+    },
+
+    clearSelection: () => set({ selection: null }),
+
+    moveSelection(dx, dy) {
+      const sel = get().selection
+      if (!sel || (dx === 0 && dy === 0)) return
+      get().execute({
+        type: 'moveObjects',
+        pageId: sel.pageId,
+        strokeIds: sel.strokeIds,
+        objectIds: sel.objectIds,
+        dx,
+        dy,
+      })
+    },
+
+    deleteSelection() {
+      const sel = get().selection
+      if (!sel) return
+      const strokeIds = new Set(sel.strokeIds)
+      const objectIds = new Set(sel.objectIds)
+      const commands: Command[] = []
+      const strokes = (get().strokes[sel.pageId] ?? []).filter((s) => strokeIds.has(s.id))
+      const objects = (get().objects[sel.pageId] ?? []).filter((o) => objectIds.has(o.id))
+      if (strokes.length) commands.push({ type: 'deleteStrokes', pageId: sel.pageId, strokes })
+      if (objects.length) commands.push({ type: 'deleteObjects', pageId: sel.pageId, objects })
+      set({ selection: null })
+      if (commands.length) get().execute({ type: 'batch', pageId: sel.pageId, commands })
+    },
+
+    copySelection() {
+      const sel = get().selection
+      if (!sel) return
+      const ids = new Set(sel.strokeIds)
+      const box = selectionBBox(get(), sel)
+      if (!box) return
+      // Offset down-right, but keep the copy on the page.
+      const dx = Math.min(0.03, 1 - (box.x + box.w))
+      const dy = Math.min(0.03, 1 - (box.y + box.h))
+      const copies = (get().strokes[sel.pageId] ?? [])
+        .filter((s) => ids.has(s.id))
+        .map((s) => ({
+          ...s,
+          id: uuidv7(),
+          points: s.points.map(([x, y]) => [x + dx, y + dy]),
+          bbox: { ...s.bbox, x: s.bbox.x + dx, y: s.bbox.y + dy },
+        }))
+      if (copies.length === 0) return
+      get().execute({ type: 'addStrokes', pageId: sel.pageId, strokes: copies })
+      set({ selection: { pageId: sel.pageId, strokeIds: copies.map((s) => s.id), objectIds: [] } })
+    },
+
+    addObject(object, { record = true } = {}) {
+      if (record) get().execute({ type: 'addObject', pageId: object.page_id, object })
+      else insertObjects(object.page_id, [object])
+    },
+
+    updateObjectPayload(object, payload) {
+      const pageId = object.page_id
+      set((s) => ({
+        objects: {
+          ...s.objects,
+          [pageId]: (s.objects[pageId] ?? []).map((o) =>
+            o.id === object.id ? ({ ...o, payload } as NotebookObject) : o,
+          ),
+        },
+      }))
+      persist(
+        pageId,
+        () => objectsRepo.update(object.id, { payload } as Partial<NotebookObject>),
+        `obj:${object.id}`,
+      )
+    },
+
+    execute(cmd) {
+      apply(cmd, 1)
+      history.push(cmd.pageId, cmd)
+      set({ activePageId: cmd.pageId })
+      bump()
+    },
+
+    undo(pageId = target()) {
+      const cmd = history.undo(pageId)
+      if (cmd) {
+        apply(cmd, -1)
+        bump()
+      }
+    },
+
+    redo(pageId = target()) {
+      const cmd = history.redo(pageId)
+      if (cmd) {
+        apply(cmd, 1)
+        bump()
+      }
+    },
+
+    canUndo: (pageId = target()) => history.canUndo(pageId),
+    canRedo: (pageId = target()) => history.canRedo(pageId),
+  }
+})
+
+/** Union bbox of the selected strokes and objects. */
+export function selectionBBox(
+  state: Pick<NotebookState, 'strokes' | 'objects'>,
+  sel: Selection,
+): BBox | null {
+  const s = new Set(sel.strokeIds)
+  const o = new Set(sel.objectIds)
+  return unionBBox([
+    ...(state.strokes[sel.pageId] ?? []).filter((x) => s.has(x.id)).map((x) => x.bbox),
+    ...(state.objects[sel.pageId] ?? []).filter((x) => o.has(x.id)).map((x) => x.bbox),
+  ])
+}
+
+/** The current selection and its bbox, for the review flow (crop export, annotations). */
+export function getSelection(): (Selection & { bbox: BBox }) | null {
+  const state = useNotebookStore.getState()
+  const sel = state.selection
+  const bbox = sel && selectionBBox(state, sel)
+  return sel && bbox ? { ...sel, bbox } : null
+}

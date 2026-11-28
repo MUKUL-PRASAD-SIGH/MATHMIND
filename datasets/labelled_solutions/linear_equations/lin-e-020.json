@@ -1,0 +1,23 @@
+{
+  "id": "lin-e-020",
+  "concept_id": "linear_equations",
+  "problem_latex": "\\frac{2x}{3}-1=7",
+  "reference_solution": [
+    "\\frac{2x}{3}-1=7",
+    "\\frac{2x}{3}=8",
+    "2x=24",
+    "x=12"
+  ],
+  "learner_attempt": [
+    "\\frac{2x}{3}-1=7",
+    "\\frac{2x}{3}=8",
+    "2x=21",
+    "x=\\frac{21}{2}"
+  ],
+  "expected_correct": false,
+  "first_error_step": 3,
+  "error_type": "arithmetic_slip",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "8 times 3 is 24, not 21."
+}

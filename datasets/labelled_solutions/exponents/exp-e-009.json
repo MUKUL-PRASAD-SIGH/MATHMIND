@@ -1,0 +1,21 @@
+{
+  "id": "exp-e-009",
+  "concept_id": "exponents",
+  "problem_latex": "5^{-2}",
+  "reference_solution": [
+    "5^{-2}",
+    "\\frac{1}{5^{2}}",
+    "\\frac{1}{25}"
+  ],
+  "learner_attempt": [
+    "5^{-2}",
+    "-5^{2}",
+    "-25"
+  ],
+  "expected_correct": false,
+  "first_error_step": 2,
+  "error_type": "sign_error",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "A negative exponent means a reciprocal, not a negative number: 5^{-2} is 1/25."
+}

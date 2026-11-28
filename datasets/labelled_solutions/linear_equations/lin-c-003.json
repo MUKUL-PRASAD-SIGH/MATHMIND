@@ -1,0 +1,22 @@
+{
+  "id": "lin-c-003",
+  "concept_id": "linear_equations",
+  "problem_latex": "2(x-3)=10",
+  "reference_solution": [
+    "2(x-3)=10",
+    "2x-6=10",
+    "2x=16",
+    "x=8"
+  ],
+  "learner_attempt": [
+    "2(x-3)=10",
+    "x-3=5",
+    "x=8"
+  ],
+  "expected_correct": true,
+  "first_error_step": null,
+  "error_type": null,
+  "expected_intervention": "continue",
+  "has_handwriting_image": false,
+  "notes": "Valid alternative route: divided both sides by 2 first."
+}

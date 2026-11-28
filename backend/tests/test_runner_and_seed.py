@@ -107,7 +107,8 @@ def test_learner_endpoints(client: TestClient) -> None:
     nxt = client.get(f"{API}/learners/me/next").json()
     assert nxt["concept_id"] == "integer_arithmetic"
     assert nxt["problem_id"] == "int-001"
-    assert "T6.4" in nxt["reason"]
+    assert nxt["action"] == "ask_another_question"  # adaptive engine: no evidence yet, so no strong claim
+    assert "integer arithmetic" in nxt["reason"]
 
 
 @pytest.mark.integration

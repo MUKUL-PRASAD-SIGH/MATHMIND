@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mathmind.local/contracts/schemas/ExportedSubmission.json",
+  "properties": {
+    "id": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "title": "Id"
+    },
+    "page_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Page Id"
+    },
+    "problem_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Problem Id"
+    },
+    "input_mode": {
+      "$ref": "InputMode.json"
+    },
+    "status": {
+      "$ref": "SubmissionStatus.json"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Created At"
+    },
+    "has_source_image": {
+      "type": "boolean",
+      "title": "Has Source Image"
+    },
+    "steps": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "title": "Steps"
+    },
+    "regions": {
+      "items": {
+        "$ref": "RecognizedRegion.json"
+      },
+      "type": "array",
+      "title": "Regions"
+    },
+    "verification": {
+      "anyOf": [
+        {
+          "$ref": "VerificationResult.json"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "review": {
+      "anyOf": [
+        {
+          "$ref": "ReviewResult.json"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ai_status": {
+      "$ref": "AiStatus.json"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "id",
+    "page_id",
+    "problem_id",
+    "input_mode",
+    "status",
+    "created_at",
+    "has_source_image",
+    "steps",
+    "regions",
+    "verification",
+    "review",
+    "ai_status"
+  ],
+  "title": "ExportedSubmission"
+}

@@ -6,7 +6,11 @@
 
 MathMind is an open-source, AI-assisted mathematics learning workspace built around a natural digital notebook. Learners write with a stylus or finger on tablets, type structured equations with a keyboard on laptops, or import photos of paper work. MathMind recognizes the mathematical regions, **verifies each transformation symbolically**, explains the likely mistake next to the learner's own work, and adapts the next activity based on what the learner has shown they understand.
 
-> **Status:** Planning / pre-implementation. The technologies and device behaviours below are an *implementation plan*, not measured results. Accuracy, latency and device compatibility are claimed only after they are tested (see [docs/10-evaluation-plan.md](docs/10-evaluation-plan.md)).
+> **Status (2026-11-28):** working MVP. The notebook, typed and image review, SymPy verification, the local AI
+> reviewer, mastery and the progress page run end to end on a laptop with `docker compose`. Numbers below are
+> **measured** ([what was measured, and how](#measured-results)); anything not yet tested says so.
+
+![Review of 2(x-3)=10: step 2 marked, SymPy verdicts per step, explanation and next action](docs/evidence/demo-dryrun/screenshot-4-review.png)
 
 ---
 
@@ -17,6 +21,7 @@ MathMind is an open-source, AI-assisted mathematics learning workspace built aro
 - [How it works](#how-it-works)
 - [Tech stack](#tech-stack)
 - [Repository layout](#repository-layout)
+- [Measured results](#measured-results)
 - [Getting started](#getting-started)
 - [Documentation map](#documentation-map)
 - [Team and workflow](#team-and-workflow)
@@ -41,20 +46,22 @@ MathMind analyses the learner's **working**. It:
 
 ## Core features (MVP)
 
-| Priority | Feature | What "done" means |
-|---|---|---|
-| P0 | Notebook pages & tools | Create notebooks, write, erase, undo/redo, navigate pages, autosave |
-| P0 | Cross-device input | Tablet: stylus/touch ink · Phone: short practice + camera import · Non-touch laptop: full workflow via keyboard equation blocks (MathLive) |
-| P0 | Expandable workspace | Extra working space without losing page context |
-| P0 | Typed input | Enter a supported expression and send it for verification |
-| P0 | Handwritten image workflow | Import/capture a region → candidate recognition → learner confirms/corrects |
-| P0 | SymPy verification | Each supported step returns `supported`, `incorrect` or `inconclusive` |
-| P0 | On-demand review | "Review my solution" returns structured feedback anchored to the page region |
-| P0 | Graceful failure | Unreadable input or model offline → work preserved, clear status shown |
-| P0 | Basic mastery profile | A small concept set tracks attempts and updates a mastery estimate |
-| P1 | Live assistance | Light, optional, debounced hints — never on every stroke |
-| P1 | Adaptive question selection | Pick prerequisite / practice / next question from evidence |
-| P2 | Gamification, analytics, teacher summaries | Only after core reliability |
+| Priority | Feature | What "done" means | Built |
+|---|---|---|---|
+| P0 | Notebook pages & tools | Create notebooks, write, erase, undo/redo, navigate pages, autosave | ✅ |
+| P0 | Cross-device input | Tablet: stylus/touch ink · Phone: short practice + camera import · Non-touch laptop: full workflow via keyboard equation blocks (MathLive) | ✅ automated tests in Chromium device emulation; manual device matrix pending |
+| P0 | Expandable workspace | Extra working space without losing page context | ✅ |
+| P0 | Typed input | Enter a supported expression and send it for verification | ✅ |
+| P0 | Handwritten image workflow | Import/capture a region → candidate recognition → learner confirms/corrects | ✅ UI + API; pix2tex is an optional install, not yet measured on real handwriting |
+| P0 | SymPy verification | Each supported step returns `supported`, `incorrect` or `inconclusive` | ✅ |
+| P0 | On-demand review | "Review my solution" returns structured feedback anchored to the page region | ✅ |
+| P0 | Graceful failure | Unreadable input or model offline → work preserved, clear status shown | ✅ ([R3-2](docs/evidence/R3-2/notes.md)) |
+| P0 | Basic mastery profile | A small concept set tracks attempts and updates a mastery estimate | ✅ |
+| P1 | Live assistance | Light, optional, debounced hints — never on every stroke | ❌ not built |
+| P1 | Adaptive question selection | Pick prerequisite / practice / next question from evidence | ✅ "Next up" + practise this problem |
+| P2 | Gamification, analytics, teacher summaries | Only after core reliability | progress page only |
+
+Also built: export / delete all my data (JSON) from the progress page.
 
 ## How it works
 
@@ -123,7 +130,25 @@ MathMind/
 └── README.md
 ```
 
-> The `frontend/`, `backend/`, `ai/`, `datasets/`, `shared/` and `scripts/` folders are created by task **T0.1** in [docs/plan/phase-0-setup.md](docs/plan/phase-0-setup.md).
+
+## Measured results
+
+Measured 2026-11-28 on one laptop (Intel Core Ultra 5 125U, 15.4 GB RAM, Windows 11, CPU only). Full reports linked.
+
+| What | Result | Source |
+|---|---|---|
+| SymPy first-error localization (120 labelled solutions, 68 with an error) | **100 %** | [SymPy-only report](ai/evaluation/reports/2026-11-28-sympy-only.md) |
+| Correct work wrongly marked `incorrect` | **none** | same |
+| Correct solutions fully confirmed / inconclusive items | 93.3 % / 2.5 % | same |
+| LLM output valid against the schema (after one retry) | 100 % (40 items, qwen2.5:3b) | [LLM report](ai/evaluation/reports/2026-11-28-qwen2.5-3b.md) |
+| LLM error-type accuracy | 52 % with both `reviewer_v1` and `reviewer_v2` (sign errors get labelled `algebraic_transformation`): the weak spot, see [limitations](#known-limitations) | same, [v2 report](ai/evaluation/reports/2026-11-28-qwen2.5-3b-reviewer_v2.md) |
+| Verify stage latency | p50 ≈ 0.1 s | [performance.md](ai/benchmarks/performance.md) |
+| AI explanation latency (qwen2.5:3b, CPU) | p50 37–40 s, p95 64–97 s; first call after start 1–2 min | same |
+| Cost per evaluation | ₹0 / $0 incremental (everything local) | same |
+| R2/R3 functionality cases | 5 pass; R3-1 shown with mock OCR only | [docs/evidence](docs/evidence/README.md) |
+
+**Tested on:** Chromium (Playwright) at laptop 1440×900 and in iPad Pro 11 / iPhone 13 emulation, plus axe
+accessibility checks. Real tablets, phones and other browsers have **not** been tested yet (T7.4).
 
 ## Getting started
 
@@ -137,10 +162,24 @@ MathMind/
 | Python | 3.11 | backend, SymPy, pix2tex |
 | Ollama | latest stable | local LLM runtime (optional at runtime) |
 | ~10 GB disk, 16 GB RAM recommended | — | model weights + pix2tex/torch |
+| Docker Desktop (optional) | any recent | one-command run |
 
 Full list including devices, accounts and licences: [docs/06-external-requirements.md](docs/06-external-requirements.md).
 
-### Run locally (once scaffolding exists)
+### One command (Docker)
+
+```bash
+cp .env.example .env
+docker compose up -d --build                 # app on http://localhost:8080 (SymPy checks, no AI text)
+docker compose --profile ai up -d --build    # + Ollama; then pull the model once:
+docker compose exec ollama ollama pull qwen2.5:3b
+```
+
+Ports come from `.env` (`WEB_HOST_PORT`, `BACKEND_HOST_PORT`) and are bound to 127.0.0.1. The first AI review after a
+start loads the model (1–2 min on CPU). For handwriting OCR build the backend with `--build-arg WITH_ML=true`
+(adds pix2tex and CPU torch, several GB). `scripts/dev.sh` / `scripts/dev.ps1` start the setup below.
+
+### Run locally (without Docker)
 
 ```bash
 # 1. Clone
@@ -169,8 +208,9 @@ ollama serve
 ```bash
 cd backend  && pytest -q                 # unit + integration
 cd frontend && npm run test              # Vitest unit/component
-cd frontend && npx playwright test       # end-to-end (needs both servers)
-python ai/evaluation/run_eval.py         # AI evaluation metrics
+cd frontend && npx playwright test       # end-to-end with a mocked API (starts its own dev server)
+cd frontend && npm run e2e:real          # end-to-end against a real backend (AI off)
+python ai/evaluation/run_eval.py --dataset datasets/labelled_solutions   # evaluation metrics
 ```
 
 ## Documentation map
@@ -189,6 +229,7 @@ python ai/evaluation/run_eval.py         # AI evaluation metrics
 | [docs/08-risks-and-limitations.md](docs/08-risks-and-limitations.md) | Risks and mitigations |
 | [docs/09-ai-disclosure-log.md](docs/09-ai-disclosure-log.md) | Log AI-assisted contributions (hackathon A4) |
 | [docs/10-evaluation-plan.md](docs/10-evaluation-plan.md) | Metrics, dataset, R2/R3 evidence |
+| [docs/11-demo-script.md](docs/11-demo-script.md) | Demo run sheet and fallbacks (draft) |
 | [docs/task-board.md](docs/task-board.md) | Live status of every task |
 | [docs/team/](docs/team/) | **Personal guide per team member — feed yours to your AI agent** |
 | [AGENTS.md](AGENTS.md) | Rules every AI coding agent must follow here |
@@ -230,7 +271,11 @@ Each member has a personal guide in [docs/team/](docs/team/) written so it can b
 
 - pix2tex is a single-expression recognizer. Full multi-column pages with prose and diagrams are out of MVP scope, so users select regions instead.
 - Generic symbolic equivalence cannot validate every transformation. Unsupported cases return `inconclusive`.
-- Local models can produce plausible but wrong explanations. They are limited by verification evidence and evaluated by humans.
+- Local models can produce plausible but wrong explanations. Our own evidence shows it: on
+  [R2-D](docs/evidence/R2-D/notes.md) the 3B model called a wrong factorisation correct while SymPy marked it
+  incorrect. Verdicts always come from SymPy; `reviewer_v2` passes SymPy-expanded steps to the model to reduce this.
+- AI explanations take 20–120 s on a CPU-only laptop; a classroom would need a GPU or a smaller model.
+- Handwriting recognition (pix2tex) has not been measured on real handwriting yet.
 - Mastery is an **estimate** (`M_new = 0.7·M_old + 0.3·S`), not a validated learning-science model.
 
 See [docs/08-risks-and-limitations.md](docs/08-risks-and-limitations.md).

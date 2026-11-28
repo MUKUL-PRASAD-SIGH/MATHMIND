@@ -1,0 +1,23 @@
+{
+  "id": "int-e-004",
+  "concept_id": "integer_arithmetic",
+  "problem_latex": "-24\\div 6-(-7)",
+  "reference_solution": [
+    "-24\\div 6-(-7)",
+    "-4-(-7)",
+    "-4+7",
+    "3"
+  ],
+  "learner_attempt": [
+    "-24\\div 6-(-7)",
+    "-4-(-7)",
+    "-4+7",
+    "4"
+  ],
+  "expected_correct": false,
+  "first_error_step": 4,
+  "error_type": "arithmetic_slip",
+  "expected_intervention": "targeted_practice",
+  "has_handwriting_image": false,
+  "notes": "-4+7 is 3, not 4."
+}
