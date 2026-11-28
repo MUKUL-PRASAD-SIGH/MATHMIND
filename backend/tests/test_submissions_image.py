@@ -135,7 +135,12 @@ def test_low_confidence_waits_for_learner_and_never_judges_first(client: TestCli
     sid = upload(client, png_bytes()).json()["submission_id"]  # type: ignore[attr-defined]
     assert status(client, sid) == "awaiting_confirmation"
     assert calls == []  # spec 8.3: no maths verdict before confirmation
-    assert client.get(f"{API}/submissions/{sid}/review").status_code == 404
+    pending = client.get(f"{API}/submissions/{sid}/review")
+    assert pending.status_code == 200
+    body = pending.json()
+    assert body["verification"] is None and body["review"] is None  # regions to check, no verdict
+    assert body["ai_status"] == "pending"
+    assert len(body["regions"]) == 2 and not any(g["confirmed"] for g in body["regions"])
 
     regs = regions_of(client, sid)
     r = client.post(
@@ -216,7 +221,12 @@ def test_real_recognizer_low_confidence_never_reaches_a_verdict(client: TestClie
     sid = upload(client, png_bytes_of(render(LINES)), problem_id="lin-001").json()["submission_id"]  # type: ignore[attr-defined]
     assert status(client, sid) == "awaiting_confirmation"
     assert verified == []
-    assert client.get(f"{API}/submissions/{sid}/review").status_code == 404
+    pending = client.get(f"{API}/submissions/{sid}/review")
+    assert pending.status_code == 200
+    body = pending.json()
+    assert body["verification"] is None and body["review"] is None  # regions to check, no verdict
+    assert body["ai_status"] == "pending"
+    assert body["regions"] and not any(g["confirmed"] for g in body["regions"])
 
     regs = regions_of(client, sid)
     assert regs[1]["latex"] == "3x=16" and float(regs[1]["confidence"]) < 0.75  # type: ignore[arg-type]

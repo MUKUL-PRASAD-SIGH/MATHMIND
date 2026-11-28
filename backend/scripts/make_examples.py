@@ -173,6 +173,25 @@ EXAMPLES: dict[str, BaseModel] = {
         ],
         step_to_region={str(i + 1): f"rg_{i + 1}" for i in range(4)},
     ),
+    "ReviewResponse.awaiting_confirmation": ReviewResponse(
+        submission_id="sub_r2b_image",
+        status="awaiting_confirmation",
+        verification=None,
+        review=None,
+        ai_status="pending",
+        regions=[
+            RecognizedRegion(
+                id=f"rg_{i + 1}",
+                line_index=i,
+                latex=s,
+                confidence=c,
+                confirmed=False,
+                **{**region, "bbox": {"x": 0.1, "y": 0.2 + 0.09 * i, "w": 0.6, "h": 0.08}},
+            )
+            for i, (s, c) in enumerate([("2(x-3)=10", 0.92), ("2x-3=1O", 0.41), ("2x=13", 0.88)])
+        ],
+        step_to_region={},
+    ),
     "ReviewResponse.completed_without_ai": ReviewResponse(
         submission_id="sub_r2a_typed",
         status="completed_without_ai",

@@ -14,6 +14,7 @@ from app.schemas.common import BBox, ErrorResponse
 from app.schemas.notebooks import Id
 from app.schemas.review import ReviewResult
 from app.schemas.submissions import (
+    RECOGNITION_CHECK_STATUSES,
     REVIEW_READY_STATUSES,
     AiStatus,
     ConfirmRequest,
@@ -189,7 +190,23 @@ def start_review(session: SessionDep, user: UserDep, runner: RunnerDep, submissi
 
 @router.get("/{submission_id}/review", response_model=ReviewResponse, responses=ERRORS)
 def get_review(session: SessionDep, user: UserDep, submission_id: IdPath) -> ReviewResponse:
+    """The finished review, or, while recognition is being checked, just the recognized regions.
+
+    In `awaiting_confirmation` / `failed_recognition` the response carries the regions to confirm
+    with `verification` and `review` set to null and `ai_status: "pending"` (spec 8.3: no verdict
+    before the learner confirms what was read). Any other unfinished state is 404 `review_not_ready`.
+    """
     sub = repo.get_owned_submission(session, user.id, submission_id)
+    regions = [_region(r) for r in repo.list_regions(session, sub.id)]
+    if sub.status in RECOGNITION_CHECK_STATUSES:
+        return ReviewResponse(
+            submission_id=sub.id,
+            status=SubmissionStatus(sub.status),
+            verification=None,
+            review=None,
+            ai_status=AiStatus.pending,
+            regions=regions,
+        )
     if sub.status not in REVIEW_READY_STATUSES:
         raise AppError(404, "review_not_ready", "Review is not ready yet", {"status": sub.status})
     ev = repo.get_evaluation(session, sub.id)
@@ -200,6 +217,6 @@ def get_review(session: SessionDep, user: UserDep, submission_id: IdPath) -> Rev
         verification=VerificationResult.model_validate(ev.verification) if ev.verification else None,
         review=ReviewResult.model_validate(ev.review) if ev.review else None,
         ai_status=AiStatus(ev.ai_status),
-        regions=[_region(r) for r in repo.list_regions(session, sub.id)],
+        regions=regions,
         step_to_region={str(st.index): st.region_id for st in steps if st.region_id},
     )

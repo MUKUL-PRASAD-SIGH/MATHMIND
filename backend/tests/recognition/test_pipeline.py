@@ -42,7 +42,8 @@ def test_unstable_ocr_of_wrong_looking_maths_asks_for_confirmation(client: TestC
     _use_ocr(fake_model(lambda img: next(outputs)))
     sid = _submit(client, render(["3x + 5 = 20", "x = 5"]))
     assert client.get(f"{API}/submissions/{sid}/status").json()["status"] == "awaiting_confirmation"
-    assert client.get(f"{API}/submissions/{sid}/review").status_code == 404  # no verdict exists yet
+    pending = client.get(f"{API}/submissions/{sid}/review").json()
+    assert pending["verification"] is None and pending["review"] is None  # no verdict exists yet
 
 
 def test_confident_ocr_goes_straight_to_verification(client: TestClient) -> None:

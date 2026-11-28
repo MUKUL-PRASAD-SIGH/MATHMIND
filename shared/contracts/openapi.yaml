@@ -503,6 +503,14 @@ paths:
       tags:
       - submissions
       summary: Get Review
+      description: 'The finished review, or, while recognition is being checked, just the recognized regions.
+
+
+        In `awaiting_confirmation` / `failed_recognition` the response carries the regions to confirm
+
+        with `verification` and `review` set to null and `ai_status: "pending"` (spec 8.3: no verdict
+
+        before the learner confirms what was read). Any other unfinished state is 404 `review_not_ready`.'
       operationId: get_review_api_v1_submissions__submission_id__review_get
       parameters:
       - name: submission_id
