@@ -22,11 +22,12 @@ from app.schemas.verification import Overall
 from app.services.jobs.runner import enforce_sympy_authority
 from app.services.jobs.stages import ReviewInput, ReviewUnavailable
 from app.services.reasoning.client import OllamaClient
+from app.services.reasoning.facts import checker_facts
 from app.services.reasoning.schema import LlmReview
 
 log = logging.getLogger(__name__)
 
-PROMPT_VERSION = "reviewer_v1"
+PROMPT_VERSION = "reviewer_v2"  # v2 adds checker_facts (SymPy-expanded steps around the first error)
 PROMPTS_DIR = REPO_ROOT / "ai" / "prompts"
 MAX_PRIOR_ERRORS = 3
 MAX_ERROR_FEEDBACK = 600
@@ -53,6 +54,7 @@ def build_input(data: ReviewInput) -> dict[str, Any]:
         "problem": asdict(data.problem) if data.problem else None,
         "steps": data.steps,
         "verification": data.verification.model_dump(mode="json", exclude={"verifier_version"}),
+        "checker_facts": checker_facts(data.steps, data.verification),
         "concept": data.concept_id,
         "prerequisites": data.prerequisites,
         "prior_errors": data.prior_errors[-MAX_PRIOR_ERRORS:],
