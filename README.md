@@ -141,9 +141,9 @@ Measured 2026-11-28 on one laptop (Intel Core Ultra 5 125U, 15.4 GB RAM, Windows
 | Correct work wrongly marked `incorrect` | **none** | same |
 | Correct solutions fully confirmed / inconclusive items | 93.3 % / 2.5 % | same |
 | LLM output valid against the schema (after one retry) | 100 % (40 items, qwen2.5:3b) | [LLM report](ai/evaluation/reports/2026-11-28-qwen2.5-3b.md) |
-| LLM error-type accuracy | 52 % with `reviewer_v1`: the weak spot, see [limitations](#known-limitations) | same |
+| LLM error-type accuracy | 52 % with both `reviewer_v1` and `reviewer_v2` (sign errors get labelled `algebraic_transformation`): the weak spot, see [limitations](#known-limitations) | same, [v2 report](ai/evaluation/reports/2026-11-28-qwen2.5-3b-reviewer_v2.md) |
 | Verify stage latency | p50 ≈ 0.1 s | [performance.md](ai/benchmarks/performance.md) |
-| AI explanation latency (qwen2.5:3b, CPU) | p50 40 s, p95 97 s; first call after start 1–2 min | same |
+| AI explanation latency (qwen2.5:3b, CPU) | p50 37–40 s, p95 64–97 s; first call after start 1–2 min | same |
 | Cost per evaluation | ₹0 / $0 incremental (everything local) | same |
 | R2/R3 functionality cases | 5 pass; R3-1 shown with mock OCR only | [docs/evidence](docs/evidence/README.md) |
 

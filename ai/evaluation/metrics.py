@@ -30,6 +30,8 @@ class ItemOutcome:
     llm_error_type: str | None = None
     llm_valid: bool | None = None  # None = LLM not run for this item
     llm_overridden: bool | None = None
+    llm_explanation: str | None = None  # kept for human rating (T7.2 step 4)
+    llm_hint: str | None = None
 
 
 def ratio(num: int, den: int) -> float | None:

@@ -31,6 +31,7 @@ sys.path.insert(0, str(HERE))
 import metrics as m  # noqa: E402
 
 from app.services.jobs.stages import ProblemContext, ReviewInput, ReviewUnavailable  # noqa: E402
+from app.services.reasoning.reviewer import PROMPT_VERSION  # noqa: E402
 from app.services.verification import verify_steps  # noqa: E402
 
 
@@ -68,12 +69,15 @@ def run_typed(items: list[dict[str, Any]], reviewer: Any, latency: dict[str, lis
         llm_type: str | None = None
         llm_valid: bool | None = None
         overridden: bool | None = None
+        explanation: str | None = None
+        hint: str | None = None
         if reviewer is not None:
             t0 = time.perf_counter()
             try:
                 r = reviewer.review(ReviewInput(problem, steps, v, item["concept_id"]))
                 llm_valid, overridden = True, r.overridden
                 llm_type = r.error_type.value if r.error_type else None
+                explanation, hint = r.explanation, r.hint
             except ReviewUnavailable:
                 llm_valid = False
             latency["llm"].append(time.perf_counter() - t0)
@@ -92,6 +96,8 @@ def run_typed(items: list[dict[str, Any]], reviewer: Any, latency: dict[str, lis
                 llm_error_type=llm_type,
                 llm_valid=llm_valid,
                 llm_overridden=overridden,
+                llm_explanation=explanation,
+                llm_hint=hint,
             )
         )
     return out
@@ -190,7 +196,9 @@ def render_md(report: dict[str, Any]) -> str:
         f"# Evaluation report — {report['date']} — {report['label']}",
         "",
         f"Dataset: `{report['dataset']}` ({s['items']} items, {s['with_error']} with a step error). "
-        f"Verifier: `{report['verifier_version']}`. LLM: {report['llm'] or 'not run'}.",
+        f"Verifier: `{report['verifier_version']}`. LLM: {report['llm'] or 'not run'}"
+        + (f" (prompt `{report['prompt_version']}`)" if report.get("prompt_version") else "")
+        + ".",
         "",
     ]
     if report.get("llm_note"):
@@ -315,6 +323,7 @@ def main(argv: list[str] | None = None) -> int:
         else str(args.dataset),
         "verifier_version": VERIFIER_VERSION,
         "llm": args.model if reviewer else None,
+        "prompt_version": PROMPT_VERSION if reviewer else None,
         "llm_note": llm_note,
         "summary": summarize(outcomes),
         "image": image,
