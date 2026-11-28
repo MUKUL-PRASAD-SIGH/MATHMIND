@@ -3,6 +3,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { api, type Schemas } from '../../services/api/client'
 import { describeError } from '../ai-review/reviewStore'
 import { RECOMMENDED_ACTION } from '../ai-review/annotations'
+import { PrivacyPanel } from '../privacy/PrivacyPanel'
 import { findProblem, startPractice } from './practice'
 
 type Entry = Schemas['MasteryEntry']
@@ -169,6 +170,7 @@ export function ProgressPage() {
           )}
         </section>
       )}
+      <PrivacyPanel />
     </div>
   )
 }

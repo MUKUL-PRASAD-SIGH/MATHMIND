@@ -169,6 +169,18 @@
 - Step 5: endpoints `GET /learners/me/export` and `DELETE /learners/me/data?confirm=true` built; contract examples ready for M2's buttons. `OLLAMA_URL` must be a local/LAN host unless `ALLOW_REMOTE_OLLAMA=true`. The DevTools network check needs the frontend.
 - Step 6: history scanned, no secrets or `.env` files ever committed.
 
+**Status (M1, 2026-11-28), frontend half done on `feat/M1-integration`:**
+- Step 1: `npm audit --omit=dev` → **0 vulnerabilities** after upgrading KaTeX 0.16 → 0.19.1
+  (GHSA-238p-pmpm-9mq7, low: trust bypass via pre-existing prototype pollution). Dev-only findings remain
+  (vitest 4 / tinypool critical, glob / minimatch moderate). They only affect the local test runner, which is never
+  shipped or exposed. vitest 5 does not install cleanly against the current plugins yet, so the upgrade waits.
+- Step 3: no `dangerouslySetInnerHTML`, `eval` or `new Function` in `frontend/src`; KaTeX renders with
+  `trust: false` (`components/KatexMath.tsx`); LLM text is rendered as plain React text only.
+- Step 5: **Export my data (JSON)** and **Delete all my data** (in-page confirmation, no browser dialog) on the
+  progress page (`features/privacy/`). Both act on IndexedDB *and* the backend and say plainly when the backend
+  could not be reached. Network check is automated: `e2e/typed-review.spec.ts` fails on any non-localhost request
+  during a full typed review.
+
 ---
 
 ## T7.8 — Accessibility & keyboard-only audit (M2, M4 assists)
