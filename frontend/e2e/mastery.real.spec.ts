@@ -9,7 +9,7 @@ test('practise the recommended problem → solve it → the progress page change
   const next = await (await page.request.get('/api/v1/learners/me/next')).json()
   expect(next.problem_id, 'the backend recommends a problem from the bank').toBeTruthy()
   const problems = await (
-    await page.request.get(`/api/v1/problems?concept_id=${next.concept_id}`)
+    await page.request.get(`/api/v1/problems?concept=${next.concept_id}`)
   ).json()
   const problem = problems.find((p: { id: string }) => p.id === next.problem_id)
   expect(problem?.expected_answer_latex, 'the problem has an answer to type').toBeTruthy()

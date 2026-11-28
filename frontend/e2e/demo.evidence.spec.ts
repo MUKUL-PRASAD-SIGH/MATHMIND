@@ -117,7 +117,7 @@ test('demo dry run (laptop, typed fallback)', async ({ page }) => {
         []) as Entry[]
     const next = await (await page.request.get('/api/v1/learners/me/next')).json()
     const problems = await (
-      await page.request.get(`/api/v1/problems?concept_id=${next.concept_id}`)
+      await page.request.get(`/api/v1/problems?concept=${next.concept_id}`)
     ).json()
     const problem = problems.find((p: { id: string }) => p.id === next.problem_id)
     const before = (await entries()).find((e) => e.concept_id === next.concept_id)

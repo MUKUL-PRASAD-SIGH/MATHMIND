@@ -118,7 +118,7 @@ export const api = {
   problems: (conceptId?: string) =>
     request<Schemas['Problem'][]>(
       'GET',
-      conceptId ? `/problems?concept_id=${enc(conceptId)}` : '/problems',
+      conceptId ? `/problems?concept=${enc(conceptId)}` : '/problems', // query name from openapi.yaml
     ),
   mastery: () => request<Schemas['Mastery']>('GET', '/learners/me/mastery'),
   revision: () => request<Schemas['Revision']>('GET', '/learners/me/revision'),
