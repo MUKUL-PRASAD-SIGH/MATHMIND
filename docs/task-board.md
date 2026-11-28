@@ -97,4 +97,4 @@
 | T7.4 | Cross-device manual matrix | T5.4 | M2 | todo | |
 | T7.5 | R2/R3 evidence (with M1) | T7.2, T7.3 | M1 | review (R2-A–D, R3-2 pass; R3-1 mock OCR only; clips by hand in T8.4) | `feat/M1-integration` |
 | T8.3 | AI disclosure log | continuous | M1 | todo | |
-| T8.2 | README & docs final | T7.5 | M1 | todo | |
+| T8.2 | README & docs final | T7.5 | M1 | in-progress (README status, measured results, Docker quick start, limitations; links checked. Left: T7.4 "Tested on", 08-risks update) | `feat/M1-integration` |
