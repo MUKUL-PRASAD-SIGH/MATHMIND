@@ -31,17 +31,17 @@ The hackathon rubric rewards **practical value, a justified AI design, observed 
 
 | Case | Input | Expected | Evidence | Status |
 |---|---|---|---|---|
-| R2-A | Correct linear equation, e.g. `3x + 5 = 20 → 3x = 15 → x = 5` | All steps supported; accepted result | `docs/evidence/R2-A/` | ☐ |
-| R2-B | Different problem with an algebraic error, e.g. `2(x-3)=10 → 2x-3=10 → …` | First incorrect = step 2; red annotation on that region; hint | `docs/evidence/R2-B/` | ☐ |
-| R2-C | Repeat R2-A ×3 | Same correct result each time | `docs/evidence/R2-C/` | ☐ |
-| R2-D | Multi-step quadratic with an inserted mistake, e.g. `x^2-5x+6=0 → (x-2)(x+3)=0 → …` | First supported error located; relevant intervention | `docs/evidence/R2-D/` | ☐ |
+| R2-A | Correct linear equation, e.g. `3x + 5 = 20 → 3x = 15 → x = 5` | All steps supported; accepted result | `docs/evidence/R2-A/` | ✅ pass |
+| R2-B | Different problem with an algebraic error, e.g. `2(x-3)=10 → 2x-3=10 → …` | First incorrect = step 2; red annotation on that region; hint | `docs/evidence/R2-B/` | ✅ pass |
+| R2-C | Repeat R2-A ×3 | Same correct result each time | `docs/evidence/R2-C/` | ✅ pass |
+| R2-D | Multi-step quadratic with an inserted mistake, e.g. `x^2-5x+6=0 → (x-2)(x+3)=0 → …` | First supported error located; relevant intervention | `docs/evidence/R2-D/` | ✅ pass (AI text wrong, see notes) |
 
 ## 4. R3 — Failure demonstrations
 
 | Case | How to trigger | Expected | Evidence | Status |
 |---|---|---|---|---|
-| R3-1 OCR uncertainty | Upload a messy handwriting sample | "Check recognition" panel; original kept; correct/retry path works; **no incorrect verdict before confirmation** | `docs/evidence/R3-1/` | ☐ |
-| R3-2 Model unavailable | Stop Ollama (`ollama stop` / kill the service) and submit | Work preserved; "AI explanation unavailable"; SymPy checks still shown | `docs/evidence/R3-2/` | ☐ |
+| R3-1 OCR uncertainty | Upload a messy handwriting sample | "Check recognition" panel; original kept; correct/retry path works; **no incorrect verdict before confirmation** | `docs/evidence/R3-1/` | 🟡 mock OCR only |
+| R3-2 Model unavailable | Stop Ollama (`ollama stop` / kill the service) and submit | Work preserved; "AI explanation unavailable"; SymPy checks still shown | `docs/evidence/R3-2/` | ✅ pass |
 
 ## 5. Evidence folder format
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { MathfieldElement } from 'mathlive'
 import { KatexMath } from '../../components/KatexMath'
 import { MathField } from '../../notebook/equations/MathField'
@@ -15,7 +15,9 @@ type Region = Schemas['RecognizedRegion']
 /** The part of the uploaded crop that one recognized line came from. */
 function Thumbnail({ url, crop, line }: { url: string; crop: BBox; line: BBox }) {
   const r = relativeTo(line, crop)
-  if (r.w <= 0 || r.h <= 0) return null
+  const [failed, setFailed] = useState(false)
+  // A crop that cannot load (revoked blob URL, offline) shows nothing rather than a broken-image icon.
+  if (failed || r.w <= 0 || r.h <= 0) return null
   // Page units: y is PAGE_ASPECT times longer than x, so keep the line's real proportions.
   const aspect = (line.w / line.h) * (1 / 1.414)
   return (
@@ -26,6 +28,7 @@ function Thumbnail({ url, crop, line }: { url: string; crop: BBox; line: BBox })
       <img
         src={url}
         alt=""
+        onError={() => setFailed(true)}
         className="absolute max-w-none"
         style={{
           width: `${100 / r.w}%`,
@@ -98,11 +101,15 @@ export function ConfirmPanel({ onRecrop }: { onRecrop?(): void }) {
   const fields = useRef(new Map<string, MathfieldElement>())
   useFocusTrap(panel, () => setConfirmOpen(false))
 
-  const url = useMemo(
-    () => (active?.upload ? URL.createObjectURL(active.upload.blob) : null),
-    [active?.upload],
-  )
-  useEffect(() => () => void (url && URL.revokeObjectURL(url)), [url])
+  // Create and revoke in the same effect: with useMemo, StrictMode's extra cleanup revoked a URL still in use.
+  const blob = active?.upload?.blob
+  const [url, setUrl] = useState<string | null>(null)
+  useEffect(() => {
+    if (!blob) return setUrl(null)
+    const u = URL.createObjectURL(blob)
+    setUrl(u)
+    return () => URL.revokeObjectURL(u)
+  }, [blob])
 
   if (!active) return null
   const regions: Region[] = active.regions ?? []

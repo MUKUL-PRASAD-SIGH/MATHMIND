@@ -208,7 +208,14 @@ test('R3-2 model unavailable', async ({ page }) => {
   mkdirSync(join(OUT, 'R3-2'), { recursive: true })
   await panel.screenshot({ path: join(OUT, 'R3-2', 'screenshot-review.png') })
   await page.reload()
-  const kept = await page.locator('math-field[aria-label="Step 4"]').count()
+  // count() would not wait for the notebook to reload from IndexedDB
+  const kept = await page
+    .locator('math-field[aria-label="Step 4"]')
+    .waitFor({ timeout: 15_000 })
+    .then(
+      () => 1,
+      () => 0,
+    )
   const pass =
     o.status === 'completed_without_ai' && o.first_error_step === 2 && banner && kept === 1
   const dir = writeNotes(
