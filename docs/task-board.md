@@ -16,9 +16,9 @@
 
 | Milestone | Target | Status |
 |---|---|---|
-| Contract freeze v0 | Day 1 noon | ready for review (`shared/contracts/`) |
-| Milestone A — typed review E2E | Day 3 EOD | todo |
-| Milestone B — full review + mastery | Day 5 EOD | todo |
+| Contract freeze v0 | Day 1 noon | done (PR #1); v0.1 adds regions to `GET /review` while awaiting confirmation |
+| Milestone A — typed review E2E | Day 3 EOD | done on `feat/M1-integration`: real-backend E2E (R2-A, R2-B) passes; not on `main` yet |
+| Milestone B — full review + mastery | Day 5 EOD | done on `feat/M1-integration`: Ollama review via compose + practise → mastery E2E; not on `main` yet |
 | Feature freeze + dry run #1 | Day 6 PM | todo |
 | Release `v0.1.0` + video | Day 7 noon | todo |
 | Submitted | Day 7 (≥ 2 h before deadline) | todo |
@@ -27,22 +27,22 @@
 
 | Task | Title | Prereqs | Status | Branch / PR |
 |---|---|---|---|---|
-| T0.1 | Monorepo scaffold | — | review (branch protection + labels set) | `feat/M1-foundation` |
-| T0.3 | Backend scaffold | T0.1 | review | `feat/M1-foundation` |
-| T0.4 | API contract v0 + mocks | T0.3 | review (MSW handlers wait for T0.2) | `feat/M1-foundation` |
-| T0.7 | CI pipeline | T0.2, T0.3 | review (backend job live; frontend job auto-enables at T0.2) | `feat/M1-foundation` |
-| T2.1 | DB models + repos | T0.3, T0.4 | review | `feat/M1-foundation` |
-| T2.2 | Notebook/page API | T2.1 | review | `feat/M1-foundation` |
-| T2.3 | Submission API + upload validation | T2.1 | review | `feat/M1-foundation` |
-| T2.4 | Job runner + state machine | T2.3 | review | `feat/M1-foundation` |
-| T2.5 | FE API client + sync (with M2) | T2.2, T1.5 | blocked: needs T1.5 (M2) | |
-| T4.2 | Recognition stage + /confirm | T2.4, T4.1 | in-progress (stage + /confirm built on stubs; swap in T4.1) | `feat/M1-foundation` |
-| T5.3 | Review orchestrator + fallback | T3.4, T4.2, T5.2 | todo | |
-| T6.5 | Learner endpoints | T6.3, T6.4 | todo | |
-| T7.3 | E2E Playwright (with M2) | T5.4 | todo | |
-| T7.5 | R2/R3 evidence (with M4) | T7.2, T7.3 | todo | |
-| T7.7 | Security & privacy checks | T2.3 | in-progress (backend done; npm audit, KaTeX, DevTools check wait for frontend) | `feat/T7.7-security` |
-| T8.1 | docker-compose | T5.3 | todo | |
+| T0.1 | Monorepo scaffold | — | done | PR #1 |
+| T0.3 | Backend scaffold | T0.1 | done | PR #1 |
+| T0.4 | API contract v0 + mocks | T0.3 | done | PR #1 |
+| T0.7 | CI pipeline | T0.2, T0.3 | done (2026-11-28: `e2e` job + eval tests added, not a required check) | PR #1, `feat/M1-integration` |
+| T2.1 | DB models + repos | T0.3, T0.4 | done | PR #1 |
+| T2.2 | Notebook/page API | T2.1 | done | PR #1 |
+| T2.3 | Submission API + upload validation | T2.1 | done | PR #1 |
+| T2.4 | Job runner + state machine | T2.3 | done | PR #1 |
+| T2.5 | FE API client + sync (with M2) | T2.2, T1.5 | review (status polling + best-effort page sync) | `feat/M2-notebook` → `feat/M1-integration` |
+| T4.2 | Recognition stage + /confirm | T2.4, T4.1 | review (real pix2tex stage; `GET /review` serves regions while awaiting confirmation) | `feat/M1-wave2` → `feat/M1-integration` |
+| T5.3 | Review orchestrator + fallback | T3.4, T4.2, T5.2 | review | `feat/M1-wave2` → `feat/M1-integration` |
+| T6.5 | Learner endpoints | T6.3, T6.4 | review | `feat/M1-wave2` → `feat/M1-integration` |
+| T7.3 | E2E Playwright (with M2) | T5.4 | review (22 mock specs on laptop/tablet/phone + 3 real-backend specs) | `feat/M1-integration` |
+| T7.5 | R2/R3 evidence (with M4) | T7.2, T7.3 | todo (both prerequisites in review) | |
+| T7.7 | Security & privacy checks | T2.3 | review (backend + frontend halves; `npm audit --omit=dev` clean) | PR #2, `feat/M1-integration` |
+| T8.1 | docker-compose | T5.3 | review (`compose up` + `--profile ai` verified on Docker Desktop) | `feat/M1-integration` |
 | T8.4 | Demo script + recording | T7.5 | in-progress (early prep: `seed_demo.py` + draft run sheet; dry runs wait for T7.5) | `feat/T8.4-demo-seed` |
 | T8.5 | Devpost submission | T8.4 | todo | |
 
