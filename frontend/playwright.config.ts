@@ -28,7 +28,7 @@ const laptop = { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 
 const tablet = { ...devices['iPad Pro 11'], defaultBrowserType: 'chromium' as const }
 const phone = { ...devices['iPhone 13'], defaultBrowserType: 'chromium' as const }
 // Specs that make sense on touch devices; everything else is laptop/keyboard only.
-const touchSpecs = /(notebook|offline|image-review|ocr-uncertain)\.spec\.ts$/
+const touchSpecs = /(notebook|offline|image-review|ocr-uncertain|perf)\.spec\.ts$/
 
 export default defineConfig({
   testDir: './e2e',

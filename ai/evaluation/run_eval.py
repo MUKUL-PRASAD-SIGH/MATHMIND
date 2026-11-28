@@ -325,16 +325,18 @@ def main(argv: list[str] | None = None) -> int:
     report["seconds"] = time.perf_counter() - started
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
-    stem = args.out_dir / f"{report['date']}-{report['label']}"
-    stem.with_suffix(".json").write_text(json.dumps(report, indent=2), encoding="utf-8")
-    stem.with_suffix(".md").write_text(render_md(report), encoding="utf-8")
+    # Not Path.with_suffix: a label like "qwen2.5-3b" would lose ".5-3b" as if it were an extension.
+    stem = f"{report['date']}-{report['label']}"
+    md_path, json_path = args.out_dir / f"{stem}.md", args.out_dir / f"{stem}.json"
+    json_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    md_path.write_text(render_md(report), encoding="utf-8")
     s = report["summary"]
     print(
         f"{s['items']} items | first-error {fmt(s['first_error_accuracy'])} | incorrect precision "
         f"{fmt(s['incorrect_precision'])} | inconclusive {fmt(s['inconclusive_rate'])} | "
         f"schema-valid {fmt(s['schema_valid_rate'])}"
     )
-    print(f"wrote {stem.with_suffix('.md').relative_to(REPO) if stem.is_relative_to(REPO) else stem}")
+    print(f"wrote {md_path.relative_to(REPO) if md_path.is_relative_to(REPO) else md_path}")
     return 0
 
 
