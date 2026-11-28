@@ -43,7 +43,7 @@
 | T7.5 | R2/R3 evidence (with M4) | T7.2, T7.3 | todo (both prerequisites in review) | |
 | T7.7 | Security & privacy checks | T2.3 | review (backend + frontend halves; `npm audit --omit=dev` clean) | PR #2, `feat/M1-integration` |
 | T8.1 | docker-compose | T5.3 | review (`compose up` + `--profile ai` verified on Docker Desktop) | `feat/M1-integration` |
-| T8.4 | Demo script + recording | T7.5 | in-progress (early prep: `seed_demo.py` + draft run sheet; dry runs wait for T7.5) | `feat/T8.4-demo-seed` |
+| T8.4 | Demo script + recording | T7.5 | in-progress (automated dry run #1 done, 6 findings in `11-demo-script.md` §0; human dry run #2 + recording to do) | `feat/M1-integration` |
 | T8.5 | Devpost submission | T8.4 | todo | |
 
 ## M2 — Frontend · Notebook

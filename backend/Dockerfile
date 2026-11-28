@@ -20,6 +20,7 @@ RUN pip install -r requirements.txt \
 COPY backend/app ./app
 COPY datasets /app/datasets
 COPY ai/prompts /app/ai/prompts
+COPY scripts/seed_demo.py /app/scripts/seed_demo.py
 
 RUN useradd --create-home --uid 1000 mathmind && mkdir -p /app/backend/data && chown -R mathmind /app/backend/data
 USER mathmind
