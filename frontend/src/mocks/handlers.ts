@@ -18,7 +18,66 @@ export function example<T>(name: string): T {
 }
 
 const API = '*/api/v1'
-const statusPolls = new Map<string, number>()
+
+// --- Submission scenario --------------------------------------------------------------------
+// typed: verifying → completed. image: recognizing → awaiting_confirmation (one uncertain
+// line) → POST /confirm → verifying → completed. The R2-B lines are laid out inside the
+// submitted bbox, so annotations land on the learner's own ink.
+
+const FULL_PAGE = { x: 0, y: 0, w: 1, h: 1 }
+const CONFIRM_MESSAGE = "We're not sure we read this correctly. Please check."
+const R2B: [string, number][] = [
+  ['2(x-3)=10', 0.92],
+  ['2x-3=1O', 0.41],
+  ['2x=13', 0.88],
+  ['x=6.5', 0.9],
+]
+
+interface MockSub {
+  mode: 'typed' | 'image'
+  bbox: Schemas['BBox']
+  polls: number
+  confirmed: boolean
+  corrections?: Schemas['ConfirmRequest']
+}
+const subs = new Map<string, MockSub>()
+let seq = 0
+
+function mockSub(id: string): MockSub {
+  let sub = subs.get(id)
+  if (!sub) {
+    sub = { mode: 'typed', bbox: FULL_PAGE, polls: 0, confirmed: true }
+    subs.set(id, sub)
+  }
+  return sub
+}
+
+function mockStatus(sub: MockSub): Schemas['SubmissionStatus'] {
+  if (sub.mode === 'image' && !sub.confirmed) {
+    return sub.polls <= 1 ? 'recognizing' : 'awaiting_confirmation'
+  }
+  return sub.polls <= 1 ? 'verifying' : 'completed'
+}
+
+function mockRegions(id: string, sub: MockSub, confirmed: boolean): Schemas['RecognizedRegion'][] {
+  const b = sub.bbox
+  const h = b.h / R2B.length
+  return R2B.map(([latex, confidence], i) => {
+    const rid = `rg_${i + 1}`
+    const fix = sub.corrections?.regions.find((c) => c.id === rid)
+    return {
+      id: rid,
+      submission_id: id,
+      line_index: i,
+      bbox: { x: b.x, y: b.y + i * h, w: b.w, h: h * 0.9 },
+      latex,
+      confidence,
+      confirmed: confirmed && (fix?.confirmed ?? true),
+      corrected_latex: fix?.corrected_latex ?? null,
+      recognizer_version: 'mock',
+    }
+  })
+}
 
 export const handlers = [
   http.get(`${API}/health`, () => HttpResponse.json(example<Schemas['Health']>('Health.ok'))),
@@ -60,13 +119,16 @@ export const handlers = [
     return HttpResponse.json(page)
   }),
 
-  http.post(`${API}/submissions/typed`, () =>
-    HttpResponse.json(example('SubmissionAccepted.received'), { status: 202 }),
-  ),
+  http.post(`${API}/submissions/typed`, () => {
+    const id = `sub_typed_${++seq}`
+    subs.set(id, { mode: 'typed', bbox: FULL_PAGE, polls: 0, confirmed: true })
+    return HttpResponse.json({ submission_id: id, status: 'received' }, { status: 202 })
+  }),
 
   // Mirrors the backend's upload checks (type) so a broken crop fails visibly against mocks too.
   http.post(`${API}/submissions/image`, async ({ request }) => {
-    const file = (await request.formData()).get('file')
+    const form = await request.formData()
+    const file = form.get('file')
     if (!(file instanceof Blob) || !['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
       const error = {
         code: 'unsupported_media_type',
@@ -75,33 +137,91 @@ export const handlers = [
       }
       return HttpResponse.json({ error }, { status: 415 })
     }
-    return HttpResponse.json(example('SubmissionAccepted.received'), { status: 202 })
+    const bbox = form.get('bbox')
+    const id = `sub_img_${++seq}`
+    subs.set(id, {
+      mode: 'image',
+      bbox: typeof bbox === 'string' ? (JSON.parse(bbox) as Schemas['BBox']) : FULL_PAGE,
+      polls: 0,
+      confirmed: false,
+    })
+    return HttpResponse.json({ submission_id: id, status: 'received' }, { status: 202 })
   }),
 
-  // First poll reports `verifying`, later polls `completed`.
   http.get(`${API}/submissions/:id/status`, ({ params }) => {
     const id = String(params.id)
-    const n = (statusPolls.get(id) ?? 0) + 1
-    statusPolls.set(id, n)
+    const sub = mockSub(id)
+    sub.polls += 1
     const body = example<Schemas['SubmissionStatusResponse']>('SubmissionStatusResponse.verifying')
     return HttpResponse.json({
       ...body,
       submission_id: id,
-      status: n > 1 ? 'completed' : 'verifying',
+      input_mode: sub.mode,
+      status: mockStatus(sub),
+      message: mockStatus(sub) === 'awaiting_confirmation' ? CONFIRM_MESSAGE : null,
     })
   }),
 
-  http.post(`${API}/submissions/:id/confirm`, () =>
-    HttpResponse.json(example('SubmissionAccepted.received'), { status: 202 }),
-  ),
+  http.post(`${API}/submissions/:id/confirm`, async ({ params, request }) => {
+    const id = String(params.id)
+    const sub = mockSub(id)
+    if (mockStatus(sub) !== 'awaiting_confirmation') {
+      const error = { code: 'not_awaiting_confirmation', message: 'Not waiting', details: {} }
+      return HttpResponse.json({ error }, { status: 409 })
+    }
+    sub.corrections = (await request.json()) as Schemas['ConfirmRequest']
+    sub.confirmed = true
+    sub.polls = 0
+    return HttpResponse.json({ submission_id: id, status: 'verifying' }, { status: 202 })
+  }),
 
-  http.post(`${API}/submissions/:id/review`, () =>
-    HttpResponse.json(example('SubmissionAccepted.received'), { status: 202 }),
-  ),
+  http.post(`${API}/submissions/:id/review`, ({ params }) => {
+    const id = String(params.id)
+    const sub = mockSub(id)
+    sub.polls = 0
+    return HttpResponse.json({ submission_id: id, status: 'verifying' }, { status: 202 })
+  }),
 
-  http.get(`${API}/submissions/:id/review`, () =>
-    HttpResponse.json(example('ReviewResponse.completed_incorrect')),
-  ),
+  // Like the backend: while awaiting confirmation it serves the regions only (no verdict);
+  // other unfinished states are 404 review_not_ready.
+  http.get(`${API}/submissions/:id/review`, ({ params }) => {
+    const id = String(params.id)
+    const sub = mockSub(id)
+    const status = mockStatus(sub)
+    if (status === 'awaiting_confirmation') {
+      const pending: Schemas['ReviewResponse'] = {
+        submission_id: id,
+        status,
+        verification: null,
+        review: null,
+        ai_status: 'pending',
+        regions: mockRegions(id, sub, false),
+        step_to_region: {},
+      }
+      return HttpResponse.json(pending)
+    }
+    if (status !== 'completed') {
+      const error = { code: 'review_not_ready', message: 'Review is not ready yet', details: {} }
+      return HttpResponse.json({ error }, { status: 404 })
+    }
+    const done = example<Schemas['ReviewResponse']>('ReviewResponse.completed_incorrect')
+    const regions = sub.mode === 'image' ? mockRegions(id, sub, true) : []
+    return HttpResponse.json({
+      ...done,
+      submission_id: id,
+      regions,
+      step_to_region: Object.fromEntries(regions.map((r) => [String(r.line_index + 1), r.id])),
+    })
+  }),
+
+  http.get(`${API}/learners/me/export`, () => HttpResponse.json(example('LearnerExport.small'))),
+  http.delete(`${API}/learners/me/data`, ({ request }) => {
+    if (new URL(request.url).searchParams.get('confirm') !== 'true') {
+      const error = { code: 'confirmation_required', message: 'Pass confirm=true', details: {} }
+      return HttpResponse.json({ error }, { status: 400 })
+    }
+    return HttpResponse.json(example('DeletionSummary.deleted'))
+  }),
 
   http.get(`${API}/concepts`, () => HttpResponse.json([example('Concept.linear_equations')])),
   http.get(`${API}/problems`, () => HttpResponse.json([example('Problem.lin-003')])),

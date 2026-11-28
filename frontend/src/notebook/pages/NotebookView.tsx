@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { SettingsMenu } from '../../components/SettingsMenu'
+import { ConfirmPanel } from '../../features/ai-review/ConfirmPanel'
 import { sendCaptureForReview, sendSelectionForReview } from '../../features/ai-review/regionReview'
+import { ReviewPanel } from '../../features/ai-review/ReviewPanel'
+import { describeError, useReviewStore } from '../../features/ai-review/reviewStore'
 import { SubmissionStatus } from '../../features/ai-review/SubmissionStatus'
-import { describeError, useSubmission } from '../../features/ai-review/useSubmission'
 import { useDeviceMode } from '../../services/device/capabilities'
 import { readLast } from '../autosave'
 import { CaptureDialog } from '../images/CaptureDialog'
@@ -11,7 +13,7 @@ import { ACCEPTED_TYPES, newImageObject, prepareImage, validateImageFile } from 
 import { newSolutionBlock, newTextNote } from '../objects'
 import type { Background } from '../model'
 import { SaveStatus } from '../SaveStatus'
-import { useNotebookStore } from '../store'
+import { getSelection, useNotebookStore } from '../store'
 import { Toolbar } from '../tools/Toolbar'
 import { isEditableTarget } from '../tools/shortcuts'
 import { PageSidebar } from './PageSidebar'
@@ -39,7 +41,11 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
   const phone = mode === 'phone'
   const tablet = mode === 'tablet'
   const keyboardFirst = mode === 'laptop' || mode === 'hybrid'
-  const review = useSubmission()
+  const active = useReviewStore((s) => s.active)
+  const startReview = useReviewStore((s) => s.start)
+  const cancelReview = useReviewStore((s) => s.cancel)
+  const setConfirmOpen = useReviewStore((s) => s.setConfirmOpen)
+  const loadReviews = useReviewStore((s) => s.loadPage)
   const [notice, setNotice] = useState<string | null>(null)
   const [capture, setCapture] = useState<File | null>(null)
   const importInput = useRef<HTMLInputElement>(null)
@@ -61,6 +67,20 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
     autoBlocked.add(currentPageId)
     s.addObject(newSolutionBlock(currentPageId, []), { record: false })
   }, [keyboardFirst, loaded, currentPageId])
+
+  // Cached reviews for this page and its working spaces, so annotations show offline.
+  const areaKey = pages
+    .filter((p) => p.parent_page_id === currentPageId)
+    .map((p) => p.id)
+    .join(',')
+  useEffect(() => {
+    if (!currentPageId) return
+    void loadReviews(currentPageId)
+    areaKey
+      .split(',')
+      .filter(Boolean)
+      .forEach((id) => void loadReviews(id))
+  }, [currentPageId, areaKey, loadReviews])
 
   const top = pages.filter((p) => !p.parent_page_id).sort((a, b) => a.order - b.order)
   const index = top.findIndex((p) => p.id === currentPageId)
@@ -175,7 +195,35 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
     const file = capture
     const pageId = currentPageId
     setCapture(null)
-    if (file && pageId) void review.submit(() => sendCaptureForReview(file, crop, pageId))
+    if (!file || !pageId) return
+    void startReview({
+      pageId,
+      origin: 'capture',
+      send: async () => {
+        const { accepted, upload } = await sendCaptureForReview(file, crop, pageId)
+        useReviewStore.setState((s) => (s.active ? { active: { ...s.active, upload } } : {}))
+        return accepted
+      },
+    })
+  }
+
+  /** Review the lasso selection (context menu or toolbar). */
+  const reviewSelection = () => {
+    const sel = getSelection()
+    if (!sel) {
+      setNotice('Select some work with the lasso first, then choose Review.')
+      return
+    }
+    setNotice(null)
+    void startReview({
+      pageId: sel.pageId,
+      origin: 'selection',
+      send: async () => {
+        const { accepted, upload } = await sendSelectionForReview()
+        useReviewStore.setState((s) => (s.active ? { active: { ...s.active, upload } } : {}))
+        return accepted
+      },
+    })
   }
 
   const toolbar = (orientation: 'horizontal' | 'vertical', large: boolean) => (
@@ -197,6 +245,14 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
         onClick={() => importInput.current?.click()}
       >
         🖼 Image
+      </button>
+      <button
+        type="button"
+        className={`${actionBtn(large)} text-blue-700`}
+        title="Review the selected work (select it with the lasso first)"
+        onClick={reviewSelection}
+      >
+        ✓ Review my solution
       </button>
     </Toolbar>
   )
@@ -253,7 +309,7 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
       {capture && (
         <CaptureDialog file={capture} onCancel={() => setCapture(null)} onUse={confirmCapture} />
       )}
-      {(review.state.kind !== 'idle' || notice) && (
+      {(active || notice) && (
         <div
           aria-live="polite"
           className="fixed bottom-16 left-1/2 z-40 flex max-w-[90vw] -translate-x-1/2 items-center gap-3 rounded-lg bg-white px-4 py-2 shadow-lg ring-1 ring-slate-200"
@@ -263,21 +319,47 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
               {notice}
             </span>
           ) : (
-            <SubmissionStatus state={review.state} />
+            active && (
+              <SubmissionStatus
+                review={active}
+                onCancel={cancelReview}
+                onOpenConfirm={() => setConfirmOpen(true)}
+              />
+            )
           )}
-          <button
-            type="button"
-            aria-label="Dismiss"
-            className="min-h-8 min-w-8 rounded hover:bg-slate-100"
-            onClick={() => {
-              setNotice(null)
-              review.reset()
-            }}
-          >
-            ✕
-          </button>
+          {(notice ||
+            (active &&
+              active.phase !== 'sending' &&
+              active.phase !== 'working' &&
+              active.phase !== 'confirm')) && (
+            <button
+              type="button"
+              aria-label="Dismiss"
+              className="min-h-8 min-w-8 rounded hover:bg-slate-100"
+              onClick={() => {
+                setNotice(null)
+                if (
+                  active?.phase === 'done' ||
+                  active?.phase === 'error' ||
+                  active?.phase === 'unreadable'
+                ) {
+                  cancelReview()
+                }
+              }}
+            >
+              ✕
+            </button>
+          )}
         </div>
       )}
+      {active?.phase === 'confirm' && active.confirmOpen && (
+        <ConfirmPanel
+          onRecrop={() =>
+            setNotice('Select the work again with the lasso, then choose Review this.')
+          }
+        />
+      )}
+      {!(active?.phase === 'confirm' && active.confirmOpen) && <ReviewPanel />}
       {phone && (
         <p className="bg-amber-50 px-3 py-1 text-xs text-amber-900">
           Phone mode is for short practice and photos of your work. Use a tablet or laptop for long
@@ -314,7 +396,7 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
                     zoom={zoom}
                     label={pageTitle}
                     virtualKeyboard={!keyboardFirst}
-                    onReview={() => void review.submit(sendSelectionForReview)}
+                    onReview={reviewSelection}
                   />
                   {areas.map((a, i) => (
                     <PageSurface
@@ -324,7 +406,7 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
                       zoom={zoom}
                       label={`${pageTitle} — working space ${i + 1}`}
                       virtualKeyboard={!keyboardFirst}
-                      onReview={() => void review.submit(sendSelectionForReview)}
+                      onReview={reviewSelection}
                     />
                   ))}
                   <button

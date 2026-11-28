@@ -79,4 +79,6 @@ export interface CachedReview {
   page_id: string
   response: Schemas['ReviewResponse']
   saved_at: string
+  /** The learner hid its annotations (they can be shown again; ink is never touched). */
+  dismissed?: boolean
 }

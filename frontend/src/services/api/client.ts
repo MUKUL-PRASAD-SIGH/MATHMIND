@@ -114,4 +114,11 @@ export const api = {
     request<Schemas['SubmissionAccepted']>('POST', `/submissions/${enc(id)}/review`),
   getReview: (id: string) =>
     request<Schemas['ReviewResponse']>('GET', `/submissions/${enc(id)}/review`),
+
+  mastery: () => request<Schemas['Mastery']>('GET', '/learners/me/mastery'),
+  revision: () => request<Schemas['Revision']>('GET', '/learners/me/revision'),
+  next: () => request<Schemas['NextAction']>('GET', '/learners/me/next'),
+  exportMyData: () => request<Schemas['LearnerExport']>('GET', '/learners/me/export'),
+  deleteMyData: () =>
+    request<Schemas['DeletionSummary']>('DELETE', '/learners/me/data?confirm=true'),
 }
