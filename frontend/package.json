@@ -15,7 +15,8 @@
     "typecheck": "tsc -b --noEmit",
     "format": "prettier --write .",
     "e2e": "playwright test",
-    "gen:types": "openapi-typescript ../shared/contracts/openapi.yaml -o src/services/api/types.ts"
+    "gen:types": "openapi-typescript ../shared/contracts/openapi.yaml -o src/services/api/types.ts",
+    "e2e:real": "node -e \"process.env.E2E_REAL='1'; require('child_process').execSync('npx playwright test', {stdio: 'inherit', env: process.env})\""
   },
   "dependencies": {
     "dexie": "^4.4.7",
