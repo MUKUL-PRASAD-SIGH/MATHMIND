@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { ProgressPage } from './features/analytics/ProgressPage'
 import { readLast } from './notebook/autosave'
 import { NotebookList } from './notebook/pages/NotebookList'
 import { NotebookView } from './notebook/pages/NotebookView'
@@ -25,6 +26,7 @@ function useHashRoute(): string {
 export default function App() {
   const route = useHashRoute()
   const notebookId = /^#\/nb\/([\w-]+)/.exec(route)?.[1]
+  const progress = route.startsWith('#/progress')
 
   return (
     <div className="flex h-full flex-col">
@@ -35,11 +37,27 @@ export default function App() {
         </>
       ) : (
         <>
-          <header className="bg-white px-4 py-3 shadow-sm">
+          <header className="flex items-center gap-4 bg-white px-4 py-3 shadow-sm">
             <h1 className="text-xl font-bold text-blue-700">MathMind</h1>
+            <nav aria-label="Main" className="flex gap-1 text-sm">
+              <a
+                href="#/"
+                aria-current={!progress ? 'page' : undefined}
+                className="rounded px-2 py-1 hover:bg-slate-100 aria-[current=page]:font-semibold"
+              >
+                Notebooks
+              </a>
+              <a
+                href="#/progress"
+                aria-current={progress ? 'page' : undefined}
+                className="rounded px-2 py-1 hover:bg-slate-100 aria-[current=page]:font-semibold"
+              >
+                Progress
+              </a>
+            </nav>
           </header>
           <main className="min-h-0 flex-1 overflow-y-auto">
-            <NotebookList />
+            {progress ? <ProgressPage /> : <NotebookList />}
           </main>
         </>
       )}

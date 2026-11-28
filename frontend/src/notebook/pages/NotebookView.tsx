@@ -285,6 +285,9 @@ export function NotebookView({ notebookId }: { notebookId: string }) {
             📷 Capture
           </button>
         )}
+        <a href="#/progress" className="rounded px-2 py-1 text-sm text-blue-700 hover:bg-slate-100">
+          Progress
+        </a>
         <SettingsMenu mode={mode} />
       </header>
       <input
