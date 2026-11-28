@@ -28,14 +28,16 @@ jobs:
         run: pip install -r requirements.txt -r requirements-dev.txt
       - name: Lint
         run: |
-          ruff check .
-          ruff format --check .
+          ruff check . ../ai/evaluation
+          ruff format --check . ../ai/evaluation
       - name: Type-check
         run: mypy app
       - name: Contract is in sync with the code
         run: python scripts/export_contracts.py --check
       - name: Tests (no ML / LLM)
         run: pytest -m "not ml and not llm" --cov=app --cov-report=term-missing:skip-covered
+      - name: Evaluation metric tests (T7.2)
+        run: pytest ../ai/evaluation -q -p no:cacheprovider
       - name: Security scan
         run: bandit -q -r app
 

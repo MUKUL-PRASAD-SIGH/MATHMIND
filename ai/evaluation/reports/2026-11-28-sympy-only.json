@@ -1,0 +1,2183 @@
+{
+  "date": "2026-11-28",
+  "label": "sympy-only",
+  "dataset": "datasets/labelled_solutions",
+  "verifier_version": "sympy-1.14.0/verifier-1",
+  "llm": null,
+  "llm_note": null,
+  "summary": {
+    "items": 120,
+    "with_error": 68,
+    "first_error_accuracy": 1.0,
+    "incorrect_precision": 1.0,
+    "incorrect_recall": 1.0,
+    "false_incorrect_items": [],
+    "steps_wrongly_blamed": 0,
+    "correct_confirmed": 0.9333333333333333,
+    "inconclusive_rate": 0.025,
+    "step_inconclusive_rate": 0.007159904534606206,
+    "schema_valid_rate": null,
+    "override_rate": null,
+    "error_type_accuracy": null,
+    "confusion_matrix": {},
+    "per_concept": {
+      "exponents": {
+        "items": 15,
+        "first_error_accuracy": 1.0,
+        "incorrect_precision": 1.0,
+        "inconclusive_rate": 0.0
+      },
+      "factorization": {
+        "items": 15,
+        "first_error_accuracy": 1.0,
+        "incorrect_precision": 1.0,
+        "inconclusive_rate": 0.0
+      },
+      "fractions": {
+        "items": 12,
+        "first_error_accuracy": 1.0,
+        "incorrect_precision": 1.0,
+        "inconclusive_rate": 0.0
+      },
+      "integer_arithmetic": {
+        "items": 8,
+        "first_error_accuracy": 1.0,
+        "incorrect_precision": 1.0,
+        "inconclusive_rate": 0.0
+      },
+      "linear_equations": {
+        "items": 40,
+        "first_error_accuracy": 1.0,
+        "incorrect_precision": 1.0,
+        "inconclusive_rate": 0.0
+      },
+      "quadratic_equations": {
+        "items": 30,
+        "first_error_accuracy": 1.0,
+        "incorrect_precision": 1.0,
+        "inconclusive_rate": 0.1
+      }
+    }
+  },
+  "image": null,
+  "latency": {
+    "verify": {
+      "n": 120.0,
+      "p50": 0.09576070006005466,
+      "p95": 0.2701688000233844
+    },
+    "llm": {
+      "n": 0.0,
+      "p50": null,
+      "p95": null
+    },
+    "ocr": {
+      "n": 0.0,
+      "p50": null,
+      "p95": null
+    }
+  },
+  "ratings": null,
+  "items": [
+    {
+      "id": "exp-c-001",
+      "concept_id": "exponents",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "exp-c-002",
+      "concept_id": "exponents",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "exp-c-003",
+      "concept_id": "exponents",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "exp-c-004",
+      "concept_id": "exponents",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "exp-c-005",
+      "concept_id": "exponents",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "exp-c-006",
+      "concept_id": "exponents",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "exp-e-001",
+      "concept_id": "exponents",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "exp-e-002",
+      "concept_id": "exponents",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "exp-e-003",
+      "concept_id": "exponents",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "exp-e-004",
+      "concept_id": "exponents",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "exp-e-005",
+      "concept_id": "exponents",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "exp-e-006",
+      "concept_id": "exponents",
+      "expected_correct": false,
+      "expected_first_error": 4,
+      "expected_error_type": "arithmetic_slip",
+      "overall": "incorrect",
+      "first_error": 4,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "exp-e-007",
+      "concept_id": "exponents",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "arithmetic_slip",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "exp-e-008",
+      "concept_id": "exponents",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "exp-e-009",
+      "concept_id": "exponents",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "fact-c-001",
+      "concept_id": "factorization",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "fact-c-002",
+      "concept_id": "factorization",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "fact-c-003",
+      "concept_id": "factorization",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "fact-c-004",
+      "concept_id": "factorization",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "fact-c-005",
+      "concept_id": "factorization",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "fact-c-006",
+      "concept_id": "factorization",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "fact-e-001",
+      "concept_id": "factorization",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "fact-e-002",
+      "concept_id": "factorization",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "fact-e-003",
+      "concept_id": "factorization",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "fact-e-004",
+      "concept_id": "factorization",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "fact-e-005",
+      "concept_id": "factorization",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "fact-e-006",
+      "concept_id": "factorization",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "fact-e-007",
+      "concept_id": "factorization",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "fact-e-008",
+      "concept_id": "factorization",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "fact-e-009",
+      "concept_id": "factorization",
+      "expected_correct": false,
+      "expected_first_error": null,
+      "expected_error_type": "incomplete",
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "frac-c-001",
+      "concept_id": "fractions",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "frac-c-002",
+      "concept_id": "fractions",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "frac-c-003",
+      "concept_id": "fractions",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "frac-c-004",
+      "concept_id": "fractions",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "frac-c-005",
+      "concept_id": "fractions",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "frac-e-001",
+      "concept_id": "fractions",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "missing_prerequisite",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "frac-e-002",
+      "concept_id": "fractions",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "missing_prerequisite",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "frac-e-003",
+      "concept_id": "fractions",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "missing_prerequisite",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "frac-e-004",
+      "concept_id": "fractions",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "missing_prerequisite",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "frac-e-005",
+      "concept_id": "fractions",
+      "expected_correct": false,
+      "expected_first_error": 3,
+      "expected_error_type": "arithmetic_slip",
+      "overall": "incorrect",
+      "first_error": 3,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "frac-e-006",
+      "concept_id": "fractions",
+      "expected_correct": false,
+      "expected_first_error": 3,
+      "expected_error_type": "arithmetic_slip",
+      "overall": "incorrect",
+      "first_error": 3,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "frac-e-007",
+      "concept_id": "fractions",
+      "expected_correct": false,
+      "expected_first_error": null,
+      "expected_error_type": "incomplete",
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "int-c-001",
+      "concept_id": "integer_arithmetic",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "int-c-002",
+      "concept_id": "integer_arithmetic",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "int-c-003",
+      "concept_id": "integer_arithmetic",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "int-e-001",
+      "concept_id": "integer_arithmetic",
+      "expected_correct": false,
+      "expected_first_error": 3,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 3,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "int-e-002",
+      "concept_id": "integer_arithmetic",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "int-e-003",
+      "concept_id": "integer_arithmetic",
+      "expected_correct": false,
+      "expected_first_error": 3,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 3,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "int-e-004",
+      "concept_id": "integer_arithmetic",
+      "expected_correct": false,
+      "expected_first_error": 4,
+      "expected_error_type": "arithmetic_slip",
+      "overall": "incorrect",
+      "first_error": 4,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "int-e-005",
+      "concept_id": "integer_arithmetic",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "other",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-c-001",
+      "concept_id": "linear_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-c-002",
+      "concept_id": "linear_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-c-003",
+      "concept_id": "linear_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-c-004",
+      "concept_id": "linear_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-c-005",
+      "concept_id": "linear_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-c-006",
+      "concept_id": "linear_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-c-007",
+      "concept_id": "linear_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-c-008",
+      "concept_id": "linear_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-c-009",
+      "concept_id": "linear_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-c-010",
+      "concept_id": "linear_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-c-011",
+      "concept_id": "linear_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-c-012",
+      "concept_id": "linear_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-c-013",
+      "concept_id": "linear_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-c-014",
+      "concept_id": "linear_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-c-015",
+      "concept_id": "linear_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-001",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-002",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-003",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 3,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 3,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-004",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-005",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-006",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 3,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 3,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-007",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-008",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-009",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-010",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-011",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-012",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 3,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 3,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-013",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-014",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-015",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 4,
+      "expected_error_type": "arithmetic_slip",
+      "overall": "incorrect",
+      "first_error": 4,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-016",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 3,
+      "expected_error_type": "arithmetic_slip",
+      "overall": "incorrect",
+      "first_error": 3,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-017",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "arithmetic_slip",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-018",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 4,
+      "expected_error_type": "arithmetic_slip",
+      "overall": "incorrect",
+      "first_error": 4,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-019",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 3,
+      "expected_error_type": "arithmetic_slip",
+      "overall": "incorrect",
+      "first_error": 3,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-020",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 3,
+      "expected_error_type": "arithmetic_slip",
+      "overall": "incorrect",
+      "first_error": 3,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-021",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": null,
+      "expected_error_type": "incomplete",
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-022",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": null,
+      "expected_error_type": "incomplete",
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-023",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": null,
+      "expected_error_type": "incomplete",
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-024",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "missing_prerequisite",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "lin-e-025",
+      "concept_id": "linear_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "missing_prerequisite",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-c-001",
+      "concept_id": "quadratic_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "inconclusive",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "inconclusive",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-c-002",
+      "concept_id": "quadratic_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-c-003",
+      "concept_id": "quadratic_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-c-004",
+      "concept_id": "quadratic_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "inconclusive",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "inconclusive",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-c-005",
+      "concept_id": "quadratic_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-c-006",
+      "concept_id": "quadratic_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-c-007",
+      "concept_id": "quadratic_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-c-008",
+      "concept_id": "quadratic_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "inconclusive",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "inconclusive",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-c-009",
+      "concept_id": "quadratic_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-c-010",
+      "concept_id": "quadratic_equations",
+      "expected_correct": true,
+      "expected_first_error": null,
+      "expected_error_type": null,
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-e-001",
+      "concept_id": "quadratic_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-e-002",
+      "concept_id": "quadratic_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-e-003",
+      "concept_id": "quadratic_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-e-004",
+      "concept_id": "quadratic_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-e-005",
+      "concept_id": "quadratic_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "algebraic_transformation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-e-006",
+      "concept_id": "quadratic_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "formula_selection",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-e-007",
+      "concept_id": "quadratic_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "formula_selection",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-e-008",
+      "concept_id": "quadratic_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "formula_selection",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-e-009",
+      "concept_id": "quadratic_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "formula_selection",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-e-010",
+      "concept_id": "quadratic_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "domain_violation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-e-011",
+      "concept_id": "quadratic_equations",
+      "expected_correct": false,
+      "expected_first_error": 3,
+      "expected_error_type": "domain_violation",
+      "overall": "incorrect",
+      "first_error": 3,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-e-012",
+      "concept_id": "quadratic_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "domain_violation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-e-013",
+      "concept_id": "quadratic_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "domain_violation",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-e-014",
+      "concept_id": "quadratic_equations",
+      "expected_correct": false,
+      "expected_first_error": 3,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 3,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-e-015",
+      "concept_id": "quadratic_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-e-016",
+      "concept_id": "quadratic_equations",
+      "expected_correct": false,
+      "expected_first_error": 2,
+      "expected_error_type": "sign_error",
+      "overall": "incorrect",
+      "first_error": 2,
+      "step_verdicts": [
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-e-017",
+      "concept_id": "quadratic_equations",
+      "expected_correct": false,
+      "expected_first_error": 4,
+      "expected_error_type": "arithmetic_slip",
+      "overall": "incorrect",
+      "first_error": 4,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "incorrect"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-e-018",
+      "concept_id": "quadratic_equations",
+      "expected_correct": false,
+      "expected_first_error": 3,
+      "expected_error_type": "arithmetic_slip",
+      "overall": "incorrect",
+      "first_error": 3,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "incorrect",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-e-019",
+      "concept_id": "quadratic_equations",
+      "expected_correct": false,
+      "expected_first_error": null,
+      "expected_error_type": "incomplete",
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    },
+    {
+      "id": "quad-e-020",
+      "concept_id": "quadratic_equations",
+      "expected_correct": false,
+      "expected_first_error": null,
+      "expected_error_type": "incomplete",
+      "overall": "correct",
+      "first_error": null,
+      "step_verdicts": [
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "llm_error_type": null,
+      "llm_valid": null,
+      "llm_overridden": null
+    }
+  ],
+  "seconds": 14.9315092000179
+}
