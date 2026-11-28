@@ -23,7 +23,7 @@ test.use({ viewport: { width: 1440, height: 900 } })
 type Step = string[]
 
 async function newNotebook(page: Page, title: string) {
-  await page.goto('/')
+  await page.goto('/#/') // a bare '/' reopens the last notebook
   await page.getByLabel('New notebook title').fill(title)
   await page.keyboard.press('Enter')
   await expect(page.getByRole('heading', { name: title })).toBeVisible()
