@@ -1,7 +1,9 @@
 """Image pipeline, OCR confirmation and upload security (spec 8.3, 13.2)."""
 
+import functools
 import io
 import json
+from collections.abc import Callable
 from pathlib import Path
 
 import pytest
@@ -10,7 +12,11 @@ from PIL import Image
 
 from app.schemas.common import BBox
 from app.services.jobs import stages
+from app.services.recognition import recognize_region
+from app.services.verification import verify_steps
 from tests.conftest import API, png_bytes
+from tests.recognition.test_recognition import LINES, render
+from tests.recognition.test_recognition import to_png as png_bytes_of
 
 pytestmark = pytest.mark.integration
 
@@ -169,3 +175,72 @@ def test_confirm_rejects_foreign_regions_and_wrong_state(client: TestClient) -> 
     typed = client.post(f"{API}/submissions/typed", json={"steps": [{"latex": "x=1"}]}).json()["submission_id"]
     r = client.post(f"{API}/submissions/{typed}/confirm", json={"regions": [{"id": "x"}]})
     assert r.status_code == 409
+
+
+# ---- T4.2 with M3's real recognize stage (pix2tex replaced by a fake model) ----------------------------
+
+
+def real_recognizer(outputs: Callable[[int], str]) -> stages.RecognizeFn:
+    """recognize_region with a fake OCR model; outputs(n) is the reply to the n-th model call (3 per line)."""
+    calls = iter(range(10_000))
+    return functools.partial(recognize_region, model=lambda img: outputs(next(calls)))
+
+
+def test_real_recognizer_confident_lines_are_verified_straight_away(client: TestClient) -> None:
+    stages.register_stage("verify", verify_steps)
+    stages.register_stage("recognize", real_recognizer(lambda n: ["3x+5=20", "3x=15", "x=5"][n // 3]))
+    sid = upload(client, png_bytes_of(render(LINES)), problem_id="lin-001").json()["submission_id"]  # type: ignore[attr-defined]
+    body = client.get(f"{API}/submissions/{sid}/review").json()
+    assert body["verification"]["overall"] == "correct"
+    assert len(body["regions"]) == 3 and all(r["confidence"] >= 0.75 for r in body["regions"])
+    assert body["step_to_region"] == {str(i + 1): r["id"] for i, r in enumerate(body["regions"])}
+
+
+def test_real_recognizer_low_confidence_never_reaches_a_verdict(client: TestClient) -> None:
+    """The misread middle line would be 'incorrect' (3x=16) — it must be confirmed first, never judged."""
+    verified: list[list[str]] = []
+    seen: list[stages.ReviewInput] = []
+
+    def spy_verify(steps: list[str], problem: stages.ProblemContext | None) -> object:
+        verified.append(steps)
+        return verify_steps(steps, problem)
+
+    def spy_reason(data: stages.ReviewInput) -> object:
+        seen.append(data)
+        raise stages.ReviewUnavailable()
+
+    unstable = {3: "3x=16", 4: "3x=15", 5: "8x=16"}  # line 2 reads differently on every augmentation
+    stages.register_stage("verify", spy_verify)
+    stages.register_stage("reason", spy_reason)
+    stages.register_stage("recognize", real_recognizer(lambda n: unstable.get(n, ["3x+5=20", "", "x=5"][n // 3])))
+    sid = upload(client, png_bytes_of(render(LINES)), problem_id="lin-001").json()["submission_id"]  # type: ignore[attr-defined]
+    assert status(client, sid) == "awaiting_confirmation"
+    assert verified == []
+    assert client.get(f"{API}/submissions/{sid}/review").status_code == 404
+
+    regs = regions_of(client, sid)
+    assert regs[1]["latex"] == "3x=16" and float(regs[1]["confidence"]) < 0.75  # type: ignore[arg-type]
+    r = client.post(
+        f"{API}/submissions/{sid}/confirm",
+        json={"regions": [{"id": regs[1]["id"], "corrected_latex": "3x=15"}]},
+    )
+    assert r.status_code == 202
+    body = client.get(f"{API}/submissions/{sid}/review").json()
+    assert body["verification"]["overall"] == "correct"
+    assert regions_of(client, sid)[1]["latex"] == "3x=16"  # original OCR output kept
+    assert seen[-1].ocr_corrections == {2: "3x=15"}
+
+
+def test_ocr_crash_keeps_the_image_and_allows_typing(client: TestClient, settings) -> None:  # type: ignore[no-untyped-def]
+    def crash(n: int) -> str:
+        raise RuntimeError("model exploded")
+
+    stages.register_stage("verify", verify_steps)
+    stages.register_stage("recognize", real_recognizer(crash))
+    sid = upload(client, png_bytes_of(render(LINES))).json()["submission_id"]  # type: ignore[attr-defined]
+    assert status(client, sid) == "failed_recognition"
+    assert len(list((Path(settings.upload_dir) / sid).glob("source-*.png"))) == 1
+    [reg] = regions_of(client, sid)
+    r = client.post(f"{API}/submissions/{sid}/confirm", json={"regions": [{"id": reg["id"], "corrected_latex": "x=5"}]})
+    assert r.status_code == 202
+    assert client.get(f"{API}/submissions/{sid}/review").json()["verification"]["steps"][0]["latex"] == "x=5"

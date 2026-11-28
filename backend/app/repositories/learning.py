@@ -6,12 +6,18 @@ from sqlmodel import Session, col, select
 
 from app.models import (
     ConceptRow,
+    EvaluationRow,
+    LearningEventRow,
     MasteryProfileRow,
     PrerequisiteRow,
     ProblemRow,
     RevisionQueueRow,
+    SubmissionRow,
     User,
 )
+
+# "revision" = an attempt made while a revision of that concept was due (rule 6 of the next-action table).
+ATTEMPT_KINDS = ("attempt", "revision")
 
 
 def get_or_create_default_user(session: Session) -> User:
@@ -73,14 +79,46 @@ def list_mastery(session: Session, user_id: str) -> list[tuple[MasteryProfileRow
     return [(m, c) for m, c in session.exec(stmt)]
 
 
-def list_due_revision(session: Session, user_id: str, now: datetime) -> list[tuple[RevisionQueueRow, ConceptRow]]:
-    stmt = (
-        select(RevisionQueueRow, ConceptRow)
-        .where(
-            RevisionQueueRow.user_id == user_id,
-            RevisionQueueRow.concept_id == ConceptRow.id,
-            col(RevisionQueueRow.due_at) <= now,
-        )
-        .order_by(col(RevisionQueueRow.due_at))
+def list_revision(session: Session, user_id: str) -> list[tuple[RevisionQueueRow, ConceptRow]]:
+    """All queued items; which are due is decided by ``adaptation.due_revisions`` (timezone-safe)."""
+    stmt = select(RevisionQueueRow, ConceptRow).where(
+        RevisionQueueRow.user_id == user_id, RevisionQueueRow.concept_id == ConceptRow.id
     )
     return [(r, c) for r, c in session.exec(stmt)]
+
+
+def get_mastery(session: Session, user_id: str, concept_id: str) -> MasteryProfileRow | None:
+    return session.get(MasteryProfileRow, (user_id, concept_id))
+
+
+def get_revision(session: Session, user_id: str, concept_id: str) -> RevisionQueueRow | None:
+    return session.get(RevisionQueueRow, (user_id, concept_id))
+
+
+def upsert_revision(session: Session, user_id: str, concept_id: str, due_at: datetime, reason: str) -> None:
+    row = get_revision(session, user_id, concept_id) or RevisionQueueRow(
+        user_id=user_id, concept_id=concept_id, due_at=due_at
+    )
+    row.due_at, row.reason = due_at, reason
+    session.add(row)
+
+
+def attempt_events(
+    session: Session, user_id: str
+) -> list[tuple[LearningEventRow, SubmissionRow | None, EvaluationRow | None]]:
+    """Attempt events (oldest first) with their submission (problem id) and evaluation (verdicts)."""
+    stmt = (
+        select(LearningEventRow, SubmissionRow, EvaluationRow)
+        .join(SubmissionRow, col(LearningEventRow.submission_id) == col(SubmissionRow.id), isouter=True)
+        .join(EvaluationRow, col(LearningEventRow.submission_id) == col(EvaluationRow.submission_id), isouter=True)
+        .where(LearningEventRow.user_id == user_id, col(LearningEventRow.kind).in_(ATTEMPT_KINDS))
+        .order_by(col(LearningEventRow.at))
+    )
+    return [(e, sub, ev) for e, sub, ev in session.exec(stmt)]
+
+
+def events_for_submission(session: Session, submission_id: str) -> list[LearningEventRow]:
+    stmt = select(LearningEventRow).where(
+        LearningEventRow.submission_id == submission_id, col(LearningEventRow.kind).in_(ATTEMPT_KINDS)
+    )
+    return list(session.exec(stmt))

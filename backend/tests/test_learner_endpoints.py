@@ -1,7 +1,7 @@
 """Learner, concept and problem endpoints with real data in the DB.
 
-`test_runner_and_seed.py` covers an empty learner. These tests insert mastery and revision rows so the
-mapping, filtering and ordering rules are pinned down before T6.5 swaps in M3's adaptive engine.
+`test_runner_and_seed.py` covers an empty learner. These tests insert mastery, revision and learning-event rows
+so the mapping, filtering and ordering rules and the wiring to M3's adaptive engine (T6.5) are pinned down.
 """
 
 from datetime import timedelta
@@ -10,9 +10,21 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session
 
-from app.models import ConceptRow, MasteryProfileRow, RevisionQueueRow, User, utcnow
+from app.models import (
+    ConceptRow,
+    EvaluationRow,
+    LearningEventRow,
+    MasteryProfileRow,
+    RevisionQueueRow,
+    SubmissionRow,
+    User,
+    utcnow,
+)
 from app.repositories import learning as repo
+from app.services.jobs import stages
+from app.services.verification import verify_steps
 from tests.conftest import API
+from tests.test_contracts import assert_valid
 
 pytestmark = pytest.mark.integration
 
@@ -109,20 +121,108 @@ def test_revision_hides_items_not_yet_due(client: TestClient) -> None:
     assert client.get(f"{API}/learners/me/revision").json() == {"items": []}
 
 
-# --- /learners/me/next (placeholder rule until T6.4) ----------------------------------------------------
+# --- /learners/me/next (M3's next-action rule table, T6.4) ---------------------------------------------
 
 
-def test_next_picks_lowest_mastery_among_root_concepts(client: TestClient) -> None:
-    uid = me(client)
+def events(client: TestClient, concept_id: str, *items: tuple[float | None, str | None]) -> None:
+    """Attempt events (score, error_type), oldest first, without submissions: the outcome comes from the score."""
+    uid, now = me(client), utcnow()
+    n = len(items)
+    add_rows(
+        client,
+        *(
+            LearningEventRow(
+                user_id=uid,
+                concept_id=concept_id,
+                kind="attempt",
+                score=sc,
+                error_type=et,
+                at=now - timedelta(minutes=n - i),
+            )
+            for i, (sc, et) in enumerate(items)
+        ),
+    )
+
+
+def test_next_without_history_starts_on_the_first_root_concept(client: TestClient) -> None:
     add_rows(client, ConceptRow(id="fractions", name="Fractions", domain="arithmetic"))
-    add_rows(client, MasteryProfileRow(user_id=uid, concept_id="fractions", mastery=0.1, attempts=2))
     nxt = client.get(f"{API}/learners/me/next").json()
-    assert nxt["concept_id"] == "fractions"
+    assert_valid("NextAction", nxt)
+    assert nxt["concept_id"] == "fractions"  # first concept without prerequisites, by id
     assert nxt["problem_id"] is None  # no problems seeded for it: still a valid suggestion
-    assert nxt["action"] == "ask_another_question"
-    assert "Fractions" in nxt["reason"]
+    assert nxt["action"] == "ask_another_question"  # < 2 attempts: no strong claim
+    assert "fractions" in nxt["reason"]
 
 
-def test_next_breaks_full_ties_by_concept_id(client: TestClient) -> None:
-    add_rows(client, ConceptRow(id="a_counting", name="Counting", domain="arithmetic"))
-    assert client.get(f"{API}/learners/me/next").json()["concept_id"] == "a_counting"
+def test_next_follows_the_most_recent_attempt(client: TestClient) -> None:
+    events(client, "linear_equations", (1.0, None))
+    nxt = client.get(f"{API}/learners/me/next").json()
+    assert (nxt["concept_id"], nxt["problem_id"], nxt["action"]) == (
+        "linear_equations",
+        "lin-001",
+        "ask_another_question",
+    )
+
+
+def test_next_sends_repeated_conceptual_errors_to_the_weakest_prerequisite(client: TestClient) -> None:
+    add_rows(client, MasteryProfileRow(user_id=me(client), concept_id="integer_arithmetic", mastery=0.4, attempts=3))
+    events(client, "linear_equations", (0.0, "algebraic_transformation"), (0.0, "algebraic_transformation"))
+    nxt = client.get(f"{API}/learners/me/next").json()
+    assert_valid("NextAction", nxt)
+    assert (nxt["action"], nxt["concept_id"], nxt["problem_id"]) == (
+        "prerequisite_review",
+        "integer_arithmetic",
+        "int-001",
+    )
+    assert "2 times" in nxt["reason"]
+
+
+def test_next_targets_an_arithmetic_slip_after_step_one(client: TestClient) -> None:
+    uid = me(client)
+    sub = SubmissionRow(owner_id=uid, input_mode="typed", problem_id="lin-001", status="completed")
+    sub_id = sub.id
+    add_rows(client, sub)
+    add_rows(
+        client,
+        EvaluationRow(submission_id=sub_id, verification={"overall": "incorrect", "first_error_step": 3, "steps": []}),
+    )
+    events(client, "linear_equations", (1.0, None))
+    add_rows(
+        client,
+        LearningEventRow(
+            user_id=uid,
+            concept_id="linear_equations",
+            submission_id=sub_id,
+            kind="attempt",
+            score=0.0,
+            error_type="arithmetic_slip",
+        ),
+    )
+    nxt = client.get(f"{API}/learners/me/next").json()
+    assert nxt["action"] == "targeted_practice"
+    assert "step 3" in nxt["reason"]
+
+
+# --- end to end: a reviewed submission feeds all three endpoints ------------------------------------------
+
+
+def test_reviewed_submission_feeds_mastery_and_next(client: TestClient) -> None:
+    stages.register_stage("verify", verify_steps)
+    for steps in (["3x+5=20", "3x=15", "x=5"], ["3x+5=20", "3x=15", "x=5"]):
+        r = client.post(
+            f"{API}/submissions/typed", json={"problem_id": "lin-001", "steps": [{"latex": s} for s in steps]}
+        )
+        assert r.status_code == 202
+
+    mastery = client.get(f"{API}/learners/me/mastery").json()
+    assert_valid("Mastery", mastery)
+    [item] = mastery["items"]
+    # 0.3 -> 0.51 (correct) -> 0.597 (correct, but a repeat of the same problem scores 0.8)
+    assert item["concept_id"] == "linear_equations" and item["mastery"] == pytest.approx(0.597)
+    assert (item["attempts"], item["confidence_level"]) == (2, "low")
+    assert item["last_practised_at"] is not None
+
+    nxt = client.get(f"{API}/learners/me/next").json()
+    assert_valid("NextAction", nxt)
+    assert (nxt["action"], nxt["concept_id"]) == ("continue", "linear_equations")
+    assert_valid("Revision", client.get(f"{API}/learners/me/revision").json())
