@@ -30,6 +30,7 @@ PROMPT_VERSION = "reviewer_v1"
 PROMPTS_DIR = REPO_ROOT / "ai" / "prompts"
 MAX_PRIOR_ERRORS = 3
 MAX_ERROR_FEEDBACK = 600
+UNSPECIFIED_CONCEPT = "unspecified"
 INCONCLUSIVE_NOTE = "The checker could not confirm every step, so this is not a final verdict."
 
 
@@ -75,6 +76,12 @@ def parse_output(raw: str, data: ReviewInput) -> ReviewResult:
     obj = json.loads(raw)
     if not isinstance(obj, dict):
         raise ValueError("reply must be a single JSON object")
+    # The concept is known input, not model judgement: use ours. With no problem attached the model
+    # often echoes `null`; that must not throw away an otherwise valid explanation.
+    if data.concept_id:
+        obj["concept"] = data.concept_id
+    elif not isinstance(obj.get("concept"), str) or not obj["concept"].strip():
+        obj["concept"] = UNSPECIFIED_CONCEPT
     review = LlmReview.model_validate(obj)
     expected = data.problem.expected_answer_latex if data.problem else None
     if _reveals_answer(review.hint, expected):
